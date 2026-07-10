@@ -19,6 +19,7 @@ This folder upgrades the EduOS Cameroon vision suite into materials that can sur
 | [11](11-Master-Implementation-Plan.md) | Master Implementation Plan | The single picture: what is being built (one-page system view + the five guarantees), the two-clock (T0/school-year) timeline to T0+60m, four-track Phase I, the dependency spine including devices and print seasons, gate-failure protocol, and what "done" means |
 | [12](12-Environmental-Social-Safeguards-and-Inclusion.md) | E&S Safeguards, Inclusion & Conflict Sensitivity | ESF-mapped safeguards: the e-waste/battery reverse-logistics plan, gender & disability inclusion requirements (INC-01..04), do-no-harm conflict analysis for NW/SW/Far North, stakeholder engagement and grievance mechanism |
 | [13](13-Procurement-Plan.md) | Procurement Plan (skeleton) | Eleven procurement packages with methods, values, and MIP-keyed timing — including the class-spec device tender with wave options and the e-waste treatment contract |
+| [14](14-Market-and-Engagement-Strategy.md) | Market & Engagement Strategy | The go-to-market: the ERSP-closing window (Dec 2026), TTL/GPE engagement sequence with deadlines, Digital Public Good registration play, the verified six-country replication market, and Opesware's open-source business model |
 
 Cross-references are live: the Budget funds the Risk mitigations, the M&E gates the Budget's disbursement phases, the Economic Analysis consumes the Baseline Annex, and the FRS trio (04, 07, 08 — the full Phase-I module scope) defines what the M&E measures.
 
