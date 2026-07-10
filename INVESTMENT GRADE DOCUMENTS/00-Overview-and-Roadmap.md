@@ -16,6 +16,7 @@ This folder upgrades the EduOS Cameroon vision suite into materials that can sur
 | [08](08-FRS-NWIDMS-Warehouse-Distribution.md) | FRS — Warehouse & Distribution (NWIDMS) | The custody engine: double-entry stock ledger, chain-of-custody shipment state machine, automatic discrepancy cases (zero silent variance), redistribution engine, emergency mode |
 | [09](09-Technology-Stack-and-Architecture-Decisions.md) | Tech Stack & Architecture Decisions | ADR-format decisions: modular monolith with DDD bounded contexts, PostgreSQL/Laravel/Flutter open-source stack, API-first with APIs as national digital public infrastructure, tiered rugged-device strategy — plus an honest open-gaps register |
 | [10](10-Pre-Build-Readiness-Checklist.md) | Pre-Build Readiness Checklist | The gate to development: blocking vs parallel items with owners — governance decree, financing, procurement route, FRS sign-off, Phase-0 engineering (sync engine, offline auth, OpenAPI), data/legal, pilot baselines |
+| [11](11-Master-Implementation-Plan.md) | Master Implementation Plan | The single picture: what is being built (one-page system view + the five guarantees), the 54-month timeline from decree to handover, Phase I build order with team shape, the dependency spine, and what "done" means |
 
 Cross-references are live: the Budget funds the Risk mitigations, the M&E gates the Budget's disbursement phases, the Economic Analysis consumes the Baseline Annex, and the FRS trio (04, 07, 08 — the full Phase-I module scope) defines what the M&E measures.
 
