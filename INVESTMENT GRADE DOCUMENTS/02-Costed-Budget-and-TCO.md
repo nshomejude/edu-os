@@ -10,7 +10,7 @@
 
 ## 1. Summary
 
-**Five-year programme total: 11.62 billion FCFA ≈ US$20.2 million**, phased as below. Steady-state recurrent cost from Year 4: **≈ 1.28 bn FCFA/year (US$2.2M)**, equal to **0.14% of the two ministries' combined 2026 budgets** (929.5 bn FCFA) — the affordability test for national budget absorption after donor financing ends.
+**Five-year programme total: 11.62 billion FCFA ≈ US$20.2 million**, phased as below. The final programme year (Phase IV, Y5) costs 1.28 bn FCFA; from Year 6 the steady-state recurrent cost is **≈ 1.22 bn FCFA/year (US$2.1M)** (§4), equal to **0.13% of the two ministries' combined 2026 budgets** (929.5 bn FCFA) — the affordability test for national budget absorption after donor financing ends.
 
 | Phase | Years | Scope | Cost (bn FCFA) | US$M |
 |---|---|---|---|---|
