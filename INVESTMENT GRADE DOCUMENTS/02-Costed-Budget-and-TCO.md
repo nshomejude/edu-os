@@ -69,7 +69,7 @@ Division-level validation workshops for school lists and enrolment (58 divisions
 Stakeholder engagement (publishers, printers, unions, PTAs), national comms campaign, school-recognition programme (Risk R3).
 
 ### 3.7 PMU & national technical team — 1.61 bn FCFA
-PMU (coordinator, procurement, finance, safeguards, M&E — 8 staff × 5 yrs) 0.69 bn; national technical team ramping 4→14 engineers/analysts by Y4 (knowledge-transfer counterpart to vendor, Risk R4) 0.92 bn. From Y5, this team is the platform's permanent operator.
+PMU (coordinator, procurement, finance, safeguards, M&E, and 2 helpdesk posts operating the L2 support line from pilot go-live per MIP §5 track 3 — 8 staff × 5 yrs) 0.69 bn; national technical team ramping 4→14 engineers/analysts by Y4 (knowledge-transfer counterpart to vendor, Risk R4) 0.92 bn. From Y5, this team is the platform's permanent operator.
 
 ### 3.8 Independent verification — 0.29 bn FCFA
 Annual technical + financial audit, third-party M&E data verification (aligns with M&E Framework EDUOS-MEF-001), and source-code escrow verification (Risk R4).
