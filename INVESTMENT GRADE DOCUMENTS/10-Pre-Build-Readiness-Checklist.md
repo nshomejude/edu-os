@@ -40,6 +40,9 @@ Item types: **B** = blocking (no build contract before DONE) · **P** = parallel
 | 3.3 | P | Official subject codesets and curriculum versions from both ministries (FRS Annex A completion) | NTR reference data (D-NTR-REF) | OPEN |
 | 3.4 | **B** | Data Protection Impact Assessment + Law 2010/012 compliance review (Risk R15) | Before any learner data is processed — i.e., before pilot | OPEN |
 | 3.5 | P | Hosting agreements: national data centre + DR site terms; self-hosted GitLab provisioned; **source-escrow agreement drafted** (Risk R4) | Build contract signature | OPEN |
+| 3.6 | **B** | E&S instruments formalized with financier (ESCP/SEP from EDUOS-ESS-001), incl. e-waste plan in device tender and child-safeguarding clauses in field contracts | Appraisal (1.2); device tender (2.6) | OPEN |
+| 3.7 | P | Specialist conflict-sensitivity assessment (NW/SW/Far North field access) per EDUOS-ESS-001 §4 | Phase III affected-region wave design; Steering Committee gate | OPEN |
+| 3.8 | P | Procurement plan (EDUOS-PRO-001) thresholds and review types finalized with financier procurement specialist | First package launch | OPEN |
 
 ## 4. Pilot preparation (owner: PMU + M&E)
 

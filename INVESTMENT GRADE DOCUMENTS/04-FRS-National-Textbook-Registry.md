@@ -234,6 +234,7 @@ Base path `/api/v1/ntr`. JSON, UTF-8, OAuth2 bearer (client-credentials for serv
 | NFR-NTR-07 | Audit | 100% of mutations attributable to user + device + timestamp; passport hash chains verified nightly (FR-NTR-DM-02) |
 | NFR-NTR-08 | Localization | Full UI in French and English; all user-facing enumerations bilingual |
 | NFR-NTR-09 | Portability | No proprietary cloud service without an open-standard exit path; database PostgreSQL ≥ 15; deployable on national data centre or IaaS |
+| NFR-NTR-10 | Accessibility & inclusion | Mobile app screen-reader (TalkBack) compatible; touch targets ≥ 48dp; WCAG 2.1 AA contrast; every critical workflow completable via icon + short-label path without reading prose (low-literacy usability); coverage reports disaggregable by school characteristics (EDUOS-ESS-001 INC-01/02) — applies equally to NSR and NWIDMS UIs |
 
 ## 9. Offline Synchronization Profile
 

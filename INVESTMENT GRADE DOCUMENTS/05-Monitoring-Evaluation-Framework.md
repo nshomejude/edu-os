@@ -17,6 +17,8 @@ Critical assumptions (monitored as risk indicators, §4): dual-ministry governan
 
 Years are programme years (Y1 = first build year). Targets are cumulative and verified by the source shown; "system" = platform analytics with independent annual data audit (Budget line 8).
 
+**Disaggregation rule (EDUOS-ESS-001 INC-01):** every coverage and access indicator (IMP-1/2, OUT-1, OUT-P2/P5) is reported disaggregated by region, urban/rural, school ownership, and single-sex/mixed status — and by learner sex where student-level assignment is active. OUT-P5 additionally tracks the female share of trained staff against the female share of school leadership (INC-03 floor).
+
 ### Impact level
 
 | ID | Indicator | Baseline | Y3 | Y5 | Y7 | Source / verification |
