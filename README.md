@@ -6,7 +6,7 @@ Documentation repository for **EduOS Cameroon** — a proposed National Educatio
 
 | Folder | Description |
 |---|---|
-| `INVESTMENT GRADE DOCUMENTS` | **Start here.** The appraisal-ready pack: sourced baseline data, costed budget/TCO (11.62 bn FCFA), economic analysis (BCR 1.65 central case), buildable FRS for the National Textbook Registry, M&E results matrix, and risk register — see its [overview](INVESTMENT%20GRADE%20DOCUMENTS/00-Overview-and-Roadmap.md) |
+| `INVESTMENT GRADE DOCUMENTS` | **Start here.** Available in English and French (`fr/` — publication-ready institutional French for ministry and financier engagement). The appraisal-ready pack: sourced baseline data, costed budget/TCO (11.62 bn FCFA), economic analysis (BCR 1.65 central case), buildable FRS for the National Textbook Registry, M&E results matrix, and risk register — see its [overview](INVESTMENT%20GRADE%20DOCUMENTS/00-Overview-and-Roadmap.md) |
 | `textbook lifecycle knowledge` | Foundational chapters on the national textbook lifecycle (forecasting, procurement, logistics, school management, analytics, security, implementation, M&E, financing) |
 | `NATIONAL DIGITAL EDUCATION MASTER PLAN` | The national digital education master plan — sector assessments, frameworks (identity, data governance, AI, interoperability), command/operations centres, architecture, and implementation |
 | `Functional requirement specifications` | Volume II functional requirements — national registries (schools, students, textbooks), procurement, warehouse/inventory (NWIDMS), school operations, command centre, NEDIH, EAFDSE |
