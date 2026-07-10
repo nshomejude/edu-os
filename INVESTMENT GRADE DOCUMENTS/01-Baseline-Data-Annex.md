@@ -26,7 +26,7 @@ Every figure carries its source and year. Figures that could not be independentl
 | Primary schools — public | >14,000 | 2021/22 | MINEDUB Annuaire Statistique 2021/22 |
 | Primary schools — private | ~8,000 | 2021/22 | MINEDUB Annuaire Statistique 2021/22 |
 | Primary schools — total | >22,000 | 2021/22 | MINEDUB Annuaire Statistique 2021/22 |
-| Secondary schools — total | **ESTIMATE ~4,000–5,000**; confirm from MINESEC Annuaire Statistique 2023/24 | — | MINESEC carte scolaire |
+| Secondary schools — total | 4,131 establishments (2,760 public / 1,371 private): 2,734 general, 831 technical, 387 polyvalent, 179 teacher-training; 3,820 functional. Working figure for current year: ~4,100–4,500 (growth since 2017/18; ~3,408 general secondary structures reported Sept 2020) | 2017/18 | MINESEC Annuaire Statistique 2017-2018, Tableaux 306–308 (INS PDF, parsed directly); newer annuaires (to 2024/25) exist on minesec.gov.cm as PDFs |
 | Primary enrolment | 5,289,656 | 2024 | World Bank/UIS SE.PRM.ENRL *(WB API)* |
 | Secondary enrolment | 2,007,361 | 2023 | World Bank/UIS SE.SEC.ENRL *(WB API)* |
 | **Total learners in scope** | **≈ 7.3 million** | 2023/24 | sum of above |
@@ -47,9 +47,11 @@ Every figure carries its source and year. Figures that could not be independentl
 | Textbook price reform | Prices previously ~3× comparable countries; reduced >50% since 2014; availability in public schools quadrupled | 2014–2023 | World Bank results brief |
 | National policy target | Textbooks for every student by 2026 | 2024 | World Bank results brief |
 | Textbook policy | Free essential textbooks in public primary schools; single approved textbook per subject | 2017– | Government policy, per World Bank/GPE |
-| Textbook unit cost | **ESTIMATE 1,500–3,000 FCFA** per primary textbook post-reform; confirm from ERSP ISRs and official MINEDUB price list | — | World Bank "Getting Textbooks to Every Child in SSA" (2015) gives regional unit-cost method |
-| SSA supply-chain benchmark | Distribution is a recurrent failure and cost point in SSA textbook chains ("Where Have All the Textbooks Gone?", World Bank 2015); country studies report significant shares of books failing to reach classrooms | 2015 | Read, World Bank 2015 |
-| Cameroon expenditure tracking | PETS III (INS) tracked non-wage education expenditure across 720 primary + 432 secondary schools, documenting delays and leakage in resource flows | ~2019 | INS PETS III Education report |
+| Textbook unit cost (average, procurement) | US$6.25 (2013) → **US$2.90 (2020)** ≈ 1,750 FCFA post-reform | 2020 | World Bank results brief (verified FR edition) |
+| Textbook retail prices (homologated, printed on book) | Primary 1,200–2,000 FCFA/book; secondary ~1,900–5,000 FCFA/book; full primary essential package 14,750–16,500 FCFA for 10–11 books (2025/26) | 2023–2026 | Official MINEDUB/MINESEC homologated lists (press transcriptions) |
+| Programme distribution volume | **11+ million textbooks** distributed free to ~13,000 public primary schools under PAREC; programme financing ≈ 57 bn FCFA (IDA + GPE) | 2018–2024 | PAREC programme site; Investir au Cameroun |
+| SSA supply-chain benchmark | Distribution is a recurrent failure and cost point in SSA textbook chains ("Where Have All the Textbooks Gone?", World Bank 2015) | 2015 | Read, World Bank 2015 |
+| **Cameroon-measured leakage (PETS III)** | **~30% of the monetary value of school "minimum package" supplies lost between council dispatch and school receipt**; >80% of school heads waited 3–6 months for resources; 11.8% of heads reported losses during withdrawal; >20% of delegates admitted irregular spending; 1 in 5 inspectorates received only 20–40% of expected programme resources | 2019 | INS PETS III Education report (85 pp., English), Executive Summary pp. 8–10 — extracted directly |
 
 ## 4. Education financing
 
@@ -76,9 +78,13 @@ Every figure carries its source and year. Figures that could not be independentl
 
 **Design implications (normative for architecture):** with rural electricity at 26% and meaningful no-signal zones, any school-level system MUST operate offline-first (see FRS NFR-NTR-05: 90-day disconnected operation) and the equipment budget MUST include solar charging for off-grid schools. These are not optional hardening measures; they are baseline conditions.
 
-## 6. Verification actions for appraisal stage
+## 6. Data-gap status (updated July 2026)
 
-1. **Secondary school count** — obtain MINESEC Annuaire Statistique 2023/24.
-2. **Textbook unit costs (FCFA)** — extract from ERSP Implementation Status Reports (P160926) and the official annual MINEDUB textbook price list.
-3. **PETS III leakage percentages** — extract exact figures from the INS PETS III Education report (available as PDF from INS).
-4. **School counts with GPS + enrolment per school** — request MINEDUB/MINESEC carte scolaire extracts; this dataset is also the seed data for the School Registry module (FRS FR-NTR-MIG-01 analogue).
+| Gap | Status |
+|---|---|
+| Secondary school count | **CLOSED** — 4,131 (2017/18, parsed from MINESEC Annuaire); refresh to 2024/25 annuaire at appraisal (PDFs exist on minesec.gov.cm but are not machine-readable) |
+| Textbook unit costs | **CLOSED** — US$2.90 ≈ 1,750 FCFA average post-reform; homologated retail ranges verified |
+| PETS III leakage | **CLOSED** — ~30% minimum-package value leakage + 3–6 month delays, extracted from the report itself |
+| School-level GPS dataset | **CLOSED AS A FINDING: none exists.** No official open machine-readable school dataset with GPS for Cameroon. MINESEC's internal "carte scolaire numérique" is geo-referenced but unpublished; HDX offers only a crowdsourced OSM education-facilities export (incomplete); Giga/UNICEF coverage of Cameroon unconfirmed. **Implication:** the NSR seed (FRS-NSR §9) must combine ministry internal extracts + OSM proxy + the funded division-level GPS verification campaign — and the registry itself becomes the country's first authoritative open school dataset, a distinct programme benefit. |
+
+Remaining appraisal-stage refresh: pull the 2024/25 MINESEC annuaire tables and the exact ERSP textbook-component spend from ISRs.

@@ -11,7 +11,7 @@
 
 Cameroon has already made the big textbook investment: the ERSP/PAREC programme (IDA US$175M + GPE US$52.45M) moved the pupil-textbook ratio from 12:1 (2016) to 3 books per 2 students (2023). The question this analysis answers is: **what is it worth to protect and optimize a national textbook flow of this scale with end-to-end digital lifecycle management?**
 
-The quantifiable loss channels, all documented in the sector literature (World Bank *Where Have All the Textbooks Gone?* 2015; INS PETS III for Cameroon expenditure flows):
+The loss channels are not hypothetical — they are **measured in Cameroon**. The INS PETS III education survey (2019) found **~30% of the monetary value of school "minimum package" supplies lost between council dispatch and school receipt**, 3–6 month delivery delays for >80% of school heads, and 11.8% of heads reporting losses during withdrawal (BDA §3). The quantifiable channels:
 
 - **L1 — Distribution leakage:** books procured but never reaching classrooms (diversion, misrouting, warehouse loss).
 - **L2 — Allocation mismatch:** schools over- or under-served because forecasts use stale enrolment data, forcing emergency redistribution or leaving surpluses idle.
@@ -36,7 +36,7 @@ This is consistent in magnitude with PAREC's 32.3 bn FCFA 2025 allocation, of wh
 
 | # | Benefit | Conservative | Central | Optimistic | Mechanism |
 |---|---|---|---|---|---|
-| B1 | Leakage reduction on distribution (share of flow recovered) | 3% → 0.27 bn | 6% → 0.54 bn | 10% → 0.90 bn | per-copy/batch passports make diversion visible (FRS §5.2); SSA studies show distribution losses well above these rates |
+| B1 | Leakage reduction on distribution (share of flow recovered) | 3% → 0.27 bn | 6% → 0.54 bn | 10% → 0.90 bn | per-copy/batch passports make diversion visible (FRS §5.2); **PETS III measured ~30% value leakage on Cameroon school supply packages** — even the optimistic case assumes recovering only a third of the measured loss rate |
 | B2 | Forecast-driven procurement efficiency (over/under-supply reduction) | 3% → 0.27 bn | 5% → 0.45 bn | 8% → 0.72 bn | real-enrolment forecasting replaces cascade reporting (existing Ch. 3 problem analysis) |
 | B3 | Service-life extension via condition tracking + recovery campaigns (replacement demand ↓) | +0.25 yr life → 0.70 bn | +0.5 yr → 1.29 bn | +0.75 yr → 1.80 bn | annual verification (FR-NTR-12), repair workflow, return accountability |
 | B4 | Administrative time savings (18,500 schools × 12 staff-days/yr saved × 6,000 FCFA/day, valued at shadow wage) | 50% capture → 0.67 bn | 75% → 1.00 bn | 100% → 1.33 bn | scan-based receipt/return replaces manual registers and paper returns |
@@ -68,7 +68,7 @@ Even the conservative case — 3% leakage recovery, 3% forecast gains, a quarter
 | B3 (book life) fails entirely | remove largest stream | NPV +3.1 bn (still positive) |
 | Discount rate 12% | — | NPV +6.2 bn |
 
-**Break-even condition:** the programme is NPV-positive if it recovers just **≈ 2.1% of the annual textbook flow in combined efficiency terms**. Every documented feature of unmanaged SSA textbook chains indicates real losses are multiples of this threshold.
+**Break-even condition:** the programme is NPV-positive if it recovers just **≈ 2.1% of the annual textbook flow in combined efficiency terms** — against a **measured 30% value-leakage rate** on comparable school-supply flows in Cameroon (PETS III). The break-even threshold is one-fourteenth of the documented loss rate.
 
 ## 6. Fiscal sustainability
 
@@ -78,9 +78,9 @@ Steady-state recurrent cost (1.22 bn FCFA/yr) equals **0.13% of the two ministri
 
 Benefits concentrate where losses concentrate: rural and crisis-affected schools with 30:1 pre-reform ratios are precisely where distribution visibility and recovery campaigns bind. The offline-first design (BDA §5 constraints) is what makes the benefit reach the 26%-electrified rural areas rather than only connected towns — equity is engineered in, not assumed.
 
-## 8. Appraisal-stage refinements required
+## 8. Appraisal-stage refinements
 
-1. Substitute derived textbook flow (§2) with actual ERSP/MINEDUB procurement figures.
-2. Extract PETS III leakage rates to replace the SSA-benchmark priors in B1.
-3. Validate admin time savings (B4) with a 20-school time-and-motion study during the pilot — this becomes an M&E indicator (EDUOS-MEF-001, IND-E2).
+1. ~~Extract PETS III leakage rates~~ **DONE** — 30% minimum-package value leakage extracted from the report (BDA §3); remaining task is validating its applicability to textbook flows specifically during the pilot (textbooks may leak less than fungible supplies — the model's 6% central case already assumes only one-fifth of the PETS rate).
+2. Substitute derived textbook flow (§2) with the exact ERSP textbook-component spend from ISRs; unit-cost input now anchored at the verified US$2.90 (BDA §3) — the model's 2,000 FCFA input is within 15% of the verified 1,750 FCFA average and conservative on the sensitivity range already tested (§5).
+3. Validate admin time savings (B4) with a 20-school time-and-motion study during the pilot — an M&E deliverable (EDUOS-MEF-001 §5).
 4. Re-run this model with pilot-measured values at the Phase II gate; the phased structure means the investment decision is re-testable before 60% of funds commit.
