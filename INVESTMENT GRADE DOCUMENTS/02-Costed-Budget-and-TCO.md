@@ -28,13 +28,13 @@ Scale basis (Baseline Data Annex §2): ~22,000 primary (14,000 public) + est. 4,
 |---|---|---|---|---|
 | 1 | Platform development (build, QA, security) | 2.87 | 5.00 | 25% |
 | 2 | Hosting infrastructure & DR | 0.92 | 1.60 | 8% |
-| 3 | School & office devices (incl. solar kits, replacement) | 2.41 | 4.20 | 21% |
+| 3 | School & office devices (two tiers incl. rugged tablets, solar kits, replacement) | 2.54 | 4.43 | 22% |
 | 4 | Training & capacity building | 1.78 | 3.10 | 15% |
 | 5 | Data cleaning & migration campaign | 0.46 | 0.80 | 4% |
 | 6 | Change management & communications | 0.52 | 0.90 | 4% |
 | 7 | Programme Management Unit & national tech team | 1.61 | 2.80 | 14% |
 | 8 | Independent verification, audit, M&E | 0.29 | 0.50 | 2% |
-| 9 | Contingency (10% of 1–8) | 0.76 | 1.32 | 7% |
+| 9 | Contingency (after absorbing the rugged-tier premium, ADR-11) | 0.63 | 1.09 | 5% |
 | | **Total** | **11.62** | **20.22** | 100% |
 
 ## 3. Category detail and unit costs
@@ -46,13 +46,18 @@ Blended build team averaging 22 FTE over 30 months (national engineers majority,
 National data-centre primary + DR site (RPO 24h/RTO 72h per Risk R16). Capex 0.35 bn (servers, storage, network for ~30M copy records / 300M events per FRS NFR-NTR-01); opex 0.115 bn/yr from Y2 (power, bandwidth, licences, admin). FCFA-denominated national hosting preferred (Risk R10).
 
 ### 3.3 Devices — 2.41 bn FCFA
+Two device tiers, allocated per school from School Registry accessibility/connectivity/power data (ADR-11, doc 09):
+
 | Item | Qty | Unit (FCFA) | Total (bn) |
 |---|---|---|---|
-| School tablets/smartphones (Android 10+, rugged case) — 1 per public school | 18,500 | 92,000 (~US$160) | 1.70 |
-| Division/sub-division office kits (laptop + scanner) | 420 | 460,000 | 0.19 |
-| Solar charging kits for off-grid schools (rural electricity = 26%, Annex §5) | ~5,500 | 69,000 (~US$120) | 0.38 |
+| Standard tier: Android 10+ smartphone/tablet, rugged case — connected schools | ~13,000 | 92,000 (~US$160) | 1.20 |
+| Rugged tier: MIL-STD-810H/IP68 tablet, ~22,000 mAh battery class (reference device: Blackview Active 8 Pro) — remote/off-grid schools operating travel-to-sync | ~5,500 | 140,000 (~US$245) | 0.77 |
+| Division/sub-division office kits (laptop + scanner; double as sync/charging points) | 420 | 460,000 | 0.19 |
+| Solar charging kits — deepest-remote subset only (rugged tier's battery class covers weekly/monthly duty cycles between sync trips) | ~3,500 | 69,000 (~US$120) | 0.24 |
 | Replacement pool (15%/yr of school devices from Y3, Risk R9) | — | — | 0.14 (within window) |
-| **Subtotal** | | | **2.41** |
+| **Subtotal** | | | **2.54** |
+
+The 0.13 bn increase over the single-tier baseline is absorbed by the contingency line (§2 line 9); final tier counts are outputs of the NSR data-cleaning campaign (§3.5), which therefore precedes device procurement.
 
 ### 3.4 Training & capacity building — 1.78 bn FCFA
 Cascade: national trainers (60) → regional trainers (600) → school-level training (1 day, 2 staff per school, per-diem + materials ≈ 65,000 FCFA/school average incl. facilitation) × 18,500 schools = 1.20 bn; national training academy curriculum + refresher e-learning 0.23 bn; ministry/division officer training 0.35 bn. (Risk R3 mitigation.)
