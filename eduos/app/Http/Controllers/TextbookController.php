@@ -30,6 +30,34 @@ class TextbookController extends Controller
         ]);
     }
 
+    /** Lifecycle start: register a title in DRAFT with a generated NTID (FR-NTR-01). */
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'title_en' => 'nullable|string|max:300|required_without:title_fr',
+            'title_fr' => 'nullable|string|max:300|required_without:title_en',
+            'ministry' => 'required|in:MINEDUB,MINESEC',
+            'subject_code' => 'required|string|size:3|alpha',
+            'grade_code' => 'required|string|max:2',
+            'language' => 'required|in:EN,FR,BI',
+            'tracking_granularity' => 'required|in:COPY,BATCH',
+        ]);
+        $data['subject_code'] = strtoupper($data['subject_code']);
+        $data['grade_code'] = strtoupper($data['grade_code']);
+        $min = $data['ministry'] === 'MINEDUB' ? 'B' : 'S';
+        $seq = TextbookTitle::where([
+            'ministry' => $data['ministry'],
+            'subject_code' => $data['subject_code'],
+            'grade_code' => $data['grade_code'],
+            'language' => $data['language'],
+        ])->count() + 1;
+        $data['ntid'] = sprintf('CM-TB-%s-%s-%s-%s-%04d-01', $min, $data['subject_code'], $data['grade_code'], $data['language'], $seq);
+        $title = TextbookTitle::create($data);   // status defaults to DRAFT
+
+        return redirect()->route('textbooks.show', $title)
+            ->with('flash', "Title registered as {$title->ntid} in DRAFT — approve it to enter the catalogue (FR-NTR-02).");
+    }
+
     public function show(TextbookTitle $textbook)
     {
         $batches = PrintBatch::with('passportEvents')->where('textbook_title_id', $textbook->id)->get();
@@ -80,6 +108,22 @@ class TextbookController extends Controller
         $qrSvg = (new \BaconQrCode\Writer($renderer))->writeString($copy->ncid);
 
         return view('textbooks.copy', compact('copy', 'qrSvg'));
+    }
+
+    /** Field actions on a single copy: repair-complete, lost, found, retire, dispose. */
+    public function copyTransition(Request $request, \App\Modules\Catalogue\Models\Copy $copy)
+    {
+        $to = $request->validate(['to' => 'required|in:AT_SCHOOL,LOST,RETIRED,DISPOSED,UNDER_REPAIR'])['to'];
+        if (! $copy->canTransition($to)) {
+            return back()->with('flash_error', "ILLEGAL_TRANSITION: {$copy->lifecycle_state} → {$to} (FRS §5.2).");
+        }
+        $update = ['lifecycle_state' => $to];
+        if ($to === 'AT_SCHOOL' && $copy->lifecycle_state === 'UNDER_REPAIR') {
+            $update['condition'] = 'FAIR';   // repaired copies return serviceable
+        }
+        $copy->update($update);
+
+        return back()->with('flash', "Copy {$copy->ncid} → ".str_replace('_', ' ', $to).'.');
     }
 
     /** Scan simulation: NCID lookup → copy passport (field scanning stand-in). */

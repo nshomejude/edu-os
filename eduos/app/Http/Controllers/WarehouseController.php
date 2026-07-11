@@ -75,6 +75,8 @@ class WarehouseController extends Controller
             'location' => $warehouse->name, 'actor' => auth()->user()->name ?? 'System',
             'occurred_at' => now(),
         ]);
+        // Per-copy lifecycle: PRINTED → IN_WAREHOUSE (copy-tracked titles)
+        \App\Modules\Catalogue\Models\Copy::advance($batch->textbook_title_id, 'PRINTED', 'IN_WAREHOUSE', $qty);
 
         $msg = "Received {$qty} copies of batch {$batch->batch_no} into {$warehouse->name}.";
         if ($data['quantity'] > $expected) {

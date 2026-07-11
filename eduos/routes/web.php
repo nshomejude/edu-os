@@ -81,6 +81,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/forecast', [\App\Http\Controllers\ForecastController::class, 'index'])->name('forecast.index');
     Route::get('/copies/{copy}', [TextbookController::class, 'copy'])->name('copies.show');
+    Route::post('/copies/{copy}/transition', [TextbookController::class, 'copyTransition'])->name('copies.transition');
+    Route::post('/textbooks', [TextbookController::class, 'store'])->name('textbooks.store');
     Route::post('/scan', [TextbookController::class, 'scan'])->name('scan');
 
     Route::middleware('can:ministry')->group(function () {

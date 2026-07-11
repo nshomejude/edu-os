@@ -106,6 +106,7 @@ class ShipmentController extends Controller
         StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'RESERVED', -$shipment->books);
         StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', $shipment->books);
         $shipment->update(['status' => 'IN_TRANSIT']);
+        \App\Modules\Catalogue\Models\Copy::advance($shipment->textbook_title_id, 'IN_WAREHOUSE', 'IN_TRANSIT', $shipment->books);
         CustodyEvent::create([
             'shipment_id' => $shipment->id, 'event_type' => 'DISPATCHED',
             'actor' => auth()->user()->name ?? 'System',
@@ -144,6 +145,7 @@ class ShipmentController extends Controller
                 'textbook_title_id' => $shipment->textbook_title_id,
                 'quantity' => $received, 'condition' => 'GOOD',
             ]);
+            \App\Modules\Catalogue\Models\Copy::advance($shipment->textbook_title_id, 'IN_TRANSIT', 'AT_SCHOOL', $received, $shipment->destination_school_id);
         }
 
         if ($variance !== 0) {

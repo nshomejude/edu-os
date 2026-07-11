@@ -31,6 +31,24 @@
                 <div><div class="dt">Condition</div><div class="dd">{{ $copy->condition }}</div></div>
                 <div><div class="dt">Minted</div><div class="dd">{{ $copy->created_at->format('d M Y') }}</div></div>
             </div>
+            <div class="toolbar" style="margin-top:16px">
+                @foreach (['AT_SCHOOL' => 'Repair complete', 'LOST' => 'Report lost', 'RETIRED' => 'Retire', 'DISPOSED' => 'Dispose'] as $to => $label)
+                    @if ($copy->canTransition($to))
+                        <form method="post" action="{{ route('copies.transition', $copy) }}">
+                            @csrf
+                            <input type="hidden" name="to" value="{{ $to }}">
+                            <button class="btn btn-sm {{ in_array($to, ['RETIRED','DISPOSED','LOST']) ? 'btn-danger' : 'btn-secondary' }}">{{ $label }}</button>
+                        </form>
+                    @endif
+                @endforeach
+                @if ($copy->lifecycle_state === 'LOST' && $copy->canTransition('AT_SCHOOL'))
+                    <form method="post" action="{{ route('copies.transition', $copy) }}">
+                        @csrf
+                        <input type="hidden" name="to" value="AT_SCHOOL">
+                        <button class="btn btn-sm btn-primary">Found — restore</button>
+                    </form>
+                @endif
+            </div>
         </div>
         <div class="card" style="text-align:center">
             <h2>Copy label (FR-NTR-ID-04)</h2>

@@ -44,6 +44,7 @@ class SchoolOpsController extends Controller
             'academic_year' => '2025/2026',
             'actor' => auth()->user()->name,
         ]);
+        \App\Modules\Catalogue\Models\Copy::advance($data['textbook_title_id'], 'AT_SCHOOL', 'ASSIGNED', $data['quantity'], $school->id);
 
         return back()->with('flash', "Assigned {$data['quantity']} books to {$data['class_level']}.");
     }
@@ -56,6 +57,15 @@ class SchoolOpsController extends Controller
             return back()->with('flash_error', 'Already returned.');
         }
         $assignment->update(['status' => 'RETURNED'] + $data);
+
+        // Per-copy lifecycle on return: good → AT_SCHOOL, poor → UNDER_REPAIR, unusable → retired path
+        $copyTo = match ($data['condition_on_return']) {
+            'UNUSABLE' => 'RETIRED',
+            'POOR' => 'UNDER_REPAIR',
+            default => 'AT_SCHOOL',
+        };
+        // ASSIGNED copies are not school-filtered on 'from' (they left AT_SCHOOL); advance by title
+        \App\Modules\Catalogue\Models\Copy::advance($assignment->textbook_title_id, 'ASSIGNED', $copyTo, $assignment->quantity, $assignment->school_id);
 
         if (in_array($data['condition_on_return'], ['POOR', 'UNUSABLE'])) {
             SchoolStock::where('school_id', $assignment->school_id)

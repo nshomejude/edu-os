@@ -54,6 +54,20 @@ class ProcurementController extends Controller
             'location' => $order->supplier->name, 'actor' => auth()->user()->name,
             'occurred_at' => now(),
         ]);
+        // Mint per-copy NCIDs for copy-tracked titles (same policy as direct batch registration)
+        $title = $order->title;
+        if ($title->tracking_granularity === 'COPY') {
+            $minted = min($batch->quantity, 500);
+            $rows = [];
+            for ($i = 1; $i <= $minted; $i++) {
+                $rows[] = [
+                    'ncid' => sprintf('%s-%05d-%06d', $title->ntid, $batch->id, $i),
+                    'print_batch_id' => $batch->id, 'lifecycle_state' => 'PRINTED',
+                    'condition' => 'NEW', 'created_at' => now(), 'updated_at' => now(),
+                ];
+            }
+            \App\Modules\Catalogue\Models\Copy::insert($rows);
+        }
         $order->update(['status' => 'DELIVERED', 'print_batch_id' => $batch->id]);
 
         return back()->with('flash', "Delivery registered as batch {$batch->batch_no}; ready for warehouse receipt.");

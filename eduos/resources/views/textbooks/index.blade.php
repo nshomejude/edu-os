@@ -25,6 +25,21 @@
         <span class="chip">Copies printed <b>{{ number_format($counts['copies']) }}</b></span>
     </div>
 
+    <div class="card mb">
+        <h2>Register title — lifecycle start (FR-NTR-01)</h2>
+        <form class="toolbar" method="post" action="{{ route('textbooks.store') }}" style="margin:0">
+            @csrf
+            <input class="input" name="title_en" placeholder="Title (EN or FR)" style="min-width:250px">
+            <input class="input" name="title_fr" placeholder="Titre (FR)" style="min-width:180px">
+            <select class="input" name="ministry" style="min-width:130px"><option>MINEDUB</option><option>MINESEC</option></select>
+            <input class="input" name="subject_code" placeholder="SUBJ" required maxlength="3" style="min-width:90px">
+            <input class="input" name="grade_code" placeholder="Grade" required maxlength="2" style="min-width:90px">
+            <select class="input" name="language" style="min-width:90px"><option>EN</option><option>FR</option><option>BI</option></select>
+            <select class="input" name="tracking_granularity" style="min-width:120px"><option>BATCH</option><option>COPY</option></select>
+            <button class="btn btn-primary">Register</button>
+        </form>
+    </div>
+
     <div class="card">
         <form class="toolbar" method="get">
             <input class="input" type="search" name="q" value="{{ request('q') }}" placeholder="Search title or NTID…">

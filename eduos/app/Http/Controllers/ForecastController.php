@@ -50,6 +50,22 @@ class ForecastController extends Controller
         }
         usort($rows, fn ($a, $b) => $b['procure'] <=> $a['procure']);
 
-        return view('forecast.index', ['rows' => $rows]);
+        // RPT-RPL — replacement planning from per-copy condition & lifecycle data (FR-NTR-16)
+        $replacement = \App\Modules\Catalogue\Models\Copy::query()
+            ->join('print_batches', 'copies.print_batch_id', '=', 'print_batches.id')
+            ->join('textbook_titles', 'print_batches.textbook_title_id', '=', 'textbook_titles.id')
+            ->selectRaw("textbook_titles.ntid,
+                sum(case when copies.lifecycle_state = 'UNDER_REPAIR' then 1 else 0 end) as under_repair,
+                sum(case when copies.lifecycle_state in ('RETIRED','DISPOSED') then 1 else 0 end) as retired,
+                sum(case when copies.lifecycle_state = 'LOST' then 1 else 0 end) as lost,
+                sum(case when copies.condition in ('POOR','UNUSABLE') and copies.lifecycle_state not in ('RETIRED','DISPOSED') then 1 else 0 end) as poor,
+                count(*) as total")
+            ->groupBy('textbook_titles.ntid')->get()
+            ->map(function ($r) {
+                $r->replace_now = $r->retired + $r->lost + $r->poor;
+                return $r;
+            });
+
+        return view('forecast.index', ['rows' => $rows, 'replacement' => $replacement]);
     }
 }

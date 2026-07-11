@@ -34,6 +34,25 @@
             @endforelse
             </tbody>
         </table>
+        <h2 style="margin-top:24px">RPT-RPL — Replacement planning (per-copy condition &amp; lifecycle)</h2>
+        <table class="table">
+            <thead><tr><th>Title</th><th>Tracked copies</th><th>Under repair</th><th>Lost</th><th>Retired/disposed</th><th>Poor condition</th><th>Replace now</th></tr></thead>
+            <tbody>
+            @forelse ($replacement as $r)
+                <tr>
+                    <td class="num">{{ $r->ntid }}</td>
+                    <td>{{ number_format($r->total) }}</td>
+                    <td>{{ $r->under_repair }}</td>
+                    <td>{{ $r->lost }}</td>
+                    <td>{{ $r->retired }}</td>
+                    <td>{{ $r->poor }}</td>
+                    <td><b style="color:{{ $r->replace_now > 0 ? 'var(--error)' : 'var(--success)' }}">{{ $r->replace_now }}</b></td>
+                </tr>
+            @empty
+                <tr><td colspan="7">No copy-tracked titles yet.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
         <p style="color:var(--text-2);font-size:13px;margin-top:12px">
             Need = validated enrolment in the title's grade (FR-NSR-03). Gap = need − school stock. To procure = gap − warehouse AVAILABLE.
             Where warehouse stock covers the gap, use <a class="rowlink" href="{{ route('redistribution.index') }}">redistribution</a> instead of procurement.
