@@ -7,6 +7,7 @@
             <div class="sub">Operational intelligence — coverage, delivery performance, loss analysis</div>
         </div>
         <div class="toolbar" style="margin:0">
+            <a class="btn btn-secondary" href="{{ route('reports.coverage.csv') }}">Export CSV</a>
             <a class="btn btn-secondary" href="{{ route('forecast.index') }}">Demand forecast</a>
             <a class="btn btn-secondary" href="{{ route('campaigns.index') }}">Verification campaigns</a>
         </div>
@@ -17,6 +18,9 @@
         <span class="chip">Books shipped <b>{{ number_format($totalShipped) }}</b></span>
         <span class="chip">Books confirmed received <b>{{ number_format($totalReceived) }}</b></span>
         <span class="chip">Schools served <b>{{ $schoolsServed }}/{{ $schoolsTotal }}</b></span>
+        @php($conf = \App\Modules\Custody\Models\Shipment::whereNotIn('status', ['CANCELLED'])->sum('books'))
+        @php($recd = \App\Modules\Custody\Models\Shipment::whereNotNull('received_books')->sum('received_books'))
+        <span class="chip">Season readiness (FR-NWD-15) <b>{{ $conf > 0 ? round($recd / $conf * 100, 1) : 0 }}%</b> received of planned</span>
     </div>
 
     @if ($drill)

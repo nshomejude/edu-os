@@ -97,6 +97,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/alerts/read-all', [\App\Http\Controllers\PlatformController::class, 'markAllRead'])->name('alerts.readall');
     Route::post('/warehouses', [WarehouseController::class, 'store'])->name('warehouses.store')->middleware('can:warehouse-ops');
 
+    Route::post('/users', [PlatformController::class, 'storeUser'])->name('users.store')->middleware('can:ministry');
+    Route::post('/users/{user}/toggle', [PlatformController::class, 'toggleUser'])->name('users.toggle')->middleware('can:ministry');
+    Route::post('/suppliers', [\App\Http\Controllers\ProcurementController::class, 'storeSupplier'])->name('suppliers.store')->middleware('can:ministry');
+    Route::post('/schools/{school}/transition', [SchoolController::class, 'transition'])->name('schools.transition')->middleware('can:ministry');
+    Route::post('/schools/{school}/students', [SchoolController::class, 'storeStudent'])->name('schools.students.store')->middleware('can:school-ops');
+    Route::get('/reports/coverage.csv', [\App\Http\Controllers\PublicApiController::class, 'coverageCsv'])->name('reports.coverage.csv');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/alerts', [PlatformController::class, 'alerts'])->name('alerts.index');
     Route::post('/alerts/{alert}/read', [PlatformController::class, 'markRead'])->name('alerts.read');

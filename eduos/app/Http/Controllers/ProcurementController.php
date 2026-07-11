@@ -37,6 +37,18 @@ class ProcurementController extends Controller
         return back()->with('flash', "Order {$order->order_no} placed ({$order->quantity} copies @ {$order->unit_price_fcfa} FCFA).");
     }
 
+    public function storeSupplier(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:160|unique:suppliers,name',
+            'type' => 'required|in:PRINTER,PUBLISHER,LOGISTICS',
+            'contact' => 'nullable|string|max:160',
+        ]);
+        Supplier::create($data);
+
+        return back()->with('flash', "Supplier {$data['name']} registered.");
+    }
+
     /** Delivery registers the print batch and links it to the order (traceable procurement). */
     public function markDelivered(ProcurementOrder $order)
     {

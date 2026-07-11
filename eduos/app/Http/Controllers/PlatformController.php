@@ -34,6 +34,31 @@ class PlatformController extends Controller
         return view('users.index', ['users' => User::orderBy('name')->get()]);
     }
 
+    public function storeUser(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:120',
+            'email' => 'required|email|unique:users,email',
+            'role' => 'required|in:ADMIN,WAREHOUSE_OFFICER,SCHOOL_HEAD',
+            'ministry' => 'nullable|in:MINEDUB,MINESEC',
+            'school_id' => 'nullable|exists:schools,id',
+        ]);
+        $data['password'] = \Illuminate\Support\Facades\Hash::make('password');
+        $user = User::create($data);
+
+        return back()->with('flash', "User {$user->email} created (initial password: password).");
+    }
+
+    public function toggleUser(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('flash_error', 'You cannot deactivate your own account.');
+        }
+        $user->update(['is_active' => ! $user->is_active]);
+
+        return back()->with('flash', "{$user->email} ".($user->is_active ? 'activated' : 'deactivated').'.');
+    }
+
     public function settings()
     {
         return view('settings.index');
@@ -50,7 +75,7 @@ class PlatformController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-        if (auth()->attempt($credentials, true)) {
+        if (auth()->attempt($credentials + ['is_active' => 1], true)) {
             $request->session()->regenerate();
 
             return redirect()->intended(route('dashboard'));

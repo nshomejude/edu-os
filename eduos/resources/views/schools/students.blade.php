@@ -10,6 +10,19 @@
         <span class="chip">{{ number_format($students->total()) }} {{ __('learners') }}</span>
     </div>
 
+    @include('partials.flash')
+    @can('school-ops')
+    <div class="card mb">
+        <h2>{{ __('Register learner') }}</h2>
+        <form class="toolbar" method="post" action="{{ route('schools.students.store', $school) }}" style="margin:0">
+            @csrf
+            <input class="input" name="name" placeholder="{{ __('Name') }}" required>
+            <select class="input" name="sex" style="min-width:90px"><option>M</option><option>F</option></select>
+            <input class="input" name="class_level" placeholder="{{ __('Class') }}" required style="min-width:100px">
+            <button class="btn btn-primary btn-sm">Register</button>
+        </form>
+    </div>
+    @endcan
     <div class="card">
         <form class="toolbar" method="get">
             <input class="input" type="search" name="q" value="{{ request('q') }}" placeholder="{{ __('Search name or LSID…') }}">

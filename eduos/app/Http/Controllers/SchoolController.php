@@ -42,6 +42,46 @@ class SchoolController extends Controller
         return view('schools.show', compact('school', 'enrolments', 'stock', 'shipments'));
     }
 
+    /** School status lifecycle (FRS-NSR §4, simplified): guard closure against open shipments. */
+    public function transition(Request $request, School $school)
+    {
+        $to = $request->validate(['to' => 'required|in:OPERATIONAL,TEMPORARILY_CLOSED,CLOSED'])['to'];
+        $legal = match ($school->status) {
+            'OPERATIONAL' => ['TEMPORARILY_CLOSED', 'CLOSED'],
+            'TEMPORARILY_CLOSED' => ['OPERATIONAL', 'CLOSED'],
+            default => [],
+        };
+        if (! in_array($to, $legal)) {
+            return back()->with('flash_error', "ILLEGAL_TRANSITION: {$school->status} → {$to}.");
+        }
+        if ($to === 'CLOSED') {
+            $open = \App\Modules\Custody\Models\Shipment::where('destination_school_id', $school->id)
+                ->whereNotIn('status', ['CLOSED', 'RECEIVED_FULL', 'CANCELLED'])->count();
+            if ($open > 0) {
+                return back()->with('flash_error', "Cannot close: {$open} open shipment(s) reference this school (blocking references, FR-NSR-SM-01).");
+            }
+        }
+        $school->update(['status' => $to]);
+
+        return back()->with('flash', "School status → {$to}.");
+    }
+
+    /** Learner registration (light Student Registry write path). */
+    public function storeStudent(Request $request, School $school)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:160',
+            'sex' => 'required|in:M,F',
+            'class_level' => 'required|string|max:4',
+        ]);
+        $student = \App\Modules\Registry\Models\Student::create($data + [
+            'lsid' => sprintf('CM-STU-%07d', \App\Modules\Registry\Models\Student::count() + 1),
+            'school_id' => $school->id, 'academic_year' => '2025/2026',
+        ]);
+
+        return back()->with('flash', "Learner registered as {$student->lsid}.");
+    }
+
     public function students(School $school, Request $request)
     {
         $students = \App\Modules\Registry\Models\Student::where('school_id', $school->id)

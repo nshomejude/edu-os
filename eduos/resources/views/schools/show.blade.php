@@ -9,6 +9,14 @@
         </div>
         <div class="toolbar" style="margin:0">
             <a class="btn btn-secondary btn-sm" href="{{ route('schools.students', $school) }}">{{ __('Learner registry') }}</a>
+            @can('ministry')
+                @foreach (['TEMPORARILY_CLOSED' => 'Suspend', 'OPERATIONAL' => 'Reopen', 'CLOSED' => 'Close'] as $to => $label)
+                    <form method="post" action="{{ route('schools.transition', $school) }}">@csrf
+                        <input type="hidden" name="to" value="{{ $to }}">
+                        <button class="btn btn-sm {{ $to === 'CLOSED' ? 'btn-danger' : 'btn-secondary' }}">{{ $label }}</button>
+                    </form>
+                @endforeach
+            @endcan
             <span class="pill {{ $school->status === 'OPERATIONAL' ? 'pill-success' : 'pill-pending' }}">{{ $school->status }}</span>
         </div>
     </div>

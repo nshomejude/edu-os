@@ -11,6 +11,12 @@
 
     @include('partials.flash')
 
+    <div class="chips">
+        @foreach (\App\Modules\Custody\Models\StorageLocation::where('warehouse_id', $warehouse->id)->get() as $z)
+            <span class="chip">Zone {{ $z->zone }} <b>cap. {{ number_format($z->capacity) }}</b></span>
+        @endforeach
+    </div>
+
     <div class="card mb">
         <h2>Goods receipt against print batch (FR-NWD-02)</h2>
         <form class="toolbar" method="post" action="{{ route('warehouses.receive', $warehouse) }}" style="margin:0">

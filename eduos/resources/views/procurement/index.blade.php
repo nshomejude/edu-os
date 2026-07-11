@@ -26,6 +26,13 @@
             <input class="input" name="contract_ref" placeholder="Contract ref" required style="min-width:140px">
             <button class="btn btn-primary">Order</button>
         </form>
+        <form class="toolbar" method="post" action="{{ route('suppliers.store') }}" style="margin-top:12px">
+            @csrf
+            <input class="input" name="name" placeholder="New supplier name" required>
+            <select class="input" name="type"><option>PRINTER</option><option>PUBLISHER</option><option>LOGISTICS</option></select>
+            <input class="input" name="contact" placeholder="Contact / city">
+            <button class="btn btn-secondary btn-sm">Add supplier</button>
+        </form>
     </div>
 
     <div class="card">
