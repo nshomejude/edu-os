@@ -3,11 +3,11 @@
 @section('title', 'Dashboard')
 
 @php
-    // SVG donut geometry: r=80, C=2πr≈502.65
-    $C = 502.65;
-    $seg1 = $deliveredPct / 100 * $C;          // delivered (green)
-    $seg2 = $transitPct / 100 * $C;            // in transit (gold)
-    $seg3 = max(0, $C - $seg1 - $seg2);        // pending (red)
+    // Donut geometry measured from mockup: outer Ø ~158, ring 33 → r=62.5 in a 172 box
+    $R = 62.5; $C = 2 * pi() * $R; $GAP = $C * 0.008;
+    $seg1 = $deliveredPct / 100 * $C - $GAP;
+    $seg2 = $transitPct / 100 * $C - $GAP;
+    $seg3 = max(0, $C - ($deliveredPct + $transitPct) / 100 * $C - $GAP);
     $maxRegion = max(1, $regions->max('books_distributed'));
 @endphp
 
@@ -18,7 +18,7 @@
             <div class="sub">Textbook Distribution Tracking System</div>
         </div>
         <div class="datecard">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0D5C3B" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#1C1D1F" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M16 2v4M8 2v4M3 9h18"/></svg>
             <div>
                 <div class="d1">{{ now()->format('l, d F Y') }}</div>
                 <div class="d2">{{ now()->format('h:i A') }}</div>
@@ -29,7 +29,7 @@
     <div class="kpis">
         <div class="card kpi">
             <div class="icon green">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 19V5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zm0 0a2 2 0 002 2h13"/></svg>
+                <svg viewBox="0 0 24 24" fill="#fff"><path d="M2 5.5C5.2 3.6 8.3 3.6 11.4 5.4V19c-3-1.7-6.1-1.7-9.4.1zM12.6 5.4c3.1-1.8 6.2-1.8 9.4.1V19.1c-3.3-1.8-6.4-1.8-9.4-.1z"/></svg>
             </div>
             <div>
                 <div class="k-label">Total Textbooks</div>
@@ -39,7 +39,7 @@
         </div>
         <div class="card kpi">
             <div class="icon green">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M1 7h14v9H1zM15 10h4l3 3v3h-7zM5.5 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm12 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
+                <svg viewBox="0 0 24 24" fill="#fff"><path d="M1 5.5h13.5V16H1zM16 8.5h3.6L23 12v4h-7zM6.2 19.6a2.1 2.1 0 110-4.2 2.1 2.1 0 010 4.2zm11.6 0a2.1 2.1 0 110-4.2 2.1 2.1 0 010 4.2z"/></svg>
             </div>
             <div>
                 <div class="k-label">In Transit</div>
@@ -49,7 +49,7 @@
         </div>
         <div class="card kpi">
             <div class="icon green">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M7.5 12.5l3 3 6-7"/></svg>
             </div>
             <div>
                 <div class="k-label">Delivered</div>
@@ -59,12 +59,12 @@
         </div>
         <div class="card kpi">
             <div class="icon gold">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v5.5l3.5 3.5"/></svg>
             </div>
             <div>
                 <div class="k-label">Pending</div>
                 <div class="k-value">{{ number_format($stats['pending']->value ?? 0) }}</div>
-                <div class="k-sub"><strong class="up">{{ $stats['pending']->delta_pct ?? 0 }}%</strong> vs last month</div>
+                <div class="k-sub"><strong class="up" style="color:#C62828">{{ $stats['pending']->delta_pct ?? 0 }}%</strong> vs last month</div>
             </div>
         </div>
     </div>
@@ -74,14 +74,14 @@
             <h2>Distribution Overview</h2>
             <div class="donut-wrap">
                 <div class="donut" role="img" aria-label="Delivered {{ $deliveredPct }}%, in transit {{ $transitPct }}%, pending {{ $pendingPct }}%">
-                    <svg viewBox="0 0 200 200" width="190" height="190">
-                        <g transform="rotate(-90 100 100)">
-                            <circle cx="100" cy="100" r="80" fill="none" stroke="#2E7D32" stroke-width="30"
+                    <svg viewBox="0 0 172 172" width="172" height="172">
+                        <g transform="rotate(-90 86 86)">
+                            <circle cx="86" cy="86" r="{{ $R }}" fill="none" stroke="#155B33" stroke-width="33"
                                     stroke-dasharray="{{ $seg1 }} {{ $C }}"/>
-                            <circle cx="100" cy="100" r="80" fill="none" stroke="#D4A017" stroke-width="30"
-                                    stroke-dasharray="{{ $seg2 }} {{ $C }}" stroke-dashoffset="-{{ $seg1 }}"/>
-                            <circle cx="100" cy="100" r="80" fill="none" stroke="#D32F2F" stroke-width="30"
-                                    stroke-dasharray="{{ $seg3 }} {{ $C }}" stroke-dashoffset="-{{ $seg1 + $seg2 }}"/>
+                            <circle cx="86" cy="86" r="{{ $R }}" fill="none" stroke="#DEA511" stroke-width="33"
+                                    stroke-dasharray="{{ $seg2 }} {{ $C }}" stroke-dashoffset="-{{ $seg1 + $GAP }}"/>
+                            <circle cx="86" cy="86" r="{{ $R }}" fill="none" stroke="#C62828" stroke-width="33"
+                                    stroke-dasharray="{{ $seg3 }} {{ $C }}" stroke-dashoffset="-{{ $seg1 + $seg2 + 2 * $GAP }}"/>
                         </g>
                     </svg>
                     <div class="donut-center">
@@ -90,9 +90,9 @@
                     </div>
                 </div>
                 <div class="legend">
-                    <div class="li"><span class="swatch" style="background:#2E7D32"></span> Delivered <span class="val">{{ $deliveredPct }}%</span></div>
-                    <div class="li"><span class="swatch" style="background:#D4A017"></span> In Transit <span class="val">{{ $transitPct }}%</span></div>
-                    <div class="li"><span class="swatch" style="background:#D32F2F"></span> Pending <span class="val">{{ $pendingPct }}%</span></div>
+                    <div class="li"><span class="swatch" style="background:#155B33"></span> Delivered <span class="val">{{ $deliveredPct }}%</span></div>
+                    <div class="li"><span class="swatch" style="background:#DEA511"></span> In Transit <span class="val">{{ $transitPct }}%</span></div>
+                    <div class="li"><span class="swatch" style="background:#C62828"></span> Pending <span class="val">{{ $pendingPct }}%</span></div>
                 </div>
             </div>
         </div>
@@ -110,7 +110,7 @@
 
         <div class="card mapcard">
             <h2>Real-Time Shipment Tracking</h2>
-            <div class="mapbox" style="max-width:280px;margin:0 auto;">
+            <div class="mapbox" style="max-width:232px;margin:0 auto;">
                 @include('partials.cameroon-map')
             </div>
         </div>
@@ -138,31 +138,31 @@
                 @endforeach
                 </tbody>
             </table>
-            <a class="viewall" href="#">View all shipments →</a>
+            <a class="viewall" href="{{ route('shipments.index') }}">View all shipments&nbsp;&nbsp;→</a>
         </div>
 
         <div class="card">
             <h2>Quick Actions</h2>
             <div class="actions">
-                <a class="action" href="#">
-                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0D5C3B" stroke-width="2"><path d="M4 19V5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zm0 0a2 2 0 002 2h13"/></svg></span>
-                    New Shipment
+                <a class="action" href="{{ route('shipments.create') }}">
+                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="#0B4B2D"><path d="M2 5.5C5.2 3.6 8.3 3.6 11.4 5.4V19c-3-1.7-6.1-1.7-9.4.1zM12.6 5.4c3.1-1.8 6.2-1.8 9.4.1V19.1c-3.3-1.8-6.4-1.8-9.4-.1z"/></svg></span>
+                    New<br>Shipment
                 </a>
-                <a class="action" href="#">
-                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0D5C3B" stroke-width="2"><path d="M1 7h14v9H1zM15 10h4l3 3v3h-7zM5.5 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm12 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg></span>
-                    Track Shipment
+                <a class="action" href="{{ route('shipments.index') }}">
+                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="#0B4B2D"><path d="M1 6h13v10H1zM15 9h4l4 4v3h-8zM6 20a2 2 0 110-4 2 2 0 010 4zm12 0a2 2 0 110-4 2 2 0 010 4z"/></svg></span>
+                    Track<br>Shipment
                 </a>
-                <a class="action" href="#">
-                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0D5C3B" stroke-width="2"><path d="M3 21V9l9-6 9 6v12M9 21v-8h6v8"/></svg></span>
-                    Add Warehouse
+                <a class="action" href="{{ route('warehouses.index') }}">
+                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="#0B4B2D"><path d="M3 21V9l9-6 9 6v12h-5v-6H8v6zM10 21v-4h4v4z"/></svg></span>
+                    Add<br>Warehouse
                 </a>
-                <a class="action" href="#">
-                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0D5C3B" stroke-width="2"><path d="M12 3L2 8l10 5 10-5-10-5zM6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5"/></svg></span>
-                    Add School
+                <a class="action" href="{{ route('schools.create') }}">
+                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="#0B4B2D"><path d="M4 21V10l8-5 8 5v11h-5v-4a3 3 0 00-6 0v4zM11.3 5V2.6h4v1.8h-3z"/></svg></span>
+                    Add<br>School
                 </a>
-                <a class="action" href="#">
-                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0D5C3B" stroke-width="2"><path d="M4 20V10m6 10V4m6 16v-7"/></svg></span>
-                    Generate Report
+                <a class="action" href="{{ route('reports.index') }}">
+                    <span class="a-icon"><svg viewBox="0 0 24 24" fill="#0B4B2D"><path d="M3 21h18v-1.6H3zM4.5 18.5h3V10h-3zM10.5 18.5h3V4h-3zM16.5 18.5h3v-9h-3zM14 7.2l4.6-4.2 2.6 2.4-1.1 1.2-1.5-1.4L14.9 9z"/></svg></span>
+                    Generate<br>Report
                 </a>
             </div>
         </div>

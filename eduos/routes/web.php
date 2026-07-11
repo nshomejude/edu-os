@@ -9,6 +9,15 @@ use App\Http\Controllers\TextbookController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
 
+// Local-only design QA: renders the dashboard as user 1 without a session (headless screenshots)
+if (app()->environment('local')) {
+    Route::get('/design-preview', function () {
+        auth()->login(\App\Models\User::find(1));
+
+        return app(DashboardController::class)->index();
+    });
+}
+
 Route::get('/login', [PlatformController::class, 'login'])->name('login');
 Route::post('/login', [PlatformController::class, 'authenticate'])->name('login.post');
 Route::post('/logout', [PlatformController::class, 'logout'])->name('logout');
