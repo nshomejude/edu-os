@@ -6,7 +6,10 @@
             <h1>Shipments</h1>
             <div class="sub">Chain-of-custody logistics — every movement attributable, no silent variance</div>
         </div>
-        <a class="btn btn-primary" href="{{ route('shipments.create') }}">+ New Shipment</a>
+        <div class="toolbar" style="margin:0">
+            <a class="btn btn-secondary" href="{{ route('redistribution.index') }}">Redistribution</a>
+            <a class="btn btn-primary" href="{{ route('shipments.create') }}">+ New Shipment</a>
+        </div>
     </div>
 
     @include('partials.flash')

@@ -53,6 +53,22 @@
         </div>
     @endif
 
+    @if ($shipment->status === 'RECEIVED_WITH_DISCREPANCY' && ! $shipment->resolved_at)
+        <div class="card mb">
+            <h2>Resolve discrepancy — variance {{ $shipment->variance() }} in quarantine</h2>
+            <form class="toolbar" method="post" action="{{ route('shipments.resolve', $shipment) }}" style="margin:0">
+                @csrf
+                <select class="input" name="resolution" required style="min-width:220px">
+                    <option value="ACCEPT_SHORT">Accept short delivery</option>
+                    <option value="FOUND">Books found — restore to stock</option>
+                    <option value="WRITE_OFF">Write off (loss, audited)</option>
+                </select>
+                <button class="btn btn-danger">Resolve case</button>
+                <span style="color:var(--text-2);font-size:13.5px">Resolution is recorded on the custody chain with your name.</span>
+            </form>
+        </div>
+    @endif
+
     <div class="card">
         <h2>Chain of custody</h2>
         <div class="timeline">

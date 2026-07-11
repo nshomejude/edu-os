@@ -164,4 +164,31 @@ class ShipmentController extends Controller
 
         return back()->with('flash', 'Shipment received in full. Custody chain closed clean.');
     }
+
+    /** Discrepancy resolution: accept-short / found / write-off — closes the case with named custody. */
+    public function resolve(Request $request, Shipment $shipment)
+    {
+        if ($shipment->status !== 'RECEIVED_WITH_DISCREPANCY' || $shipment->resolved_at) {
+            return back()->with('flash_error', 'No open discrepancy on this shipment.');
+        }
+        $res = $request->validate(['resolution' => 'required|in:ACCEPT_SHORT,FOUND,WRITE_OFF'])['resolution'];
+        $variance = abs($shipment->variance());
+
+        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'QUARANTINE', -$variance);
+        if ($res === 'FOUND') {
+            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'AVAILABLE', $variance);
+        }
+        // ACCEPT_SHORT and WRITE_OFF exit the ledger via the loss sink (recorded on the custody chain)
+
+        $shipment->update(['discrepancy_resolution' => $res, 'resolved_at' => now(), 'status' => 'CLOSED']);
+        CustodyEvent::create([
+            'shipment_id' => $shipment->id, 'event_type' => 'DISCREPANCY_RESOLVED',
+            'actor' => auth()->user()->name,
+            'notes' => "{$variance} books resolved as {$res}",
+            'occurred_at' => now(),
+        ]);
+        Alert::where('link', "/shipments/{$shipment->id}")->whereNull('read_at')->update(['read_at' => now()]);
+
+        return back()->with('flash', "Discrepancy resolved as {$res}; case closed, quarantine cleared.");
+    }
 }

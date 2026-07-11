@@ -24,17 +24,77 @@
         </div>
     </div>
 
+    <div class="card mb">
+        <h2>School operations — assign &amp; return (class-level, FR-NTR-SM-02)</h2>
+        <form class="toolbar" method="post" action="{{ route('schoolops.assign', $school) }}" style="margin-bottom:14px">
+            @csrf
+            <select class="input" name="textbook_title_id" required style="min-width:260px">
+                @foreach (\App\Modules\Catalogue\Models\TextbookTitle::where('status','APPROVED')->get() as $t)
+                    <option value="{{ $t->id }}">{{ $t->ntid }} — {{ $t->title_en ?? $t->title_fr }}</option>
+                @endforeach
+            </select>
+            <input class="input" name="class_level" placeholder="Class (e.g. F1)" required style="min-width:130px">
+            <input class="input" type="number" name="quantity" min="1" placeholder="Qty" required style="min-width:110px">
+            <button class="btn btn-primary btn-sm">Assign to class</button>
+        </form>
+        @php($assignments = \App\Modules\SchoolOps\Models\Assignment::with('title')->where('school_id', $school->id)->orderByDesc('id')->limit(8)->get())
+        @if ($assignments->isNotEmpty())
+            <table class="table">
+                <thead><tr><th>Title</th><th>Class</th><th>Qty</th><th>Status</th><th>Condition</th><th></th></tr></thead>
+                <tbody>
+                @foreach ($assignments as $a)
+                    <tr>
+                        <td>{{ $a->title->ntid }}</td>
+                        <td>{{ $a->class_level }}</td>
+                        <td>{{ number_format($a->quantity) }}</td>
+                        <td><span class="pill {{ $a->status === 'ASSIGNED' ? 'pill-transit' : 'pill-success' }}">{{ $a->status }}</span></td>
+                        <td>{{ $a->condition_on_return ?? '—' }}</td>
+                        <td>
+                            @if ($a->status === 'ASSIGNED')
+                                <form class="toolbar" method="post" action="{{ route('schoolops.return', $a) }}" style="margin:0;gap:6px">
+                                    @csrf
+                                    <select class="input" name="condition_on_return" required style="min-width:110px;height:38px">
+                                        @foreach (['GOOD','FAIR','POOR','UNUSABLE'] as $c)<option>{{ $c }}</option>@endforeach
+                                    </select>
+                                    <button class="btn btn-sm btn-secondary">Record return</button>
+                                </form>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
+
     <div class="grid-bottom">
         <div class="card">
             <h2>Enrolment by class — 2025/2026</h2>
             <table class="table">
-                <thead><tr><th>Class</th><th>Boys</th><th>Girls</th><th>Total</th></tr></thead>
+                <thead><tr><th>Class</th><th>Boys</th><th>Girls</th><th>Total</th><th>Validation</th></tr></thead>
                 <tbody>
                 @foreach ($enrolments as $e)
-                    <tr><td>{{ $e->class_level }}</td><td>{{ $e->boys }}</td><td>{{ $e->girls }}</td><td><b>{{ $e->boys + $e->girls }}</b></td></tr>
+                    <tr>
+                        <td>{{ $e->class_level }}</td><td>{{ $e->boys }}</td><td>{{ $e->girls }}</td><td><b>{{ $e->boys + $e->girls }}</b></td>
+                        <td>
+                            @if ($e->validation_status === 'SUBMITTED')
+                                <form method="post" action="{{ route('schoolops.enrolment.validate', $e) }}">@csrf<button class="btn btn-sm btn-secondary">Validate</button></form>
+                            @else
+                                <span class="pill pill-success">{{ $e->validation_status }}</span>
+                            @endif
+                        </td>
+                    </tr>
                 @endforeach
                 </tbody>
             </table>
+            <h2 style="margin-top:18px">Submit 2026/2027 return (FR-NSR-03)</h2>
+            <form class="toolbar" method="post" action="{{ route('schoolops.enrolment', $school) }}" style="margin:0">
+                @csrf
+                <input class="input" name="class_level" placeholder="Class" required style="min-width:100px">
+                <input class="input" type="number" name="boys" min="0" placeholder="Boys" required style="min-width:100px">
+                <input class="input" type="number" name="girls" min="0" placeholder="Girls" required style="min-width:100px">
+                <button class="btn btn-sm btn-primary">Submit</button>
+            </form>
         </div>
         <div class="card">
             <h2>Textbook stock</h2>

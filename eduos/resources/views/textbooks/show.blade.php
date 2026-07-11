@@ -32,6 +32,36 @@
         </div>
     </div>
 
+    <div class="card mb">
+        <h2>Editions &amp; tracking policy</h2>
+        <div class="toolbar">
+            @foreach ($editions as $ed)
+                <span class="chip">Ed. {{ $ed->edition_no }} — {{ $ed->effective_academic_year }} {!! $ed->superseded ? '<b style="color:var(--text-2)">(superseded)</b>' : '<b>(current)</b>' !!}</span>
+            @endforeach
+            <form class="toolbar" method="post" action="{{ route('textbooks.editions.store', $textbook) }}" style="margin:0">
+                @csrf
+                <input class="input" name="effective_academic_year" placeholder="e.g. 2026/2027" required style="min-width:150px">
+                <button class="btn btn-sm btn-secondary">New edition</button>
+            </form>
+            <div class="spacer"></div>
+            <form class="toolbar" method="post" action="{{ route('textbooks.granularity', $textbook) }}" style="margin:0">
+                @csrf
+                <select class="input" name="granularity" style="min-width:130px">
+                    <option value="BATCH" @selected($textbook->tracking_granularity === 'BATCH')>BATCH tracking</option>
+                    <option value="COPY" @selected($textbook->tracking_granularity === 'COPY')>COPY tracking</option>
+                </select>
+                <button class="btn btn-sm btn-secondary">Set policy</button>
+            </form>
+        </div>
+        @if ($copies->isNotEmpty())
+            <div class="chips" style="margin:10px 0 0">
+                @foreach ($copies as $state => $n)
+                    <span class="chip">{{ str_replace('_', ' ', $state) }} <b>{{ number_format($n) }}</b> copies</span>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
     <div class="grid-bottom">
         <div class="card">
             <h2>Print batches &amp; passports</h2>

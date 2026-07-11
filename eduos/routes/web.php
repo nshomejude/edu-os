@@ -18,6 +18,10 @@ if (app()->environment('local')) {
     });
 }
 
+// Public open-data APIs (FR-NTR-13, FR-NSR-05) — unauthenticated by design
+Route::get('/api/catalogue', [\App\Http\Controllers\PublicApiController::class, 'catalogue'])->name('api.catalogue');
+Route::get('/api/schools', [\App\Http\Controllers\PublicApiController::class, 'schools'])->name('api.schools');
+
 Route::get('/login', [PlatformController::class, 'login'])->name('login');
 Route::post('/login', [PlatformController::class, 'authenticate'])->name('login.post');
 Route::post('/logout', [PlatformController::class, 'logout'])->name('logout');
@@ -45,6 +49,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
     Route::post('/shipments/{shipment}/dispatch', [ShipmentController::class, 'dispatchShipment'])->name('shipments.dispatch');
     Route::post('/shipments/{shipment}/receive', [ShipmentController::class, 'receive'])->name('shipments.receive');
+
+    Route::post('/textbooks/{textbook}/editions', [TextbookController::class, 'storeEdition'])->name('textbooks.editions.store');
+    Route::post('/textbooks/{textbook}/granularity', [TextbookController::class, 'setGranularity'])->name('textbooks.granularity');
+    Route::post('/shipments/{shipment}/resolve', [ShipmentController::class, 'resolve'])->name('shipments.resolve');
+
+    Route::post('/schools/{school}/assign', [\App\Http\Controllers\SchoolOpsController::class, 'assign'])->name('schoolops.assign');
+    Route::post('/assignments/{assignment}/return', [\App\Http\Controllers\SchoolOpsController::class, 'returnBooks'])->name('schoolops.return');
+    Route::post('/schools/{school}/enrolment', [\App\Http\Controllers\SchoolOpsController::class, 'submitEnrolment'])->name('schoolops.enrolment');
+    Route::post('/enrolments/{enrolment}/validate', [\App\Http\Controllers\SchoolOpsController::class, 'validateEnrolment'])->name('schoolops.enrolment.validate');
+
+    Route::get('/campaigns', [\App\Http\Controllers\SchoolOpsController::class, 'campaigns'])->name('campaigns.index');
+    Route::post('/campaigns', [\App\Http\Controllers\SchoolOpsController::class, 'openCampaign'])->name('campaigns.open');
+    Route::get('/campaigns/{campaign}', [\App\Http\Controllers\SchoolOpsController::class, 'showCampaign'])->name('campaigns.show');
+    Route::post('/campaigns/{campaign}/submit', [\App\Http\Controllers\SchoolOpsController::class, 'submitCount'])->name('campaigns.submit');
+    Route::post('/campaigns/{campaign}/close', [\App\Http\Controllers\SchoolOpsController::class, 'closeCampaign'])->name('campaigns.close');
+
+    Route::get('/redistribution', [\App\Http\Controllers\RedistributionController::class, 'index'])->name('redistribution.index');
+    Route::post('/redistribution/generate', [\App\Http\Controllers\RedistributionController::class, 'generate'])->name('redistribution.generate');
+    Route::post('/redistribution/{proposal}/approve', [\App\Http\Controllers\RedistributionController::class, 'approve'])->name('redistribution.approve');
+    Route::post('/redistribution/{proposal}/reject', [\App\Http\Controllers\RedistributionController::class, 'reject'])->name('redistribution.reject');
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/alerts', [PlatformController::class, 'alerts'])->name('alerts.index');

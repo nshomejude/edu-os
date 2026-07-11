@@ -35,8 +35,37 @@ class TextbookController extends Controller
         $batches = PrintBatch::with('passportEvents')->where('textbook_title_id', $textbook->id)->get();
         $stock = \App\Modules\Custody\Models\StockRecord::with('warehouse')
             ->where('textbook_title_id', $textbook->id)->get();
+        $editions = \App\Modules\Catalogue\Models\Edition::where('textbook_title_id', $textbook->id)
+            ->orderBy('edition_no')->get();
+        $copies = \App\Modules\Catalogue\Models\Copy::whereIn('print_batch_id', $batches->pluck('id'))
+            ->selectRaw('lifecycle_state, count(*) as n')->groupBy('lifecycle_state')->pluck('n', 'lifecycle_state');
 
-        return view('textbooks.show', compact('textbook', 'batches', 'stock'));
+        return view('textbooks.show', compact('textbook', 'batches', 'stock', 'editions', 'copies'));
+    }
+
+    /** New edition supersedes prior ones for future academic years (FR-NTR-03). */
+    public function storeEdition(Request $request, TextbookTitle $textbook)
+    {
+        $data = $request->validate([
+            'effective_academic_year' => 'required|string|max:9',
+            'changes_summary' => 'nullable|string|max:300',
+        ]);
+        \App\Modules\Catalogue\Models\Edition::where('textbook_title_id', $textbook->id)->update(['superseded' => true]);
+        $ed = \App\Modules\Catalogue\Models\Edition::create($data + [
+            'textbook_title_id' => $textbook->id,
+            'edition_no' => \App\Modules\Catalogue\Models\Edition::where('textbook_title_id', $textbook->id)->max('edition_no') + 1,
+        ]);
+
+        return back()->with('flash', "Edition {$ed->edition_no} registered, effective {$ed->effective_academic_year}; prior editions superseded.");
+    }
+
+    /** Toggle per-copy tracking policy (FR-NTR-ID-05). */
+    public function setGranularity(Request $request, TextbookTitle $textbook)
+    {
+        $g = $request->validate(['granularity' => 'required|in:COPY,BATCH'])['granularity'];
+        $textbook->update(['tracking_granularity' => $g]);
+
+        return back()->with('flash', "Tracking granularity set to {$g}.");
     }
 
     public function transition(Request $request, TextbookTitle $textbook)
@@ -77,6 +106,21 @@ class TextbookController extends Controller
             'occurred_at' => now(),
         ]);
 
-        return back()->with('flash', "Batch {$batch->batch_no} registered ({$batch->quantity} copies, QA pending).");
+        // Per-copy passports for COPY-tracked titles (FR-NTR-ID-05); demo caps NCID minting at 500/batch
+        $minted = 0;
+        if ($textbook->tracking_granularity === 'COPY') {
+            $minted = min($batch->quantity, 500);
+            $rows = [];
+            for ($i = 1; $i <= $minted; $i++) {
+                $rows[] = [
+                    'ncid' => sprintf('%s-%05d-%06d', $textbook->ntid, $batch->id, $i),
+                    'print_batch_id' => $batch->id, 'lifecycle_state' => 'PRINTED',
+                    'condition' => 'NEW', 'created_at' => now(), 'updated_at' => now(),
+                ];
+            }
+            \App\Modules\Catalogue\Models\Copy::insert($rows);
+        }
+
+        return back()->with('flash', "Batch {$batch->batch_no} registered ({$batch->quantity} copies, QA pending".($minted ? ", {$minted} NCIDs minted" : '').').');
     }
 }

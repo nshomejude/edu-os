@@ -10,6 +10,7 @@ class Shipment extends Model
         'shipment_no', 'origin_name', 'destination_name',
         'status', 'books', 'shipped_on',
         'origin_warehouse_id', 'destination_school_id', 'textbook_title_id', 'received_books',
+        'discrepancy_resolution', 'resolved_at',
     ];
 
     protected $casts = ['shipped_on' => 'date'];
