@@ -14,7 +14,7 @@
 @section('content')
     <div class="pagehead">
         <div>
-            <h1>Welcome back, Admin 👋</h1>
+            <h1>Welcome back, {{ explode(' ', auth()->user()->name ?? 'Admin')[0] }} 👋</h1>
             <div class="sub">Textbook Distribution Tracking System</div>
         </div>
         <div class="datecard">
