@@ -16,7 +16,7 @@
             <tbody>
             @forelse ($copies as $c)
                 <tr>
-                    <td class="num" style="font-size:12.5px">{{ $c->ncid }}</td>
+                    <td class="num" style="font-size:12.5px"><a class="rowlink" href="{{ route('copies.show', $c) }}">{{ $c->ncid }}</a></td>
                     <td>{{ $c->batch->batch_no }}</td>
                     <td><span class="pill {{ in_array($c->lifecycle_state, ['ASSIGNED','AT_SCHOOL']) ? 'pill-success' : ($c->lifecycle_state === 'LOST' ? 'pill-error' : 'pill-info') }}">{{ str_replace('_', ' ', $c->lifecycle_state) }}</span></td>
                     <td>{{ $c->condition }}</td>

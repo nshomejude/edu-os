@@ -6,7 +6,10 @@
             <h1>Reports &amp; Analytics</h1>
             <div class="sub">Operational intelligence — coverage, delivery performance, loss analysis</div>
         </div>
-        <a class="btn btn-secondary" href="{{ route('campaigns.index') }}">Verification campaigns</a>
+        <div class="toolbar" style="margin:0">
+            <a class="btn btn-secondary" href="{{ route('forecast.index') }}">Demand forecast</a>
+            <a class="btn btn-secondary" href="{{ route('campaigns.index') }}">Verification campaigns</a>
+        </div>
     </div>
 
     <div class="chips">

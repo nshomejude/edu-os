@@ -6,7 +6,10 @@
             <h1>Schools</h1>
             <div class="sub">National School Registry (NSR) — authoritative register of institutions</div>
         </div>
-        <a class="btn btn-primary" href="{{ route('schools.create') }}">+ Register School</a>
+        <div class="toolbar" style="margin:0">
+            @can('ministry')<a class="btn btn-secondary" href="{{ route('inspections.index') }}">Inspections</a>@endcan
+            <a class="btn btn-primary" href="{{ route('schools.create') }}">+ Register School</a>
+        </div>
     </div>
 
     @includeWhen(session('flash'), 'partials.flash')

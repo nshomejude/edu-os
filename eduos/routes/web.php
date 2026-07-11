@@ -71,6 +71,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/redistribution/{proposal}/reject', [\App\Http\Controllers\RedistributionController::class, 'reject'])->name('redistribution.reject');
 
     Route::get('/about', fn () => view('about.index'))->name('about');
+
+    Route::get('/forecast', [\App\Http\Controllers\ForecastController::class, 'index'])->name('forecast.index');
+    Route::get('/copies/{copy}', [TextbookController::class, 'copy'])->name('copies.show');
+    Route::post('/scan', [TextbookController::class, 'scan'])->name('scan');
+
+    Route::middleware('can:ministry')->group(function () {
+        Route::get('/procurement', [\App\Http\Controllers\ProcurementController::class, 'index'])->name('procurement.index');
+        Route::post('/procurement', [\App\Http\Controllers\ProcurementController::class, 'store'])->name('procurement.store');
+        Route::post('/procurement/{order}/delivered', [\App\Http\Controllers\ProcurementController::class, 'markDelivered'])->name('procurement.delivered');
+        Route::get('/inspections', [\App\Http\Controllers\InspectionController::class, 'index'])->name('inspections.index');
+        Route::post('/inspections', [\App\Http\Controllers\InspectionController::class, 'store'])->name('inspections.store');
+    });
     Route::post('/shipments/{shipment}/cancel', [ShipmentController::class, 'cancel'])->name('shipments.cancel');
     Route::get('/textbooks/{textbook}/copies', [TextbookController::class, 'copies'])->name('textbooks.copies');
     Route::post('/alerts/read-all', [\App\Http\Controllers\PlatformController::class, 'markAllRead'])->name('alerts.readall');

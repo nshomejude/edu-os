@@ -69,6 +69,31 @@ class TextbookController extends Controller
         return view('textbooks.copies', compact('textbook', 'copies'));
     }
 
+    /** Copy passport with QR code (FR-NTR-ID-04). */
+    public function copy(\App\Modules\Catalogue\Models\Copy $copy)
+    {
+        $copy->load('batch.title', 'batch.passportEvents');
+        $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+            new \BaconQrCode\Renderer\RendererStyle\RendererStyle(220),
+            new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+        );
+        $qrSvg = (new \BaconQrCode\Writer($renderer))->writeString($copy->ncid);
+
+        return view('textbooks.copy', compact('copy', 'qrSvg'));
+    }
+
+    /** Scan simulation: NCID lookup → copy passport (field scanning stand-in). */
+    public function scan(Request $request)
+    {
+        $ncid = trim($request->validate(['ncid' => 'required|string|max:64'])['ncid']);
+        $copy = \App\Modules\Catalogue\Models\Copy::where('ncid', $ncid)->first();
+        if (! $copy) {
+            return back()->with('flash_error', "No copy found for NCID {$ncid}.");
+        }
+
+        return redirect()->route('copies.show', $copy);
+    }
+
     /** Toggle per-copy tracking policy (FR-NTR-ID-05). */
     public function setGranularity(Request $request, TextbookTitle $textbook)
     {

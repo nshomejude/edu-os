@@ -6,6 +6,14 @@
             <h1>Textbook Tracking</h1>
             <div class="sub">National Textbook Registry (NTR) — approved titles, editions and passports</div>
         </div>
+        <div class="toolbar" style="margin:0">
+            @can('ministry')<a class="btn btn-secondary" href="{{ route('procurement.index') }}">Procurement</a>@endcan
+            <form class="toolbar" method="post" action="{{ route('scan') }}" style="margin:0">
+                @csrf
+                <input class="input" name="ncid" placeholder="Scan / enter NCID…" required style="min-width:280px;font-family:monospace;font-size:12.5px">
+                <button class="btn btn-primary">Look up</button>
+            </form>
+        </div>
     </div>
 
     @include('partials.flash')
