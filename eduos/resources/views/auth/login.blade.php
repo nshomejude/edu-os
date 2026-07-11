@@ -22,14 +22,14 @@
         <form method="post" action="{{ route('login.post') }}">
             @csrf
             <div class="field" style="margin-bottom:16px;">
-                <label>Email</label>
+                <label>{{ __('Email') }}</label>
                 <input class="input" type="email" name="email" value="{{ old('email', 'admin@minedub.cm') }}" required autofocus>
             </div>
             <div class="field" style="margin-bottom:22px;">
-                <label>Password</label>
+                <label>{{ __('Password') }}</label>
                 <input class="input" type="password" name="password" required>
             </div>
-            <button class="btn btn-primary" style="width:100%;justify-content:center;">Sign in</button>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;">{{ __('Sign in') }}</button>
         </form>
 
         <div style="margin-top:24px;border:1px dashed var(--cameroon-gold);border-radius:14px;padding:14px 16px;background:#FBF7EB;">

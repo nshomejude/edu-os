@@ -19,13 +19,34 @@
         <span class="chip">Schools served <b>{{ $schoolsServed }}/{{ $schoolsTotal }}</b></span>
     </div>
 
+    @if ($drill)
+        <div class="card mb">
+            <h2>Drill-down — {{ $drill['region']->name_en }} region by division</h2>
+            <table class="table">
+                <thead><tr><th>Division</th><th>Schools</th><th>Validated learners</th><th>Books at schools</th><th>Books / learner</th></tr></thead>
+                <tbody>
+                @foreach ($drill['divisions'] as $d)
+                    <tr>
+                        <td class="num">{{ $d['name'] }}</td>
+                        <td>{{ $d['schools'] }}</td>
+                        <td>{{ number_format($d['learners']) }}</td>
+                        <td>{{ number_format($d['stock']) }}</td>
+                        <td><b>{{ $d['learners'] > 0 ? round($d['stock'] / $d['learners'], 2) : '—' }}</b></td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+            <a class="viewall" href="{{ route('reports.index') }}">← All regions</a>
+        </div>
+    @endif
+
     <div class="grid-mid">
         <div class="card regions">
-            <h2>RPT-COV — Distribution by region</h2>
+            <h2>RPT-COV — Distribution by region <span style="font-weight:400;text-transform:none;color:var(--text-2)">(click a region to drill down)</span></h2>
             @php($max = max(1, $regions->max('books_distributed')))
             @foreach ($regions as $r)
                 <div class="row">
-                    <span class="r-name">{{ $r->name_en }}</span>
+                    <a class="r-name rowlink" style="text-decoration:none" href="{{ route('reports.index', ['region' => $r->code]) }}">{{ $r->name_en }}</a>
                     <div class="r-bar"><div class="r-fill" style="width: {{ round($r->books_distributed / $max * 100) }}%"></div></div>
                     <span class="r-val">{{ number_format($r->books_distributed) }}</span>
                 </div>

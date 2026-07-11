@@ -33,6 +33,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/schools/create', [SchoolController::class, 'create'])->name('schools.create');
     Route::post('/schools', [SchoolController::class, 'store'])->name('schools.store');
     Route::get('/schools/{school}', [SchoolController::class, 'show'])->name('schools.show');
+    Route::get('/schools/{school}/students', [SchoolController::class, 'students'])->name('schools.students');
+    Route::get('/locale/{locale}', function (string $locale) {
+        abort_unless(in_array($locale, ['en', 'fr']), 404);
+        session(['locale' => $locale]);
+
+        return back();
+    })->name('locale');
 
     Route::get('/textbooks', [TextbookController::class, 'index'])->name('textbooks.index');
     Route::get('/textbooks/{textbook}', [TextbookController::class, 'show'])->name('textbooks.show');

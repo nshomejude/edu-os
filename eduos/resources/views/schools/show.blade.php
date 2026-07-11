@@ -7,7 +7,10 @@
             <h1>{{ $school->name_official }}</h1>
             <div class="sub">{{ $school->nsid }} · {{ $school->region->name_en }} Region</div>
         </div>
-        <span class="pill {{ $school->status === 'OPERATIONAL' ? 'pill-success' : 'pill-pending' }}">{{ $school->status }}</span>
+        <div class="toolbar" style="margin:0">
+            <a class="btn btn-secondary btn-sm" href="{{ route('schools.students', $school) }}">{{ __('Learner registry') }}</a>
+            <span class="pill {{ $school->status === 'OPERATIONAL' ? 'pill-success' : 'pill-pending' }}">{{ $school->status }}</span>
+        </div>
     </div>
 
     @include('partials.flash')
@@ -35,7 +38,13 @@
             </select>
             <input class="input" name="class_level" placeholder="Class (e.g. F1)" required style="min-width:130px">
             <input class="input" type="number" name="quantity" min="1" placeholder="Qty" required style="min-width:110px">
-            <button class="btn btn-primary btn-sm">Assign to class</button>
+            <select class="input" name="student_id" style="min-width:220px">
+                <option value="">— or a named learner (qty 1) —</option>
+                @foreach (\App\Modules\Registry\Models\Student::where('school_id', $school->id)->orderBy('name')->limit(200)->get() as $stu)
+                    <option value="{{ $stu->id }}">{{ $stu->lsid }} — {{ $stu->name }} ({{ $stu->class_level }})</option>
+                @endforeach
+            </select>
+            <button class="btn btn-primary btn-sm">Assign</button>
         </form>
         @php($assignments = \App\Modules\SchoolOps\Models\Assignment::with('title')->where('school_id', $school->id)->orderByDesc('id')->limit(8)->get())
         @if ($assignments->isNotEmpty())

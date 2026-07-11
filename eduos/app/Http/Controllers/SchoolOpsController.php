@@ -12,14 +12,23 @@ use Illuminate\Http\Request;
 
 class SchoolOpsController extends Controller
 {
-    /** Class-level assignment (FR-NTR-SM-02 fallback until the Student Registry lands). */
+    /** Assignment: class-level by default; student-level when a learner is selected (FR-NTR-SM-02 upgrade). */
     public function assign(Request $request, School $school)
     {
         $data = $request->validate([
             'textbook_title_id' => 'required|exists:textbook_titles,id',
             'class_level' => 'required|string|max:4',
             'quantity' => 'required|integer|min:1',
+            'student_id' => 'nullable|exists:students,id',
         ]);
+        if (! empty($data['student_id'])) {
+            $student = \App\Modules\Registry\Models\Student::find($data['student_id']);
+            if ($student->school_id !== $school->id) {
+                return back()->with('flash_error', 'Learner belongs to a different school (row-level scoping).');
+            }
+            $data['quantity'] = 1;                      // one book per named learner
+            $data['class_level'] = $student->class_level;
+        }
 
         $onHand = SchoolStock::where('school_id', $school->id)
             ->where('textbook_title_id', $data['textbook_title_id'])->sum('quantity');

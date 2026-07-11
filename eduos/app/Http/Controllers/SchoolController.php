@@ -42,6 +42,16 @@ class SchoolController extends Controller
         return view('schools.show', compact('school', 'enrolments', 'stock', 'shipments'));
     }
 
+    public function students(School $school, Request $request)
+    {
+        $students = \App\Modules\Registry\Models\Student::where('school_id', $school->id)
+            ->when($request->q, fn ($q, $v) => $q->where(fn ($w) => $w->where('name', 'like', "%{$v}%")->orWhere('lsid', 'like', "%{$v}%")))
+            ->when($request->class_level, fn ($q, $v) => $q->where('class_level', $v))
+            ->orderBy('class_level')->orderBy('name')->paginate(20)->withQueryString();
+
+        return view('schools.students', compact('school', 'students'));
+    }
+
     public function create()
     {
         return view('schools.create', ['regions' => Region::orderBy('name_en')->get()]);

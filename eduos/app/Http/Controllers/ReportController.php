@@ -9,9 +9,33 @@ use App\Modules\Registry\Models\School;
 
 class ReportController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
         $regions = Region::orderByDesc('books_distributed')->get();
+
+        // Drill-down: region → divisions → school stock coverage
+        $drill = null;
+        if ($request->region) {
+            $region = Region::where('code', $request->region)->first();
+            if ($region) {
+                $drill = [
+                    'region' => $region,
+                    'divisions' => \App\Modules\Registry\Models\Division::where('region_id', $region->id)
+                        ->with(['subdivisions.schools'])->get()
+                        ->map(function ($d) {
+                            $schools = $d->subdivisions->flatMap->schools;
+                            $ids = $schools->pluck('id');
+                            return [
+                                'name' => $d->name,
+                                'schools' => $schools->count(),
+                                'stock' => \App\Modules\SchoolOps\Models\SchoolStock::whereIn('school_id', $ids)->sum('quantity'),
+                                'learners' => \App\Modules\Registry\Models\Enrolment::whereIn('school_id', $ids)
+                                    ->where('validation_status', 'VALIDATED')->sum(\Illuminate\Support\Facades\DB::raw('boys + girls')),
+                            ];
+                        }),
+                ];
+            }
+        }
 
         // Delivery performance by status
         $byStatus = Shipment::selectRaw('status, count(*) as n, sum(books) as books')
@@ -34,7 +58,7 @@ class ReportController extends Controller
 
         return view('reports.index', compact(
             'regions', 'byStatus', 'discrepancies', 'confirmRate',
-            'totalShipped', 'totalReceived', 'stockByClass', 'schoolsTotal', 'schoolsServed'
+            'totalShipped', 'totalReceived', 'stockByClass', 'schoolsTotal', 'schoolsServed', 'drill'
         ));
     }
 }

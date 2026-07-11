@@ -10,8 +10,13 @@ class Assignment extends Model
 {
     protected $fillable = [
         'school_id', 'textbook_title_id', 'class_level', 'academic_year',
-        'quantity', 'status', 'condition_on_return', 'actor',
+        'quantity', 'status', 'condition_on_return', 'actor', 'student_id',
     ];
+
+    public function student()
+    {
+        return $this->belongsTo(\App\Modules\Registry\Models\Student::class);
+    }
 
     public function school()
     {
