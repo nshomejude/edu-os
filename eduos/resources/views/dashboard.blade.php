@@ -110,8 +110,9 @@
 
         <div class="card mapcard">
             <h2>Real-Time Shipment Tracking</h2>
-            <div class="mapbox" style="max-width:232px;margin:0 auto;">
-                @include('partials.cameroon-map')
+            <div class="mapbox" style="margin:0 auto;">
+                {{-- Map artwork extracted from the project design source; the live SVG map (partials.cameroon-map) remains available for data-driven views --}}
+                <img src="{{ asset('img/map.png') }}" alt="Cameroon map with active shipment route" style="max-width:100%;max-height:252px;object-fit:contain;">
             </div>
         </div>
     </div>

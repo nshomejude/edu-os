@@ -33,7 +33,7 @@
 
 /* Toghu diamond-weave pattern (corners, strips, bands) */
 :root {
-  --toghu: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect width='28' height='28' fill='%23163A22'/%3E%3Cpath d='M14 1 27 14 14 27 1 14Z' fill='none' stroke='%23D59F2F' stroke-width='2.4'/%3E%3Cpath d='M14 7 21 14 14 21 7 14Z' fill='none' stroke='%23C62828' stroke-width='2'/%3E%3Cpath d='M14 11 17 14 14 17 11 14Z' fill='%23E8C65C'/%3E%3C/svg%3E");
+  --toghu: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%23143520'/%3E%3Cpath d='M20 2 38 20 20 38 2 20Z' fill='none' stroke='%23B23A26' stroke-width='3'/%3E%3Cpath d='M20 9 31 20 20 31 9 20Z' fill='%23EFDCA8' stroke='%23D59F2F' stroke-width='1.4'/%3E%3Cpath d='M20 15 25 20 20 25 15 20Z' fill='%23143520'/%3E%3Cpath d='M0 0h6v6H0zM34 0h6v6h-6zM0 34h6v6H0zM34 34h6v6h-6z' fill='%23D59F2F' opacity='.85'/%3E%3C/svg%3E");
   --watermark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cg fill='none' stroke='%23D4A017' stroke-width='2' opacity='.06'%3E%3Cpath d='M120 20 220 120 120 220 20 120Z'/%3E%3Cpath d='M120 60 180 120 120 180 60 120Z'/%3E%3Ccircle cx='120' cy='120' r='18'/%3E%3C/g%3E%3C/svg%3E");
 }
 
@@ -100,12 +100,14 @@ body {
   width: 24px; height: 24px;
   display: inline-flex; align-items: center; justify-content: center;
 }
-.sidebar .landmarks { height: 205px; padding: 4px 10px 0; }
+.sidebar .landmarks { height: 214px; padding: 0 8px; }
 .sidebar .motif {
-  height: 58px;
-  background: var(--toghu); background-size: 29px 29px;
+  height: 68px;
+  background: url('../img/motif-band.png') repeat-x center / auto 100%;
   border-top: 1px solid rgba(213,159,47,.55);
 }
+.nav a svg { fill: #D9A82E; stroke: none !important; }
+.nav a.active .navicon-chip svg { fill: var(--forest-icon); }
 
 /* ---------- Top navigation (82px white, arms overhanging) ---------- */
 .main { flex: 1; display: flex; flex-direction: column; min-width: 0; padding-right: 30px; /* clear the right strip */ }
@@ -127,7 +129,7 @@ body {
 .tricolor .r { background: var(--error); }
 .tricolor .y { background: var(--cameroon-gold); }
 .arms {
-  margin: 0 auto; width: 112px; height: 134px;
+  margin: 0 auto; width: 98px; height: 122px;
   align-self: flex-start; margin-top: 4px;   /* overhangs the 82px band */
   filter: drop-shadow(0 2px 3px rgba(0,0,0,.18));
 }

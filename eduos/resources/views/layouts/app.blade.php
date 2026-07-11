@@ -22,40 +22,40 @@
                 @if ($onDash)
                     <span class="navicon-chip"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-4v-6h-4v6H6v-9H3z"/></svg></span>
                 @else
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a2 2 0 01-2 2h-4v-7h-6v7H5a2 2 0 01-2-2z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-4v-6h-4v6H6v-9H3z"/></svg>
                 @endif
                 Dashboard
             </a>
             <a href="{{ route('textbooks.index') }}" class="{{ request()->routeIs('textbooks.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 5c3.5-2 6.5-2 10 0 3.5-2 6.5-2 10 0v14c-3.5-2-6.5-2-10 0-3.5-2-6.5-2-10 0zM12 5v14"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M2 5.5C5.2 3.6 8.3 3.6 11.4 5.4V19c-3-1.7-6.1-1.7-9.4.1zM12.6 5.4c3.1-1.8 6.2-1.8 9.4.1V19.1c-3.3-1.8-6.4-1.8-9.4-.1z"/></svg>
                 Textbook Tracking
             </a>
             <a href="{{ route('shipments.index') }}" class="{{ request()->routeIs('shipments.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h14v9H1zM15 10h4l3 3v3h-7zM5.5 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm12 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M1 5.5h13.5V16H1zM16 8.5h3.6L23 12v4h-7zM6.2 19.6a2.1 2.1 0 110-4.2 2.1 2.1 0 010 4.2zm11.6 0a2.1 2.1 0 110-4.2 2.1 2.1 0 010 4.2z"/></svg>
                 Shipments
             </a>
             <a href="{{ route('warehouses.index') }}" class="{{ request()->routeIs('warehouses.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V9l9-6 9 6v12M7 21v-6h4v6M13 21v-4h4v4M8 11h8"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12h-5v-6H8v6zM10 21v-4h4v4z"/></svg>
                 Warehouses
             </a>
             <a href="{{ route('schools.index') }}" class="{{ request()->routeIs('schools.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V10l8-5 8 5v11M9 21v-5a3 3 0 016 0v5M12 5V3M12 3h3v2h-3"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M4 21V10l8-5 8 5v11h-5v-4a3 3 0 00-6 0v4zM11.3 5V2.6h4v1.8h-3z"/></svg>
                 Schools
             </a>
             <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10m6 10V4m6 16v-7M3 21h18M14 8l4-4 3 3"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M3 21h18v-1.6H3zM4.5 18.5h3V10h-3zM10.5 18.5h3V4h-3zM16.5 18.5h3v-9h-3zM14 7.2l4.6-4.2 2.6 2.4-1.1 1.2-1.5-1.4L14.9 9z"/></svg>
                 Reports &amp; Analytics
             </a>
             <a href="{{ route('alerts.index') }}" class="{{ request()->routeIs('alerts.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M10.3 21a2 2 0 003.4 0"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6c0 6.5-2.5 8-2.5 8h17S18 14.5 18 8a6 6 0 00-6-6zM10.2 20a2 2 0 003.6 0z"/></svg>
                 Alerts @if($unread > 0)<span class="badge">{{ $unread }}</span>@endif
             </a>
             <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zm14 10v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M9 11a4 4 0 100-8 4 4 0 000 8zM1 21v-1.5A5.5 5.5 0 016.5 14h5a5.5 5.5 0 015.5 5.5V21zM16.6 3.7a4 4 0 010 6.7 5.6 5.6 0 000-6.7zM19.4 21v-1.5c0-1.7-.6-3.2-1.7-4.4a5.5 5.5 0 015.3 4.9V21z"/></svg>
                 Users
             </a>
             <a href="{{ route('settings.index') }}" class="{{ request()->routeIs('settings.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33h0a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51h0a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82v0a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                <svg viewBox="0 0 24 24" fill-rule="evenodd"><path d="M13.8 2l.5 2.3c.6.2 1.2.4 1.7.7l2-1.2 2.5 2.5-1.2 2c.3.5.5 1.1.7 1.7l2.3.5v3.6l-2.3.5c-.2.6-.4 1.2-.7 1.7l1.2 2-2.5 2.5-2-1.2c-.5.3-1.1.5-1.7.7l-.5 2.3h-3.6l-.5-2.3a8 8 0 01-1.7-.7l-2 1.2-2.5-2.5 1.2-2c-.3-.5-.5-1.1-.7-1.7L2 13.8v-3.6l2.3-.5c.2-.6.4-1.2.7-1.7L3.8 6 6.3 3.5l2 1.2c.5-.3 1.1-.5 1.7-.7l.5-2.3zM12 8.4a3.6 3.6 0 100 7.2 3.6 3.6 0 000-7.2z"/></svg>
                 Settings
             </a>
         </nav>
