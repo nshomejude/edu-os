@@ -9,9 +9,35 @@ class Shipment extends Model
     protected $fillable = [
         'shipment_no', 'origin_name', 'destination_name',
         'status', 'books', 'shipped_on',
+        'origin_warehouse_id', 'destination_school_id', 'textbook_title_id', 'received_books',
     ];
 
     protected $casts = ['shipped_on' => 'date'];
+
+    public function originWarehouse()
+    {
+        return $this->belongsTo(Warehouse::class, 'origin_warehouse_id');
+    }
+
+    public function destinationSchool()
+    {
+        return $this->belongsTo(\App\Modules\Registry\Models\School::class, 'destination_school_id');
+    }
+
+    public function title()
+    {
+        return $this->belongsTo(\App\Modules\Catalogue\Models\TextbookTitle::class, 'textbook_title_id');
+    }
+
+    public function custodyEvents()
+    {
+        return $this->hasMany(CustodyEvent::class)->orderBy('occurred_at');
+    }
+
+    public function variance(): ?int
+    {
+        return $this->received_books === null ? null : $this->received_books - $this->books;
+    }
 
     public function statusLabel(): string
     {
