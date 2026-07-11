@@ -58,6 +58,10 @@
                 <svg viewBox="0 0 24 24" fill-rule="evenodd"><path d="M13.8 2l.5 2.3c.6.2 1.2.4 1.7.7l2-1.2 2.5 2.5-1.2 2c.3.5.5 1.1.7 1.7l2.3.5v3.6l-2.3.5c-.2.6-.4 1.2-.7 1.7l1.2 2-2.5 2.5-2-1.2c-.5.3-1.1.5-1.7.7l-.5 2.3h-3.6l-.5-2.3a8 8 0 01-1.7-.7l-2 1.2-2.5-2.5 1.2-2c-.3-.5-.5-1.1-.7-1.7L2 13.8v-3.6l2.3-.5c.2-.6.4-1.2.7-1.7L3.8 6 6.3 3.5l2 1.2c.5-.3 1.1-.5 1.7-.7l.5-2.3zM12 8.4a3.6 3.6 0 100 7.2 3.6 3.6 0 000-7.2z"/></svg>
                 Settings
             </a>
+            <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1.2 7h2.4v9h-2.4zm1.2-4.4a1.6 1.6 0 110 3.2 1.6 1.6 0 010-3.2z"/></svg>
+                About
+            </a>
         </nav>
         <div class="landmarks" aria-hidden="true">
             @include('partials.sidebar-landmarks')
@@ -95,6 +99,12 @@
                 </div>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#5F6368" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
             </div>
+            <form method="post" action="{{ route('logout') }}" style="margin:0">
+                @csrf
+                <button class="iconbtn" title="Sign out" aria-label="Sign out">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#C62828" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                </button>
+            </form>
         </header>
 
         <main class="content">

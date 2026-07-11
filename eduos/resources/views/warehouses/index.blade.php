@@ -11,6 +11,23 @@
 
     @include('partials.flash')
 
+    <div class="card mb">
+        <h2>Register warehouse</h2>
+        <form class="toolbar" method="post" action="{{ route('warehouses.store') }}" style="margin:0">
+            @csrf
+            <input class="input" name="name" placeholder="Warehouse name" required style="min-width:260px">
+            <select class="input" name="tier" required>
+                <option>NATIONAL</option><option selected>REGIONAL</option><option>DIVISIONAL</option>
+            </select>
+            <select class="input" name="region_id" required>
+                @foreach (\App\Modules\Registry\Models\Region::orderBy('name_en')->get() as $r)
+                    <option value="{{ $r->id }}">{{ $r->name_en }}</option>
+                @endforeach
+            </select>
+            <button class="btn btn-primary">Register</button>
+        </form>
+    </div>
+
     <div class="card">
         <table class="table">
             <thead><tr><th>ID</th><th>Warehouse</th><th>Tier</th><th>Region</th><th>Stock on hand</th></tr></thead>

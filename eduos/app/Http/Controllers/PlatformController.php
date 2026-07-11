@@ -22,6 +22,13 @@ class PlatformController extends Controller
         return back()->with('flash', 'Alert marked as read.');
     }
 
+    public function markAllRead()
+    {
+        Alert::whereNull('read_at')->update(['read_at' => now()]);
+
+        return back()->with('flash', 'All alerts marked as read.');
+    }
+
     public function users()
     {
         return view('users.index', ['users' => User::orderBy('name')->get()]);

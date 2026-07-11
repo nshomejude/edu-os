@@ -58,6 +58,7 @@
                 @foreach ($copies as $state => $n)
                     <span class="chip">{{ str_replace('_', ' ', $state) }} <b>{{ number_format($n) }}</b> copies</span>
                 @endforeach
+                <a class="chip" style="text-decoration:none" href="{{ route('textbooks.copies', $textbook) }}"><b>Browse copy passports →</b></a>
             </div>
         @endif
     </div>

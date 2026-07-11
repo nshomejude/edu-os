@@ -22,6 +22,21 @@ class WarehouseController extends Controller
         ]);
     }
 
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:120',
+            'tier' => 'required|in:NATIONAL,REGIONAL,DIVISIONAL',
+            'region_id' => 'required|exists:regions,id',
+        ]);
+        $region = \App\Modules\Registry\Models\Region::find($data['region_id']);
+        $seq = Warehouse::where('region_id', $region->id)->count() + 1;
+        $data['wh_id'] = sprintf('CM-WH-%s-%03d', $region->code, $seq);
+        $wh = Warehouse::create($data);
+
+        return redirect()->route('warehouses.show', $wh)->with('flash', "Warehouse {$wh->wh_id} registered.");
+    }
+
     public function show(Warehouse $warehouse)
     {
         $stock = StockRecord::with('title')->where('warehouse_id', $warehouse->id)

@@ -37,6 +37,11 @@
                 <input class="input" name="carrier" placeholder="Carrier / driver" required>
                 <input class="input" name="waybill" placeholder="Waybill №" required>
                 <button class="btn btn-primary">Dispatch</button>
+                <div class="spacer"></div>
+            </form>
+            <form method="post" action="{{ route('shipments.cancel', $shipment) }}" style="margin-top:10px">
+                @csrf
+                <button class="btn btn-sm btn-danger">Cancel shipment (returns reservation to stock)</button>
             </form>
         </div>
     @endif

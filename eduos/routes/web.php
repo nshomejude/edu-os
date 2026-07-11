@@ -70,6 +70,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/redistribution/{proposal}/approve', [\App\Http\Controllers\RedistributionController::class, 'approve'])->name('redistribution.approve');
     Route::post('/redistribution/{proposal}/reject', [\App\Http\Controllers\RedistributionController::class, 'reject'])->name('redistribution.reject');
 
+    Route::get('/about', fn () => view('about.index'))->name('about');
+    Route::post('/shipments/{shipment}/cancel', [ShipmentController::class, 'cancel'])->name('shipments.cancel');
+    Route::get('/textbooks/{textbook}/copies', [TextbookController::class, 'copies'])->name('textbooks.copies');
+    Route::post('/alerts/read-all', [\App\Http\Controllers\PlatformController::class, 'markAllRead'])->name('alerts.readall');
+    Route::post('/warehouses', [WarehouseController::class, 'store'])->name('warehouses.store');
+
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/alerts', [PlatformController::class, 'alerts'])->name('alerts.index');
     Route::post('/alerts/{alert}/read', [PlatformController::class, 'markRead'])->name('alerts.read');

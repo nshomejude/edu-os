@@ -59,6 +59,16 @@ class TextbookController extends Controller
         return back()->with('flash', "Edition {$ed->edition_no} registered, effective {$ed->effective_academic_year}; prior editions superseded.");
     }
 
+    /** Browse minted per-copy passports (FR-NTR-ID). */
+    public function copies(TextbookTitle $textbook)
+    {
+        $copies = \App\Modules\Catalogue\Models\Copy::with('batch')
+            ->whereIn('print_batch_id', PrintBatch::where('textbook_title_id', $textbook->id)->pluck('id'))
+            ->orderBy('ncid')->paginate(25);
+
+        return view('textbooks.copies', compact('textbook', 'copies'));
+    }
+
     /** Toggle per-copy tracking policy (FR-NTR-ID-05). */
     public function setGranularity(Request $request, TextbookTitle $textbook)
     {

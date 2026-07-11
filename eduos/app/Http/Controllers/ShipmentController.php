@@ -165,6 +165,24 @@ class ShipmentController extends Controller
         return back()->with('flash', 'Shipment received in full. Custody chain closed clean.');
     }
 
+    /** Cancel before dispatch: reverses the reservation (FR-NWD state machine). */
+    public function cancel(Shipment $shipment)
+    {
+        if (! in_array($shipment->status, ['CONFIRMED', 'LOADED'])) {
+            return back()->with('flash_error', "ILLEGAL_TRANSITION: {$shipment->status} → CANCELLED (only pre-dispatch).");
+        }
+        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'RESERVED', -$shipment->books);
+        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'AVAILABLE', $shipment->books);
+        $shipment->update(['status' => 'CANCELLED']);
+        CustodyEvent::create([
+            'shipment_id' => $shipment->id, 'event_type' => 'CANCELLED',
+            'actor' => auth()->user()->name, 'notes' => 'Reservation reversed to AVAILABLE',
+            'occurred_at' => now(),
+        ]);
+
+        return back()->with('flash', 'Shipment cancelled; reserved stock returned to AVAILABLE.');
+    }
+
     /** Discrepancy resolution: accept-short / found / write-off — closes the case with named custody. */
     public function resolve(Request $request, Shipment $shipment)
     {

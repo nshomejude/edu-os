@@ -6,6 +6,7 @@
             <h1>Alerts</h1>
             <div class="sub">Operational notifications — discrepancies, campaigns, catalogue changes</div>
         </div>
+        <form method="post" action="{{ route('alerts.readall') }}">@csrf<button class="btn btn-secondary">Mark all read</button></form>
     </div>
 
     @include('partials.flash')
