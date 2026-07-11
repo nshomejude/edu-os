@@ -43,38 +43,38 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/textbooks', [TextbookController::class, 'index'])->name('textbooks.index');
     Route::get('/textbooks/{textbook}', [TextbookController::class, 'show'])->name('textbooks.show');
-    Route::post('/textbooks/{textbook}/transition', [TextbookController::class, 'transition'])->name('textbooks.transition');
+    Route::post('/textbooks/{textbook}/transition', [TextbookController::class, 'transition'])->name('textbooks.transition')->middleware('can:ministry');
     Route::post('/textbooks/{textbook}/batches', [TextbookController::class, 'storeBatch'])->name('textbooks.batches.store');
 
     Route::get('/warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');
     Route::get('/warehouses/{warehouse}', [WarehouseController::class, 'show'])->name('warehouses.show');
-    Route::post('/warehouses/{warehouse}/receive', [WarehouseController::class, 'receive'])->name('warehouses.receive');
+    Route::post('/warehouses/{warehouse}/receive', [WarehouseController::class, 'receive'])->name('warehouses.receive')->middleware('can:warehouse-ops');
 
     Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
     Route::get('/shipments/create', [ShipmentController::class, 'create'])->name('shipments.create');
-    Route::post('/shipments', [ShipmentController::class, 'store'])->name('shipments.store');
+    Route::post('/shipments', [ShipmentController::class, 'store'])->name('shipments.store')->middleware('can:warehouse-ops');
     Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
-    Route::post('/shipments/{shipment}/dispatch', [ShipmentController::class, 'dispatchShipment'])->name('shipments.dispatch');
+    Route::post('/shipments/{shipment}/dispatch', [ShipmentController::class, 'dispatchShipment'])->name('shipments.dispatch')->middleware('can:warehouse-ops');
     Route::post('/shipments/{shipment}/receive', [ShipmentController::class, 'receive'])->name('shipments.receive');
 
-    Route::post('/textbooks/{textbook}/editions', [TextbookController::class, 'storeEdition'])->name('textbooks.editions.store');
-    Route::post('/textbooks/{textbook}/granularity', [TextbookController::class, 'setGranularity'])->name('textbooks.granularity');
-    Route::post('/shipments/{shipment}/resolve', [ShipmentController::class, 'resolve'])->name('shipments.resolve');
+    Route::post('/textbooks/{textbook}/editions', [TextbookController::class, 'storeEdition'])->name('textbooks.editions.store')->middleware('can:ministry');
+    Route::post('/textbooks/{textbook}/granularity', [TextbookController::class, 'setGranularity'])->name('textbooks.granularity')->middleware('can:ministry');
+    Route::post('/shipments/{shipment}/resolve', [ShipmentController::class, 'resolve'])->name('shipments.resolve')->middleware('can:ministry');
 
-    Route::post('/schools/{school}/assign', [\App\Http\Controllers\SchoolOpsController::class, 'assign'])->name('schoolops.assign');
-    Route::post('/assignments/{assignment}/return', [\App\Http\Controllers\SchoolOpsController::class, 'returnBooks'])->name('schoolops.return');
+    Route::post('/schools/{school}/assign', [\App\Http\Controllers\SchoolOpsController::class, 'assign'])->name('schoolops.assign')->middleware('can:school-ops');
+    Route::post('/assignments/{assignment}/return', [\App\Http\Controllers\SchoolOpsController::class, 'returnBooks'])->name('schoolops.return')->middleware('can:school-ops');
     Route::post('/schools/{school}/enrolment', [\App\Http\Controllers\SchoolOpsController::class, 'submitEnrolment'])->name('schoolops.enrolment');
     Route::post('/enrolments/{enrolment}/validate', [\App\Http\Controllers\SchoolOpsController::class, 'validateEnrolment'])->name('schoolops.enrolment.validate');
 
     Route::get('/campaigns', [\App\Http\Controllers\SchoolOpsController::class, 'campaigns'])->name('campaigns.index');
-    Route::post('/campaigns', [\App\Http\Controllers\SchoolOpsController::class, 'openCampaign'])->name('campaigns.open');
+    Route::post('/campaigns', [\App\Http\Controllers\SchoolOpsController::class, 'openCampaign'])->name('campaigns.open')->middleware('can:ministry');
     Route::get('/campaigns/{campaign}', [\App\Http\Controllers\SchoolOpsController::class, 'showCampaign'])->name('campaigns.show');
     Route::post('/campaigns/{campaign}/submit', [\App\Http\Controllers\SchoolOpsController::class, 'submitCount'])->name('campaigns.submit');
-    Route::post('/campaigns/{campaign}/close', [\App\Http\Controllers\SchoolOpsController::class, 'closeCampaign'])->name('campaigns.close');
+    Route::post('/campaigns/{campaign}/close', [\App\Http\Controllers\SchoolOpsController::class, 'closeCampaign'])->name('campaigns.close')->middleware('can:ministry');
 
     Route::get('/redistribution', [\App\Http\Controllers\RedistributionController::class, 'index'])->name('redistribution.index');
-    Route::post('/redistribution/generate', [\App\Http\Controllers\RedistributionController::class, 'generate'])->name('redistribution.generate');
-    Route::post('/redistribution/{proposal}/approve', [\App\Http\Controllers\RedistributionController::class, 'approve'])->name('redistribution.approve');
+    Route::post('/redistribution/generate', [\App\Http\Controllers\RedistributionController::class, 'generate'])->name('redistribution.generate')->middleware('can:ministry');
+    Route::post('/redistribution/{proposal}/approve', [\App\Http\Controllers\RedistributionController::class, 'approve'])->name('redistribution.approve')->middleware('can:ministry');
     Route::post('/redistribution/{proposal}/reject', [\App\Http\Controllers\RedistributionController::class, 'reject'])->name('redistribution.reject');
 
     Route::get('/about', fn () => view('about.index'))->name('about');
@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/forecast', [\App\Http\Controllers\ForecastController::class, 'index'])->name('forecast.index');
     Route::get('/copies/{copy}', [TextbookController::class, 'copy'])->name('copies.show');
     Route::post('/copies/{copy}/transition', [TextbookController::class, 'copyTransition'])->name('copies.transition');
-    Route::post('/textbooks', [TextbookController::class, 'store'])->name('textbooks.store');
+    Route::post('/textbooks', [TextbookController::class, 'store'])->name('textbooks.store')->middleware('can:ministry');
     Route::post('/scan', [TextbookController::class, 'scan'])->name('scan');
 
     Route::middleware('can:ministry')->group(function () {
@@ -92,10 +92,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/inspections', [\App\Http\Controllers\InspectionController::class, 'index'])->name('inspections.index');
         Route::post('/inspections', [\App\Http\Controllers\InspectionController::class, 'store'])->name('inspections.store');
     });
-    Route::post('/shipments/{shipment}/cancel', [ShipmentController::class, 'cancel'])->name('shipments.cancel');
+    Route::post('/shipments/{shipment}/cancel', [ShipmentController::class, 'cancel'])->name('shipments.cancel')->middleware('can:warehouse-ops');
     Route::get('/textbooks/{textbook}/copies', [TextbookController::class, 'copies'])->name('textbooks.copies');
     Route::post('/alerts/read-all', [\App\Http\Controllers\PlatformController::class, 'markAllRead'])->name('alerts.readall');
-    Route::post('/warehouses', [WarehouseController::class, 'store'])->name('warehouses.store');
+    Route::post('/warehouses', [WarehouseController::class, 'store'])->name('warehouses.store')->middleware('can:warehouse-ops');
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/alerts', [PlatformController::class, 'alerts'])->name('alerts.index');
