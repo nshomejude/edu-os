@@ -112,7 +112,7 @@
             <h2>Real-Time Shipment Tracking</h2>
             <div class="mapbox" style="margin:0 auto;">
                 {{-- Map artwork extracted from the project design source; the live SVG map (partials.cameroon-map) remains available for data-driven views --}}
-                <img src="{{ asset('img/map.png') }}" alt="Cameroon map with active shipment route" style="max-width:100%;max-height:252px;object-fit:contain;">
+                <img src="{{ asset('img/map.png') }}?v=2" alt="Cameroon map with active shipment route" style="max-width:100%;max-height:262px;object-fit:contain;display:block;margin:0 auto;">
             </div>
         </div>
     </div>
