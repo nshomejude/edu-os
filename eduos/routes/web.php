@@ -102,4 +102,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/alerts/{alert}/read', [PlatformController::class, 'markRead'])->name('alerts.read');
     Route::get('/users', [PlatformController::class, 'users'])->name('users.index');
     Route::get('/settings', [PlatformController::class, 'settings'])->name('settings.index');
+    Route::post('/settings/verify-chains', function () {
+        $code = \Illuminate\Support\Facades\Artisan::call('eduos:verify-chains');
+        $out = trim(\Illuminate\Support\Facades\Artisan::output());
+
+        return back()->with($code === 0 ? 'flash' : 'flash_error', $out);
+    })->name('settings.verify');
 });

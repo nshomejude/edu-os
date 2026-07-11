@@ -44,7 +44,7 @@
             <div>
                 <div class="k-label">{{ __('In Transit') }}</div>
                 <div class="k-value">{{ number_format($stats['in_transit']->value ?? 0) }}</div>
-                <div class="k-sub"><strong class="up">{{ $stats['in_transit']->delta_pct ?? 0 }}%</strong> {{ __('vs last month') }}</div>
+                <div class="k-sub"><strong class="up">{{ $stats['in_transit']->delta_pct ?? 0 }}%</strong> {{ __('of printed stock') }}</div>
             </div>
         </div>
         <div class="card kpi">
@@ -54,7 +54,7 @@
             <div>
                 <div class="k-label">{{ __('Delivered') }}</div>
                 <div class="k-value">{{ number_format($stats['delivered']->value ?? 0) }}</div>
-                <div class="k-sub"><strong class="up">{{ $stats['delivered']->delta_pct ?? 0 }}%</strong> {{ __('vs last month') }}</div>
+                <div class="k-sub"><strong class="up">{{ $stats['delivered']->delta_pct ?? 0 }}%</strong> {{ __('of printed stock') }}</div>
             </div>
         </div>
         <div class="card kpi">
@@ -64,7 +64,7 @@
             <div>
                 <div class="k-label">{{ __('Pending') }}</div>
                 <div class="k-value">{{ number_format($stats['pending']->value ?? 0) }}</div>
-                <div class="k-sub"><strong class="up" style="color:#C62828">{{ $stats['pending']->delta_pct ?? 0 }}%</strong> {{ __('vs last month') }}</div>
+                <div class="k-sub"><strong class="up" style="color:#C62828">{{ $stats['pending']->delta_pct ?? 0 }}%</strong> {{ __('of printed stock') }}</div>
             </div>
         </div>
     </div>

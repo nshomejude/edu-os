@@ -86,10 +86,10 @@
                 <div class="r-motto">Peace – Work – Fatherland</div>
                 <div class="tricolor"><span class="g"></span><span class="r"></span><span class="y"></span></div>
             </div>
-            <button class="iconbtn" aria-label="Notifications, {{ $unread }} unread">
+            <a href="{{ route('alerts.index') }}" class="iconbtn" aria-label="Notifications, {{ $unread }} unread" style="text-decoration:none">
                 <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="#1C1D1F" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M10.3 21a2 2 0 003.4 0"/></svg>
                 @if($unread > 0)<span class="dot">{{ $unread }}</span>@endif
-            </button>
+            </a>
             <div class="vdiv"></div>
             <div class="userchip">
                 <div class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</div>

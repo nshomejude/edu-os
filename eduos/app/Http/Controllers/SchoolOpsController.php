@@ -129,6 +129,14 @@ class SchoolOpsController extends Controller
     {
         $campaign->update(['status' => 'CLOSED', 'closed_at' => now()]);
         $missing = $campaign->submissions->sum(fn ($s) => max(0, $s->expected - $s->counted));
+
+        // Wire reconciliation to per-copy lifecycle: unaccounted copies at a school → LOST
+        foreach ($campaign->submissions as $sub) {
+            $gap = $sub->expected - $sub->counted;
+            if ($gap > 0) {
+                \App\Modules\Catalogue\Models\Copy::advance($sub->textbook_title_id, 'AT_SCHOOL', 'LOST', $gap, $sub->school_id);
+            }
+        }
         \App\Modules\Platform\Models\Alert::create([
             'severity' => $missing > 0 ? 'WARNING' : 'INFO',
             'title' => "Campaign \"{$campaign->name}\" closed",
