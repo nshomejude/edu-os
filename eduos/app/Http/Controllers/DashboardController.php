@@ -11,7 +11,7 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = NationalStat::all()->keyBy('key');
-        $regions = Region::orderByDesc('books_distributed')->get();
+        $regions = Region::orderByDesc('books_distributed')->limit(9)->get();
         $shipments = Shipment::orderByDesc('shipment_no')->limit(5)->get();
 
         $total = max(1, (int) ($stats['total_textbooks']->value ?? 0));

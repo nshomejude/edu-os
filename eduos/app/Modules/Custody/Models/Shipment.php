@@ -28,9 +28,9 @@ class Shipment extends Model
     {
         return match ($this->statusLabel()) {
             'Delivered' => 'pill-success',
-            'In Transit' => 'pill-info',
+            'In Transit' => 'pill-transit',
             'Discrepancy', 'Lost' => 'pill-error',
-            default => 'pill-warning',
+            default => 'pill-pending',
         };
     }
 }

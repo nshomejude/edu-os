@@ -10,13 +10,8 @@
 <div class="app">
     <aside class="sidebar" aria-label="Main navigation">
         <div class="seal">
-            <div class="seal-ring" aria-hidden="true">
-                {{-- EduOS circular seal: open book + flame --}}
-                <svg viewBox="0 0 64 64" width="64" height="64" fill="none">
-                    <path d="M12 22c8-4 14-4 20 0 6-4 12-4 20 0v24c-8-4-14-4-20 0-6-4-12-4-20 0z" fill="#FCFBF7"/>
-                    <path d="M32 22v24" stroke="#0D5C3B" stroke-width="2"/>
-                    <path d="M32 8c3 4 5 6 0 10-5-4-3-6 0-10z" fill="#D4A017"/>
-                </svg>
+            <div class="seal-svg" aria-hidden="true">
+                @include('partials.eduos-seal')
             </div>
             <div style="font-weight:800;letter-spacing:.08em;">EDUOS CAMEROON</div>
             <div class="motto">Digital Education, Our Future</div>
@@ -59,6 +54,9 @@
                 Settings
             </a>
         </nav>
+        <div class="landmarks" aria-hidden="true">
+            @include('partials.sidebar-landmarks')
+        </div>
         <div class="motif" aria-hidden="true"></div>
     </aside>
 
@@ -70,12 +68,8 @@
                 <div class="tricolor"><span class="g"></span><span class="r"></span><span class="y"></span></div>
             </div>
             <div class="spacer"></div>
-            <div class="arms" aria-label="Coat of arms of Cameroon">
-                {{-- Coat-of-arms placeholder: shield with star; replace with official asset --}}
-                <svg viewBox="0 0 48 56" width="46" height="54">
-                    <path d="M24 2l20 6v18c0 14-9 22-20 28C13 48 4 40 4 26V8z" fill="#0D5C3B" stroke="#D4A017" stroke-width="2"/>
-                    <path d="M24 16l2.4 7.3H34l-6.2 4.5 2.4 7.2-6.2-4.5-6.2 4.5 2.4-7.2L14 23.3h7.6z" fill="#D4A017"/>
-                </svg>
+            <div class="arms" aria-label="Coat of arms of Cameroon" style="width:64px;height:72px;">
+                @include('partials.coat-of-arms')
             </div>
             <div class="spacer"></div>
             <div class="republic">
@@ -93,6 +87,7 @@
                     <div class="u-name">Admin</div>
                     <div class="u-role">MINEDUB — Basic Education</div>
                 </div>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5F6368" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
             </div>
         </header>
 

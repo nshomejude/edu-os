@@ -33,7 +33,12 @@ body {
   line-height: 1.5;
 }
 
-.app { display: flex; min-height: 100vh; }
+.app { display: flex; min-height: 100vh; border: 6px solid var(--cameroon-gold); }
+body {
+  background:
+    repeating-linear-gradient(45deg, rgba(13,92,59,.022) 0 14px, transparent 14px 28px),
+    var(--ivory);
+}
 
 /* ---------- Sidebar (Deep Forest, gold actives) ---------- */
 .sidebar {
@@ -43,9 +48,9 @@ body {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  border-right: 6px solid var(--cameroon-gold);
   position: relative;
 }
+.sidebar .landmarks { height: 150px; padding: 6px 14px 0; }
 .sidebar .seal {
   padding: 28px 20px 20px;
   text-align: center;
@@ -74,7 +79,7 @@ body {
 }
 .nav a:hover { background: rgba(255,255,255,.06); }
 .nav a.active {
-  background: rgba(212,160,23,.28);
+  background: linear-gradient(90deg, rgba(212,160,23,.5), rgba(212,160,23,.32));
   border-left-color: var(--cameroon-gold);
   color: #fff; font-weight: 600;
 }
@@ -144,9 +149,12 @@ body {
 .pagehead .sub { color: var(--text-2); margin-top: 2px; }
 .datecard {
   background: #fff; border: 1px solid var(--border); border-radius: 14px;
-  padding: 12px 18px; display: flex; align-items: center; gap: 10px;
-  font-size: 14px; font-weight: 600; white-space: nowrap;
+  padding: 10px 18px; display: flex; align-items: center; gap: 12px;
+  white-space: nowrap;
 }
+.datecard .d1 { font-size: 14px; font-weight: 700; }
+.datecard .d2 { font-size: 13px; color: var(--text-2); }
+.sidebar .seal .seal-svg { width: 122px; height: 122px; margin: 0 auto 12px; }
 
 /* ---------- Cards ---------- */
 .card {
@@ -221,6 +229,8 @@ table.shipments td.num { font-weight: 600; }
 }
 .pill-success { background: var(--success); }
 .pill-info { background: var(--info); }
+.pill-transit { background: var(--cameroon-gold); }
+.pill-pending { background: var(--error); }
 .pill-warning { background: var(--warning); color: #4a3a00; }
 .pill-error { background: var(--error); }
 .viewall { display: inline-block; margin-top: 14px; color: var(--heritage-green); font-weight: 600; text-decoration: none; font-size: 14px; }

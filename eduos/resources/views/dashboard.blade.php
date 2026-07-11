@@ -18,8 +18,11 @@
             <div class="sub">Textbook Distribution Tracking System</div>
         </div>
         <div class="datecard">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0D5C3B" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-            {{ now()->format('l, d F Y — H:i') }}
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0D5C3B" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <div>
+                <div class="d1">{{ now()->format('l, d F Y') }}</div>
+                <div class="d2">{{ now()->format('h:i A') }}</div>
+            </div>
         </div>
     </div>
 
@@ -107,16 +110,8 @@
 
         <div class="card mapcard">
             <h2>Real-Time Shipment Tracking</h2>
-            <div class="mapbox">
-                {{-- Simplified Cameroon silhouette with a live route --}}
-                <svg viewBox="0 0 100 110" width="240" height="264" role="img" aria-label="Cameroon map with active shipment route">
-                    <path d="M52 2 L60 6 L58 16 L64 26 L60 38 L66 48 L62 60 L70 70 L64 84 L54 94 L40 98 L26 94 L18 86 L10 90 L4 84 L12 76 L20 74 L26 66 L22 58 L30 50 L28 40 L36 32 L40 20 L46 10 Z"
-                          fill="#0D5C3B" opacity="0.92"/>
-                    <path d="M20 80 Q35 70 48 62 T58 34" fill="none" stroke="#FCFBF7" stroke-width="1.6" stroke-dasharray="4 3"/>
-                    <circle cx="20" cy="80" r="4" fill="#D4A017" stroke="#fff" stroke-width="1.4"/>
-                    <circle cx="48" cy="62" r="4" fill="#FCFBF7" stroke="#0D5C3B" stroke-width="1.4"/>
-                    <circle cx="58" cy="34" r="4" fill="#D32F2F" stroke="#fff" stroke-width="1.4"/>
-                </svg>
+            <div class="mapbox" style="max-width:280px;margin:0 auto;">
+                @include('partials.cameroon-map')
             </div>
         </div>
     </div>
