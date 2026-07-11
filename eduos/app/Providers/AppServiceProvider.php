@@ -7,28 +7,54 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /** The full FRS role set (docs 04 §6.5, 07 §6, 08 §5). */
+    public const ROLES = [
+        'ADMIN', 'CURRICULUM_OFFICER', 'PROCUREMENT_OFFICER',
+        'WAREHOUSE_MANAGER', 'STOREKEEPER', 'WAREHOUSE_OFFICER',   // WAREHOUSE_OFFICER kept as legacy alias of STOREKEEPER
+        'DIVISION_OFFICER', 'SUBDIV_OFFICER',
+        'SCHOOL_HEAD', 'TEACHER', 'INSPECTOR', 'AUDITOR', 'READONLY',
+    ];
+
     public function register(): void
     {
         //
     }
 
-    /**
-     * Role gates per the FRS permission matrices (simplified three-role demo):
-     * ADMIN = ministry-level (everything); WAREHOUSE_OFFICER = custody & catalogue
-     * operations; SCHOOL_HEAD = own-school operations only.
-     */
     public function boot(): void
     {
-        Gate::define('ministry', fn ($user) => $user->role === 'ADMIN');
+        $is = fn ($user, array $roles) => in_array($user->role, $roles);
 
-        Gate::define('warehouse-ops', fn ($user) => in_array($user->role, ['ADMIN', 'WAREHOUSE_OFFICER']));
+        // National administration
+        Gate::define('ministry', fn ($u) => $u->role === 'ADMIN');
 
-        Gate::define('school-ops', fn ($user) => in_array($user->role, ['ADMIN', 'SCHOOL_HEAD']));
+        // Curriculum: the only path to title approval/retirement (FR-NTR-02)
+        Gate::define('curriculum', fn ($u) => $is($u, ['ADMIN', 'CURRICULUM_OFFICER']));
 
-        // Row-level scoping (FR-NSR/NTR-18): a school head may only operate on their own school
-        Gate::define('operate-school', function ($user, $school) {
-            return $user->role === 'ADMIN'
-                || ($user->role === 'SCHOOL_HEAD' && $user->school_id === $school->id);
+        // Procurement: orders, suppliers, batch registration (FRS 04 §6.2)
+        Gate::define('procurement', fn ($u) => $is($u, ['ADMIN', 'PROCUREMENT_OFFICER']));
+
+        // Warehouse custody operations: receipts, dispatch, shipments (FRS 08 §5)
+        Gate::define('warehouse-ops', fn ($u) => $is($u, ['ADMIN', 'WAREHOUSE_MANAGER', 'STOREKEEPER', 'WAREHOUSE_OFFICER']));
+
+        // Warehouse approvals beyond posting: cancellation (manager tier)
+        Gate::define('warehouse-approve', fn ($u) => $is($u, ['ADMIN', 'WAREHOUSE_MANAGER']));
+
+        // Division tier: enrolment validation, redistribution approval, reconciliation
+        Gate::define('division', fn ($u) => $is($u, ['ADMIN', 'DIVISION_OFFICER']));
+
+        // Field verification / registration proposals
+        Gate::define('subdivision', fn ($u) => $is($u, ['ADMIN', 'DIVISION_OFFICER', 'SUBDIV_OFFICER']));
+
+        // School operations: head teachers and teachers (teachers: own class, school-scoped)
+        Gate::define('school-ops', fn ($u) => $is($u, ['ADMIN', 'SCHOOL_HEAD', 'TEACHER']));
+
+        // Inspections and spot checks
+        Gate::define('inspect', fn ($u) => $is($u, ['ADMIN', 'INSPECTOR']));
+
+        // Row-level: operate on a specific school
+        Gate::define('operate-school', function ($u, $school) {
+            return $u->role === 'ADMIN'
+                || (in_array($u->role, ['SCHOOL_HEAD', 'TEACHER']) && $u->school_id === $school->id);
         });
     }
 }

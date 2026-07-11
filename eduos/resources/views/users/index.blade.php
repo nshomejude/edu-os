@@ -16,7 +16,7 @@
             @csrf
             <input class="input" name="name" placeholder="Full name" required>
             <input class="input" type="email" name="email" placeholder="Email" required>
-            <select class="input" name="role"><option>ADMIN</option><option>WAREHOUSE_OFFICER</option><option>SCHOOL_HEAD</option></select>
+            <select class="input" name="role">@foreach (\App\Providers\AppServiceProvider::ROLES as $r)<option>{{ $r }}</option>@endforeach</select>
             <select class="input" name="ministry"><option value="">Ministry…</option><option>MINEDUB</option><option>MINESEC</option></select>
             <button class="btn btn-primary">Create</button>
         </form>

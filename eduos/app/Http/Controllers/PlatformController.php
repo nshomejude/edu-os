@@ -39,7 +39,7 @@ class PlatformController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:120',
             'email' => 'required|email|unique:users,email',
-            'role' => 'required|in:ADMIN,WAREHOUSE_OFFICER,SCHOOL_HEAD',
+            'role' => 'required|in:'.implode(',', \App\Providers\AppServiceProvider::ROLES),
             'ministry' => 'nullable|in:MINEDUB,MINESEC',
             'school_id' => 'nullable|exists:schools,id',
         ]);

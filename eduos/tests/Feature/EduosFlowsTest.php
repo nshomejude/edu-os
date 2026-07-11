@@ -154,7 +154,9 @@ class EduosFlowsTest extends TestCase
             'textbook_title_id' => $this->title->id, 'books' => 30,
         ]);
         $shipment = Shipment::latest('id')->first();
-        $this->actingAs($this->warehouseOfficer)->post(route('shipments.cancel', $shipment));
+        // storekeepers cannot cancel (warehouse-approve tier); the manager/admin can
+        $this->actingAs($this->warehouseOfficer)->post(route('shipments.cancel', $shipment))->assertForbidden();
+        $this->actingAs($this->admin)->post(route('shipments.cancel', $shipment));
         $this->assertSame('CANCELLED', $shipment->fresh()->status);
         $this->assertSame(100, (int) StockRecord::where('stock_class', 'AVAILABLE')->sum('quantity'));
         $this->assertSame(0, (int) StockRecord::where('stock_class', 'RESERVED')->sum('quantity'));
