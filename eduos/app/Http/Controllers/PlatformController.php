@@ -49,6 +49,21 @@ class PlatformController extends Controller
         return back()->with('flash', "User {$user->email} created (initial password: password).");
     }
 
+    /** Edit role/ministry/scoping after creation (RBAC scoping was previously write-once). */
+    public function updateUser(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'role' => 'required|in:'.implode(',', \App\Providers\AppServiceProvider::ROLES),
+            'ministry' => 'nullable|in:MINEDUB,MINESEC',
+            'school_id' => 'nullable|exists:schools,id',
+            'warehouse_id' => 'nullable|exists:warehouses,id',
+            'division_id' => 'nullable|exists:divisions,id',
+        ]);
+        $user->update($data);
+
+        return back()->with('flash', "{$user->email} updated: {$data['role']}.");
+    }
+
     public function toggleUser(User $user)
     {
         if ($user->id === auth()->id()) {

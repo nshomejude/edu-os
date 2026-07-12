@@ -21,6 +21,8 @@ if (app()->environment('local')) {
 // Public open-data APIs (FR-NTR-13, FR-NSR-05) — unauthenticated by design
 Route::get('/api/catalogue', [\App\Http\Controllers\PublicApiController::class, 'catalogue'])->name('api.catalogue');
 Route::get('/api/schools', [\App\Http\Controllers\PublicApiController::class, 'schools'])->name('api.schools');
+Route::get('/api/stats', [\App\Http\Controllers\PublicApiController::class, 'stats'])->name('api.stats');
+Route::get('/api/openapi.json', [\App\Http\Controllers\PublicApiController::class, 'openapi'])->name('api.openapi');
 
 Route::get('/login', [PlatformController::class, 'login'])->name('login');
 Route::post('/login', [PlatformController::class, 'authenticate'])->name('login.post');
@@ -78,6 +80,27 @@ Route::middleware('auth')->group(function () {
     Route::post('/redistribution/{proposal}/reject', [\App\Http\Controllers\RedistributionController::class, 'reject'])->name('redistribution.reject');
 
     Route::get('/about', fn () => view('about.index'))->name('about');
+
+    // Profile & password management
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/users/{user}/reset-password', [\App\Http\Controllers\ProfileController::class, 'resetPassword'])->name('users.reset')->middleware('can:ministry');
+    Route::post('/users/{user}/update', [PlatformController::class, 'updateUser'])->name('users.update')->middleware('can:ministry');
+
+    // QA, draft edit, enrolment rejection, inspection resolution
+    Route::post('/batches/{batch}/qa', [TextbookController::class, 'batchQa'])->name('batches.qa')->middleware('can:procurement');
+    Route::post('/textbooks/{textbook}/update', [TextbookController::class, 'update'])->name('textbooks.update')->middleware('can:curriculum');
+    Route::post('/enrolments/{enrolment}/reject', [\App\Http\Controllers\SchoolOpsController::class, 'rejectEnrolment'])->name('schoolops.enrolment.reject')->middleware('can:division');
+    Route::post('/inspections/{inspection}/resolve', [\App\Http\Controllers\InspectionController::class, 'resolve'])->name('inspections.resolve')->middleware('can:inspect');
+
+    // Warehouse cycle counts and inter-warehouse transfers
+    Route::post('/warehouses/{warehouse}/count', [WarehouseController::class, 'count'])->name('warehouses.count')->middleware('can:warehouse-ops');
+    Route::post('/warehouses/{warehouse}/transfer', [WarehouseController::class, 'transfer'])->name('warehouses.transfer')->middleware('can:warehouse-approve');
+
+    // School edit + learner detail + supplier edit
+    Route::post('/schools/{school}/update', [SchoolController::class, 'update'])->name('schools.update')->middleware('can:division');
+    Route::get('/students/{student}', [SchoolController::class, 'student'])->name('students.show');
+    Route::post('/suppliers/{supplier}/update', [\App\Http\Controllers\ProcurementController::class, 'updateSupplier'])->name('suppliers.update')->middleware('can:procurement');
 
     Route::get('/forecast', [\App\Http\Controllers\ForecastController::class, 'index'])->name('forecast.index');
     Route::get('/copies/{copy}', [TextbookController::class, 'copy'])->name('copies.show');

@@ -29,7 +29,7 @@
 
     <div class="card">
         <table class="table">
-            <thead><tr><th>Date</th><th>School</th><th>Title</th><th>Ledger</th><th>Counted</th><th>Variance</th><th>Outcome</th><th>Inspector</th></tr></thead>
+            <thead><tr><th>Date</th><th>School</th><th>Title</th><th>Ledger</th><th>Counted</th><th>Variance</th><th>Outcome</th><th>Inspector</th><th>Follow-up</th></tr></thead>
             <tbody>
             @forelse ($inspections as $i)
                 <tr>
@@ -41,6 +41,18 @@
                     <td><b style="color:{{ $i->variance() === 0 ? 'var(--success)' : 'var(--error)' }}">{{ $i->variance() }}</b></td>
                     <td><span class="pill {{ $i->outcome === 'CONFORM' ? 'pill-success' : ($i->outcome === 'MINOR_FINDINGS' ? 'pill-transit' : 'pill-error') }}">{{ str_replace('_', ' ', $i->outcome) }}</span></td>
                     <td>{{ $i->inspector }}</td>
+                    <td style="min-width:220px">
+                        @if ($i->resolved_at)
+                            <span class="pill pill-success" title="{{ $i->corrective_action }}">Resolved</span>
+                        @elseif ($i->outcome !== 'CONFORM')
+                            <form class="toolbar" method="post" action="{{ route('inspections.resolve', $i) }}" style="margin:0;gap:6px">@csrf
+                                <input class="input" name="corrective_action" placeholder="Corrective action" required style="min-width:150px;height:34px">
+                                <button class="btn btn-sm btn-secondary" style="height:34px">Resolve</button>
+                            </form>
+                        @else
+                            —
+                        @endif
+                    </td>
                 </tr>
             @empty
                 <tr><td colspan="8">No inspections recorded.</td></tr>

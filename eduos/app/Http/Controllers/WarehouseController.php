@@ -85,4 +85,68 @@ class WarehouseController extends Controller
 
         return back()->with('flash', $msg);
     }
+
+    /** Cycle count (FR-NWD-04): counted vs ledger; variance posts an audited adjustment. */
+    public function count(Request $request, Warehouse $warehouse)
+    {
+        $data = $request->validate([
+            'textbook_title_id' => 'required|exists:textbook_titles,id',
+            'counted_qty' => 'required|integer|min:0',
+        ]);
+        $ledger = (int) StockRecord::where([
+            'warehouse_id' => $warehouse->id, 'textbook_title_id' => $data['textbook_title_id'], 'stock_class' => 'AVAILABLE',
+        ])->value('quantity');
+        \App\Modules\Custody\Models\WarehouseCount::create($data + [
+            'warehouse_id' => $warehouse->id, 'ledger_qty' => $ledger, 'actor' => auth()->user()->name,
+        ]);
+        $variance = $data['counted_qty'] - $ledger;
+        if ($variance !== 0) {
+            StockRecord::post($warehouse->id, $data['textbook_title_id'], 'AVAILABLE', $variance);
+            \App\Modules\Platform\Models\Alert::create([
+                'severity' => abs($variance) > max(50, $ledger * 0.005) ? 'CRITICAL' : 'WARNING',
+                'title' => "Cycle count variance at {$warehouse->name}",
+                'message' => "Counted {$data['counted_qty']} vs {$ledger} on ledger (adjustment {$variance} posted by ".auth()->user()->name.').',
+                'link' => "/warehouses/{$warehouse->id}",
+            ]);
+        }
+
+        return back()->with($variance === 0 ? 'flash' : 'flash_error',
+            $variance === 0 ? 'Count reconciled with ledger.' : "Variance {$variance}: adjustment posted and audit alert raised.");
+    }
+
+    /** Inter-warehouse transfer as a custody shipment (destination = warehouse). */
+    public function transfer(Request $request, Warehouse $warehouse)
+    {
+        $data = $request->validate([
+            'destination_warehouse_id' => 'required|exists:warehouses,id',
+            'textbook_title_id' => 'required|exists:textbook_titles,id',
+            'books' => 'required|integer|min:1',
+        ]);
+        if ((int) $data['destination_warehouse_id'] === $warehouse->id) {
+            return back()->with('flash_error', 'Destination must differ from origin.');
+        }
+        $available = (int) StockRecord::where([
+            'warehouse_id' => $warehouse->id, 'textbook_title_id' => $data['textbook_title_id'], 'stock_class' => 'AVAILABLE',
+        ])->value('quantity');
+        if ($available < $data['books']) {
+            return back()->with('flash_error', "Insufficient AVAILABLE stock ({$available}).");
+        }
+        $dest = Warehouse::find($data['destination_warehouse_id']);
+        StockRecord::post($warehouse->id, $data['textbook_title_id'], 'AVAILABLE', -$data['books']);
+        StockRecord::post($warehouse->id, $data['textbook_title_id'], 'RESERVED', $data['books']);
+        $shipment = \App\Modules\Custody\Models\Shipment::create([
+            'shipment_no' => sprintf('SHP-%s-%06d', now()->format('Y'), \App\Modules\Custody\Models\Shipment::count() + 126),
+            'origin_name' => $warehouse->name, 'origin_warehouse_id' => $warehouse->id,
+            'destination_name' => $dest->name, 'destination_warehouse_id' => $dest->id,
+            'textbook_title_id' => $data['textbook_title_id'],
+            'status' => 'CONFIRMED', 'books' => $data['books'], 'shipped_on' => now()->toDateString(),
+        ]);
+        \App\Modules\Custody\Models\CustodyEvent::create([
+            'shipment_id' => $shipment->id, 'event_type' => 'CONFIRMED',
+            'actor' => auth()->user()->name, 'notes' => "Inter-warehouse transfer to {$dest->name}",
+            'occurred_at' => now(),
+        ]);
+
+        return redirect()->route('shipments.show', $shipment)->with('flash', "Transfer {$shipment->shipment_no} confirmed to {$dest->name}.");
+    }
 }

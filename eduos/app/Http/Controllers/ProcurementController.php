@@ -49,6 +49,18 @@ class ProcurementController extends Controller
         return back()->with('flash', "Supplier {$data['name']} registered.");
     }
 
+    public function updateSupplier(Request $request, Supplier $supplier)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:160',
+            'type' => 'required|in:PRINTER,PUBLISHER,LOGISTICS',
+            'contact' => 'nullable|string|max:160',
+        ]);
+        $supplier->update($data);
+
+        return back()->with('flash', "Supplier {$supplier->name} updated.");
+    }
+
     /** Delivery registers the print batch and links it to the order (traceable procurement). */
     public function markDelivered(ProcurementOrder $order)
     {

@@ -34,7 +34,7 @@
             <tbody>
             @forelse ($students as $s)
                 <tr>
-                    <td class="num">{{ $s->lsid }}</td>
+                    <td class="num"><a class="rowlink" href="{{ route('students.show', $s) }}">{{ $s->lsid }}</a></td>
                     <td>{{ $s->name }}</td>
                     <td>{{ $s->sex }}</td>
                     <td>{{ $s->class_level }}</td>

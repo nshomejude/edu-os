@@ -32,6 +32,20 @@
         </div>
     </div>
 
+    @if ($textbook->status === 'DRAFT')
+        @can('curriculum')
+            <div class="card mb">
+                <h2>Edit draft title (FR-NTR-01)</h2>
+                <form class="toolbar" method="post" action="{{ route('textbooks.update', $textbook) }}" style="margin:0">
+                    @csrf
+                    <input class="input" name="title_en" value="{{ $textbook->title_en }}" placeholder="Title (EN)" style="min-width:280px">
+                    <input class="input" name="title_fr" value="{{ $textbook->title_fr }}" placeholder="Titre (FR)" style="min-width:280px">
+                    <button class="btn btn-primary btn-sm">Save draft</button>
+                </form>
+            </div>
+        @endcan
+    @endif
+
     <div class="card mb">
         <h2>Editions &amp; tracking policy</h2>
         <div class="toolbar">
@@ -72,6 +86,16 @@
                         <b>{{ $batch->batch_no }}</b>
                         <span style="color:var(--text-2);font-size:13.5px">{{ $batch->printer }} · {{ number_format($batch->quantity) }} copies</span>
                         <span class="pill {{ $batch->qa_status === 'PASSED' ? 'pill-success' : ($batch->qa_status === 'FAILED' ? 'pill-error' : 'pill-transit') }}">QA {{ $batch->qa_status }}</span>
+                        @can('procurement')
+                            @foreach (['PASSED' => 'Pass QA', 'FAILED' => 'Fail QA'] as $q => $ql)
+                                @if ($batch->qa_status !== $q)
+                                    <form method="post" action="{{ route('batches.qa', $batch) }}" style="display:inline">@csrf
+                                        <input type="hidden" name="qa_status" value="{{ $q }}">
+                                        <button class="btn btn-sm {{ $q === 'FAILED' ? 'btn-danger' : 'btn-secondary' }}">{{ $ql }}</button>
+                                    </form>
+                                @endif
+                            @endforeach
+                        @endcan
                     </div>
                     <div class="timeline">
                         @foreach ($batch->passportEvents as $ev)

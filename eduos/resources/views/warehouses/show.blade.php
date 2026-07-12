@@ -32,6 +32,37 @@
         </form>
     </div>
 
+    <div class="card mb">
+        <h2>Cycle count (FR-NWD-04) &amp; inter-warehouse transfer</h2>
+        <form class="toolbar" method="post" action="{{ route('warehouses.count', $warehouse) }}" style="margin-bottom:10px">
+            @csrf
+            <select class="input" name="textbook_title_id" required style="min-width:240px">
+                @foreach (\App\Modules\Catalogue\Models\TextbookTitle::where('status','APPROVED')->get() as $t)
+                    <option value="{{ $t->id }}">{{ $t->ntid }}</option>
+                @endforeach
+            </select>
+            <input class="input" type="number" name="counted_qty" min="0" placeholder="Physical count" required>
+            <button class="btn btn-secondary btn-sm">Post count</button>
+        </form>
+        @can('warehouse-approve')
+        <form class="toolbar" method="post" action="{{ route('warehouses.transfer', $warehouse) }}" style="margin:0">
+            @csrf
+            <select class="input" name="destination_warehouse_id" required style="min-width:220px">
+                @foreach (\App\Modules\Custody\Models\Warehouse::where('id', '!=', $warehouse->id)->get() as $w)
+                    <option value="{{ $w->id }}">→ {{ $w->name }}</option>
+                @endforeach
+            </select>
+            <select class="input" name="textbook_title_id" required style="min-width:240px">
+                @foreach (\App\Modules\Catalogue\Models\TextbookTitle::where('status','APPROVED')->get() as $t)
+                    <option value="{{ $t->id }}">{{ $t->ntid }}</option>
+                @endforeach
+            </select>
+            <input class="input" type="number" name="books" min="1" placeholder="Qty" required style="min-width:100px">
+            <button class="btn btn-primary btn-sm">Transfer</button>
+        </form>
+        @endcan
+    </div>
+
     <div class="grid-bottom">
         <div class="card">
             <h2>Stock ledger by title &amp; class</h2>

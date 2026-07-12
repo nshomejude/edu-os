@@ -35,6 +35,22 @@
         </div>
     </div>
 
+    @can('division')
+        <div class="card mb">
+            <h2>Edit profile (FR-NSR-02 controlled updates)</h2>
+            <form class="toolbar" method="post" action="{{ route('schools.update', $school) }}" style="margin:0">
+                @csrf
+                <input class="input" name="name_official" value="{{ $school->name_official }}" required style="min-width:280px">
+                <select class="input" name="accessibility_class">@foreach (['URBAN','RURAL_ROAD','RURAL_SEASONAL','REMOTE'] as $a)<option @selected($school->accessibility_class === $a)>{{ $a }}</option>@endforeach</select>
+                <select class="input" name="grid_power">@foreach (['GRID','SOLAR','NONE'] as $g)<option @selected($school->grid_power === $g)>{{ $g }}</option>@endforeach</select>
+                <select class="input" name="connectivity">@foreach (['NONE','2G','3G','4G'] as $c)<option @selected($school->connectivity === $c)>{{ $c }}</option>@endforeach</select>
+                <input class="input" type="number" name="classrooms_total" value="{{ $school->classrooms_total }}" placeholder="Classrooms" style="min-width:110px">
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" name="storage_secure" value="1" @checked($school->storage_secure)> Secure store</label>
+                <button class="btn btn-primary btn-sm">Save</button>
+            </form>
+        </div>
+    @endcan
+
     <div class="card mb">
         <h2>School operations — assign &amp; return (class-level, FR-NTR-SM-02)</h2>
         <form class="toolbar" method="post" action="{{ route('schoolops.assign', $school) }}" style="margin-bottom:14px">
@@ -95,7 +111,13 @@
                         <td>{{ $e->class_level }}</td><td>{{ $e->boys }}</td><td>{{ $e->girls }}</td><td><b>{{ $e->boys + $e->girls }}</b></td>
                         <td>
                             @if ($e->validation_status === 'SUBMITTED')
-                                <form method="post" action="{{ route('schoolops.enrolment.validate', $e) }}">@csrf<button class="btn btn-sm btn-secondary">Validate</button></form>
+                                <form method="post" action="{{ route('schoolops.enrolment.validate', $e) }}" style="display:inline">@csrf<button class="btn btn-sm btn-secondary">Validate</button></form>
+                                <form method="post" action="{{ route('schoolops.enrolment.reject', $e) }}" class="toolbar" style="margin:4px 0 0;gap:6px">@csrf
+                                    <input class="input" name="rejection_reason" placeholder="Reason" required style="min-width:130px;height:34px">
+                                    <button class="btn btn-sm btn-danger" style="height:34px">Reject</button>
+                                </form>
+                            @elseif ($e->validation_status === 'REJECTED')
+                                <span class="pill pill-error" title="{{ $e->rejection_reason }}">REJECTED</span>
                             @else
                                 <span class="pill pill-success">{{ $e->validation_status }}</span>
                             @endif

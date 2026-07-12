@@ -163,6 +163,14 @@ class SchoolOpsController extends Controller
         return back()->with('flash', "Enrolment return for {$data['class_level']} submitted for validation.");
     }
 
+    public function rejectEnrolment(Request $request, Enrolment $enrolment)
+    {
+        $reason = $request->validate(['rejection_reason' => 'required|string|max:300'])['rejection_reason'];
+        $enrolment->update(['validation_status' => 'REJECTED', 'rejection_reason' => $reason]);
+
+        return back()->with('flash', 'Enrolment return rejected with reason recorded (FR-NSR-03).');
+    }
+
     public function validateEnrolment(Enrolment $enrolment)
     {
         $enrolment->update(['validation_status' => 'VALIDATED']);

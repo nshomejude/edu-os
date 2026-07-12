@@ -41,6 +41,17 @@
         </div>
     @endif
 
+    @php($missingSchools = $schools->whereNotIn('id', $subs->pluck('school_id')))
+    <div class="card mb">
+        <h2>Schools yet to submit ({{ $missingSchools->count() }})</h2>
+        <div class="chips">
+            @foreach ($missingSchools->take(24) as $ms)
+                <a class="chip" style="text-decoration:none" href="{{ route('schools.show', $ms) }}">{{ $ms->name_official }}</a>
+            @endforeach
+            @if ($missingSchools->count() > 24)<span class="chip">+{{ $missingSchools->count() - 24 }} more</span>@endif
+        </div>
+    </div>
+
     <div class="card">
         <h2>Reconciliation — counted vs expected per school</h2>
         <table class="table">

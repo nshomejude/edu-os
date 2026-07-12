@@ -97,6 +97,36 @@ class TextbookController extends Controller
         return view('textbooks.copies', compact('textbook', 'copies'));
     }
 
+    /** Explicit QA outcome on a batch (FR-NTR-07): FAILED batches are blocked from warehouses. */
+    public function batchQa(Request $request, PrintBatch $batch)
+    {
+        $status = $request->validate(['qa_status' => 'required|in:PASSED,FAILED'])['qa_status'];
+        $batch->update(['qa_status' => $status]);
+        PassportEvent::create([
+            'print_batch_id' => $batch->id, 'event_type' => 'QA_'.$status,
+            'location' => $batch->printer, 'actor' => auth()->user()->name,
+            'occurred_at' => now(),
+        ]);
+
+        return back()->with($status === 'FAILED' ? 'flash_error' : 'flash',
+            "Batch {$batch->batch_no} QA {$status}".($status === 'FAILED' ? ' - warehouse receipt is now blocked.' : '.'));
+    }
+
+    /** Edit a title while DRAFT only (FR-NTR-01 PATCH semantics). */
+    public function update(Request $request, TextbookTitle $textbook)
+    {
+        if ($textbook->status !== 'DRAFT') {
+            return back()->with('flash_error', 'Only DRAFT titles are editable; approved titles change via editions.');
+        }
+        $data = $request->validate([
+            'title_en' => 'nullable|string|max:300|required_without:title_fr',
+            'title_fr' => 'nullable|string|max:300|required_without:title_en',
+        ]);
+        $textbook->update($data);
+
+        return back()->with('flash', 'Draft title updated.');
+    }
+
     /** Copy passport with QR code (FR-NTR-ID-04). */
     public function copy(\App\Modules\Catalogue\Models\Copy $copy)
     {

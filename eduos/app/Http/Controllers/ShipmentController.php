@@ -139,6 +139,14 @@ class ShipmentController extends Controller
             'notes' => "Counted {$received} of {$shipment->books}", 'occurred_at' => now(),
         ]);
 
+        if ($shipment->destination_warehouse_id) {
+            StockRecord::post($shipment->destination_warehouse_id, $shipment->textbook_title_id, 'AVAILABLE', $received);
+            \App\Modules\Catalogue\Models\Copy::whereIn('id',
+                \App\Modules\Catalogue\Models\Copy::where('shipment_id', $shipment->id)
+                    ->where('lifecycle_state', 'IN_TRANSIT')->limit($received)->pluck('id')
+            )->update(['lifecycle_state' => 'IN_WAREHOUSE', 'shipment_id' => null]);
+        }
+
         if ($shipment->destination_school_id) {
             \App\Modules\SchoolOps\Models\SchoolStock::create([
                 'school_id' => $shipment->destination_school_id,

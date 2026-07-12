@@ -91,14 +91,14 @@
                 @if($unread > 0)<span class="dot">{{ $unread }}</span>@endif
             </a>
             <div class="vdiv"></div>
-            <div class="userchip">
+            <a href="{{ route('profile') }}" class="userchip" style="text-decoration:none;color:inherit">
                 <div class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</div>
                 <div>
                     <div class="u-name">{{ auth()->user()->name ?? 'Admin' }}</div>
                     <div class="u-role">{{ auth()->user()->ministry === 'MINESEC' ? 'MOE – Secondary Education' : 'MOE – Basic Education' }}</div>
                 </div>
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#5F6368" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
+            </a>
             <a href="{{ route('locale', app()->getLocale() === 'fr' ? 'en' : 'fr') }}" class="iconbtn" style="text-decoration:none;font-weight:700;font-size:12.5px;color:var(--heritage-green)" title="{{ app()->getLocale() === 'fr' ? 'Switch to English' : 'Passer au français' }}">{{ app()->getLocale() === 'fr' ? 'EN' : 'FR' }}</a>
             <form method="post" action="{{ route('logout') }}" style="margin:0">
                 @csrf

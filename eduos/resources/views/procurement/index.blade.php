@@ -35,6 +35,30 @@
         </form>
     </div>
 
+    <div class="card mb">
+        <h2>Suppliers</h2>
+        <table class="table">
+            <thead><tr><th>Name</th><th>Type</th><th>Contact</th><th></th></tr></thead>
+            <tbody>
+            @foreach ($suppliers as $sup)
+                <tr>
+                    <td class="num">{{ $sup->name }}</td>
+                    <td>{{ $sup->type }}</td>
+                    <td>{{ $sup->contact ?? '—' }}</td>
+                    <td>
+                        <form class="toolbar" method="post" action="{{ route('suppliers.update', $sup) }}" style="margin:0;gap:6px">@csrf
+                            <input type="hidden" name="name" value="{{ $sup->name }}">
+                            <input type="hidden" name="type" value="{{ $sup->type }}">
+                            <input class="input" name="contact" value="{{ $sup->contact }}" placeholder="Contact" style="min-width:140px;height:34px">
+                            <button class="btn btn-sm btn-secondary" style="height:34px">Update</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+
     <div class="card">
         <table class="table">
             <thead><tr><th>Order</th><th>Supplier</th><th>Title</th><th>Qty</th><th>Unit FCFA</th><th>Value</th><th>Contract</th><th>Status</th><th></th></tr></thead>

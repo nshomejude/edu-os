@@ -51,4 +51,12 @@ class InspectionController extends Controller
 
         return back()->with('flash', "Inspection recorded — {$outcome} (counted {$data['counted_qty']} vs {$recorded} on ledger).");
     }
+
+    public function resolve(Request $request, Inspection $inspection)
+    {
+        $action = $request->validate(['corrective_action' => 'required|string|max:500'])['corrective_action'];
+        $inspection->update(['corrective_action' => $action, 'resolved_at' => now()]);
+
+        return back()->with('flash', 'Corrective action recorded; inspection closed.');
+    }
 }

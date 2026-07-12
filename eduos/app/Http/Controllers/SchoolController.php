@@ -66,6 +66,32 @@ class SchoolController extends Controller
         return back()->with('flash', "School status → {$to}.");
     }
 
+    /** Field-level controlled updates (FR-NSR-02). */
+    public function update(Request $request, School $school)
+    {
+        $data = $request->validate([
+            'name_official' => 'required|string|max:300',
+            'accessibility_class' => 'required|in:URBAN,RURAL_ROAD,RURAL_SEASONAL,REMOTE',
+            'grid_power' => 'required|in:GRID,SOLAR,NONE',
+            'connectivity' => 'required|in:NONE,2G,3G,4G',
+            'classrooms_total' => 'nullable|integer|min:0|max:200',
+            'storage_secure' => 'nullable|boolean',
+        ]);
+        $data['storage_secure'] = $request->boolean('storage_secure');
+        $school->update($data);
+
+        return back()->with('flash', 'School profile updated (change attributed to '.auth()->user()->name.').');
+    }
+
+    /** Learner detail with assignment history. */
+    public function student(\App\Modules\Registry\Models\Student $student)
+    {
+        $assignments = \App\Modules\SchoolOps\Models\Assignment::with('title')
+            ->where('student_id', $student->id)->orderByDesc('id')->get();
+
+        return view('schools.student', compact('student', 'assignments'));
+    }
+
     /** Learner registration (light Student Registry write path). */
     public function storeStudent(Request $request, School $school)
     {
