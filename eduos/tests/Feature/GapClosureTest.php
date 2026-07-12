@@ -61,6 +61,7 @@ class GapClosureTest extends TestCase
             'destination_warehouse_id' => $dest->id, 'textbook_title_id' => $this->title->id, 'books' => 80,
         ]);
         $shipment = \App\Modules\Custody\Models\Shipment::latest('id')->first();
+        $this->actingAs($this->admin)->post(route('shipments.approve', $shipment));
         $this->actingAs($this->admin)->post(route('shipments.dispatch', $shipment), ['carrier' => 'C', 'waybill' => 'W']);
         $this->actingAs($this->admin)->post(route('shipments.receive', $shipment), ['received_books' => 80]);
 

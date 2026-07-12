@@ -7,7 +7,7 @@
             <div class="sub">Operational intelligence — coverage, delivery performance, loss analysis</div>
         </div>
         <div class="toolbar" style="margin:0">
-            <a class="btn btn-secondary" href="{{ route('reports.coverage.csv') }}">Export CSV</a>
+            <a class="btn btn-secondary" href="{{ route('exports.index') }}">Export Centre</a>
             <a class="btn btn-secondary" href="{{ route('forecast.index') }}">Demand forecast</a>
             <a class="btn btn-secondary" href="{{ route('campaigns.index') }}">Verification campaigns</a>
         </div>

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Inspection extends Model
 {
-    protected $fillable = ['school_id', 'inspector', 'inspected_on', 'textbook_title_id', 'recorded_qty', 'counted_qty', 'outcome', 'findings'];
+    protected $fillable = ['school_id', 'inspector', 'inspected_on', 'textbook_title_id', 'recorded_qty', 'counted_qty', 'outcome', 'findings', 'corrective_action', 'resolved_at', 'evidence_path'];
     protected $casts = ['inspected_on' => 'date'];
 
     public function school() { return $this->belongsTo(School::class); }

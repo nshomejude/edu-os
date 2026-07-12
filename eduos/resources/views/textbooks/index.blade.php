@@ -35,6 +35,7 @@
             <input class="input" name="subject_code" placeholder="SUBJ" required maxlength="3" style="min-width:90px">
             <input class="input" name="grade_code" placeholder="Grade" required maxlength="2" style="min-width:90px">
             <select class="input" name="language" style="min-width:90px"><option>EN</option><option>FR</option><option>BI</option></select>
+            <input class="input" name="isbn" placeholder="ISBN (optional)" style="min-width:150px">
             <select class="input" name="tracking_granularity" style="min-width:120px"><option>BATCH</option><option>COPY</option></select>
             <button class="btn btn-primary">Register</button>
         </form>

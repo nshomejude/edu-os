@@ -93,15 +93,35 @@ class ShipmentController extends Controller
         return redirect()->route('shipments.show', $shipment)->with('flash', "Shipment {$shipment->shipment_no} confirmed; {$data['books']} books reserved.");
     }
 
+    /** SHIP-06: approval before dispatch (warehouse-approve tier, separation of duties). */
+    public function approve(Shipment $shipment)
+    {
+        if ($shipment->status !== 'CONFIRMED' || $shipment->approved_at) {
+            return back()->with('flash_error', 'Only unapproved CONFIRMED shipments can be approved.');
+        }
+        $shipment->update(['approved_by' => auth()->user()->name, 'approved_at' => now()]);
+        CustodyEvent::create([
+            'shipment_id' => $shipment->id, 'event_type' => 'APPROVED',
+            'actor' => auth()->user()->name, 'occurred_at' => now(),
+        ]);
+
+        return back()->with('flash', 'Shipment approved for dispatch.');
+    }
+
     /** CONFIRMED → DISPATCHED with named custody (FR-NWD-SM-01). */
     public function dispatchShipment(Request $request, Shipment $shipment)
     {
         if (! in_array($shipment->status, ['CONFIRMED', 'LOADED'])) {
             return back()->with('flash_error', "ILLEGAL_TRANSITION: {$shipment->status} → DISPATCHED.");
         }
+        if (! $shipment->approved_at) {
+            return back()->with('flash_error', 'Dispatch requires prior approval (SHIP-06).');
+        }
         $data = $request->validate([
             'carrier' => 'required|string|max:120',
             'waybill' => 'required|string|max:60',
+            'vehicle_id' => 'nullable|exists:vehicles,id',
+            'driver_id' => 'nullable|exists:drivers,id',
         ]);
         StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'RESERVED', -$shipment->books);
         StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', $shipment->books);
@@ -113,6 +133,16 @@ class ShipmentController extends Controller
             'notes' => "Carrier {$data['carrier']}, waybill {$data['waybill']}",
             'occurred_at' => now(),
         ]);
+
+        // LOG-06: create the trip; bind vehicle/driver when supplied
+        $trip = \App\Modules\Logistics\Models\Trip::create([
+            'shipment_id' => $shipment->id,
+            'vehicle_id' => $data['vehicle_id'] ?? null,
+            'driver_id' => $data['driver_id'] ?? null,
+            'status' => 'EN_ROUTE', 'departed_at' => now(),
+        ]);
+        $trip->vehicle?->update(['status' => 'ON_TRIP']);
+        $trip->driver?->update(['status' => 'ON_TRIP']);
 
         return back()->with('flash', "Shipment dispatched with {$data['carrier']} (waybill {$data['waybill']}).");
     }
@@ -133,6 +163,14 @@ class ShipmentController extends Controller
             'received_books' => $received,
             'status' => $variance === 0 ? 'RECEIVED_FULL' : 'RECEIVED_WITH_DISCREPANCY',
         ]);
+        // Trip closes on receipt (LOG)
+        $trip = \App\Modules\Logistics\Models\Trip::where('shipment_id', $shipment->id)->latest('id')->first();
+        if ($trip && $trip->status !== 'ARRIVED') {
+            $trip->update(['status' => 'ARRIVED', 'arrived_at' => now()]);
+            $trip->vehicle?->update(['status' => 'AVAILABLE']);
+            $trip->driver?->update(['status' => 'AVAILABLE']);
+        }
+
         CustodyEvent::create([
             'shipment_id' => $shipment->id, 'event_type' => 'RECEIVED',
             'actor' => auth()->user()->name ?? 'System',
@@ -173,6 +211,43 @@ class ShipmentController extends Controller
         }
 
         return back()->with('flash', 'Shipment received in full. Custody chain closed clean.');
+    }
+
+    /** SHIP-04: printable picking list. */
+    public function picking(Shipment $shipment)
+    {
+        $shipment->load(['title', 'originWarehouse']);
+        $copies = \App\Modules\Catalogue\Models\Copy::whereHas('batch', fn ($q) => $q->where('textbook_title_id', $shipment->textbook_title_id))
+            ->where('lifecycle_state', 'IN_WAREHOUSE')->orderBy('id')->limit(min($shipment->books, 40))->get();
+
+        return view('shipments.picking', compact('shipment', 'copies'));
+    }
+
+    /** POD-05: printable digital proof of delivery. */
+    public function pod(Shipment $shipment)
+    {
+        abort_unless(in_array($shipment->status, ['RECEIVED_FULL', 'RECEIVED_WITH_DISCREPANCY', 'CLOSED']), 404);
+        $shipment->load(['title', 'custodyEvents', 'destinationSchool']);
+
+        return view('shipments.pod', compact('shipment'));
+    }
+
+    /** SHIP-11: delivery schedule — open shipments by date. */
+    public function schedule()
+    {
+        $upcoming = Shipment::whereIn('status', ['CONFIRMED', 'LOADED', 'DISPATCHED', 'IN_TRANSIT'])
+            ->with(['destinationSchool'])->orderBy('shipped_on')->get()->groupBy(fn ($s) => $s->shipped_on->format('Y-m-d'));
+
+        return view('shipments.schedule', compact('upcoming'));
+    }
+
+    /** SHIP-12: distribution network — origin → destination volumes. */
+    public function network()
+    {
+        $lanes = Shipment::selectRaw('origin_name, destination_name, count(*) n, sum(books) books')
+            ->groupBy('origin_name', 'destination_name')->orderByDesc('books')->limit(40)->get();
+
+        return view('shipments.network', compact('lanes'));
     }
 
     /** Cancel before dispatch: reverses the reservation (FR-NWD state machine). */

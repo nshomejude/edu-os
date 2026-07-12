@@ -11,6 +11,14 @@
     @include('partials.flash')
     @if ($errors->any())<div class="flash error">{{ $errors->first() }}</div>@endif
 
+    <div class="chips">
+        <a class="chip" style="text-decoration:none" href="{{ route('mfa.setup') }}"><b>{{ auth()->user()->mfa_enabled ? 'Manage 2FA' : 'Enable two-factor (2FA)' }}</b></a>
+        <a class="chip" style="text-decoration:none" href="{{ route('sessions.index') }}"><b>Security & sessions</b></a>
+        @if (auth()->user()->mfa_enabled)
+            <form method="post" action="{{ route('mfa.disable') }}" style="display:inline">@csrf<button class="chip" style="cursor:pointer;border-color:var(--error);color:var(--error)">Disable 2FA</button></form>
+        @endif
+    </div>
+
     <div class="card" style="max-width:560px">
         <h2>Change password</h2>
         <form method="post" action="{{ route('profile.password') }}">

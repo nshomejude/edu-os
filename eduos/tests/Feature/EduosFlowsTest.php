@@ -112,6 +112,7 @@ class EduosFlowsTest extends TestCase
         $this->assertSame('CONFIRMED', $shipment->status);
         $this->assertSame(40, (int) StockRecord::where('stock_class', 'RESERVED')->sum('quantity'));
 
+        $this->actingAs($this->admin)->post(route('shipments.approve', $shipment));
         $this->actingAs($this->warehouseOfficer)->post(route('shipments.dispatch', $shipment), [
             'carrier' => 'Camrail', 'waybill' => 'WB-1',
         ]);
@@ -132,6 +133,7 @@ class EduosFlowsTest extends TestCase
             'textbook_title_id' => $this->title->id, 'books' => 50,
         ]);
         $shipment = Shipment::latest('id')->first();
+        $this->actingAs($this->admin)->post(route('shipments.approve', $shipment));
         $this->actingAs($this->warehouseOfficer)->post(route('shipments.dispatch', $shipment), ['carrier' => 'C', 'waybill' => 'W']);
         $this->actingAs($this->admin)->post(route('shipments.receive', $shipment), ['received_books' => 45]);
 
@@ -237,6 +239,7 @@ class EduosFlowsTest extends TestCase
             'textbook_title_id' => $this->title->id, 'books' => $qty,
         ]);
         $shipment = Shipment::latest('id')->first();
+        $this->actingAs($this->admin)->post(route('shipments.approve', $shipment));
         $this->actingAs($this->warehouseOfficer)->post(route('shipments.dispatch', $shipment), ['carrier' => 'C', 'waybill' => 'W']);
         $this->actingAs($this->admin)->post(route('shipments.receive', $shipment), ['received_books' => $qty]);
     }

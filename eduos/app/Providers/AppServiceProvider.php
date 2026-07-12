@@ -9,7 +9,7 @@ class AppServiceProvider extends ServiceProvider
 {
     /** The full FRS role set (docs 04 §6.5, 07 §6, 08 §5). */
     public const ROLES = [
-        'ADMIN', 'CURRICULUM_OFFICER', 'PROCUREMENT_OFFICER',
+        'ADMIN', 'PROGRAMME_ADMIN', 'CURRICULUM_OFFICER', 'PROCUREMENT_OFFICER', 'TRANSPORT_OFFICER',
         'WAREHOUSE_MANAGER', 'STOREKEEPER', 'WAREHOUSE_OFFICER',   // WAREHOUSE_OFFICER kept as legacy alias of STOREKEEPER
         'DIVISION_OFFICER', 'SUBDIV_OFFICER',
         'SCHOOL_HEAD', 'TEACHER', 'INSPECTOR', 'AUDITOR', 'READONLY',
@@ -26,6 +26,12 @@ class AppServiceProvider extends ServiceProvider
 
         // National administration
         Gate::define('ministry', fn ($u) => $u->role === 'ADMIN');
+
+        // National programme tier: campaigns, allocation approval (PLAN module)
+        Gate::define('programme', fn ($u) => $is($u, ['ADMIN', 'PROGRAMME_ADMIN']));
+
+        // Logistics: vehicles, drivers, trips, incidents (LOG module)
+        Gate::define('logistics', fn ($u) => $is($u, ['ADMIN', 'TRANSPORT_OFFICER', 'WAREHOUSE_MANAGER']));
 
         // Curriculum: the only path to title approval/retirement (FR-NTR-02)
         Gate::define('curriculum', fn ($u) => $is($u, ['ADMIN', 'CURRICULUM_OFFICER']));

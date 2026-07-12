@@ -5,7 +5,7 @@
     <div class="pagehead">
         <div>
             <h1>{{ $textbook->title_en ?? $textbook->title_fr }}</h1>
-            <div class="sub">{{ $textbook->ntid }} · {{ $textbook->ministry }} · {{ $textbook->subject_code }} {{ $textbook->grade_code }} ({{ $textbook->language }})</div>
+            <div class="sub">{{ $textbook->ntid }} · {{ $textbook->ministry }} · {{ $textbook->subject_code }} {{ $textbook->grade_code }} ({{ $textbook->language }})@if($textbook->isbn) · ISBN {{ $textbook->isbn }}@endif</div>
         </div>
         <span class="pill {{ $textbook->status === 'APPROVED' ? 'pill-success' : ($textbook->status === 'RETIRED' ? 'pill-pending' : 'pill-transit') }}">{{ $textbook->status }}</span>
     </div>

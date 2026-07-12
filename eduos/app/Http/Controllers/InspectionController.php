@@ -27,7 +27,12 @@ class InspectionController extends Controller
             'textbook_title_id' => 'required|exists:textbook_titles,id',
             'counted_qty' => 'required|integer|min:0',
             'findings' => 'nullable|string|max:500',
+            'evidence' => 'nullable|image|max:4096',
         ]);
+        if ($request->hasFile('evidence')) {
+            $data['evidence_path'] = $request->file('evidence')->store('evidence', 'public');
+        }
+        unset($data['evidence']);
         $recorded = SchoolStock::where('school_id', $data['school_id'])
             ->where('textbook_title_id', $data['textbook_title_id'])->sum('quantity');
         $variance = $data['counted_qty'] - $recorded;

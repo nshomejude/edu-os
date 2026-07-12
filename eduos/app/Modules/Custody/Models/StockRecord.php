@@ -31,6 +31,14 @@ class StockRecord extends Model
         $rec->quantity = max(0, $rec->quantity + $delta);
         $rec->save();
 
+        // Journal (INV-07): the ledger is reconstructible from transactions
+        StockTransaction::create([
+            'warehouse_id' => $warehouseId, 'textbook_title_id' => $titleId,
+            'stock_class' => $class, 'delta' => $delta, 'balance_after' => $rec->quantity,
+            'actor' => auth()->user()->name ?? 'System',
+            'context' => app()->runningInConsole() ? 'console' : request()->path(),
+        ]);
+
         // Low-stock alert (Problem 26): fire once per warehouse/title while unread
         if ($class === 'AVAILABLE' && $delta < 0 && $rec->quantity < self::LOW_STOCK_THRESHOLD) {
             $title = \App\Modules\Catalogue\Models\TextbookTitle::find($titleId);

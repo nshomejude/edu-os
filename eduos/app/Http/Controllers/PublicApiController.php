@@ -47,6 +47,30 @@ class PublicApiController extends Controller
         ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
+    public function shipmentsCsv()
+    {
+        return response()->streamDownload(function () {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['shipment_no', 'origin', 'destination', 'status', 'books', 'received', 'date']);
+            foreach (\App\Modules\Custody\Models\Shipment::orderByDesc('id')->get() as $s) {
+                fputcsv($out, [$s->shipment_no, $s->origin_name, $s->destination_name, $s->status, $s->books, $s->received_books, $s->shipped_on?->toDateString()]);
+            }
+            fclose($out);
+        }, 'shipments.csv', ['Content-Type' => 'text/csv']);
+    }
+
+    public function stockCsv()
+    {
+        return response()->streamDownload(function () {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['warehouse', 'ntid', 'class', 'quantity']);
+            foreach (\App\Modules\Custody\Models\StockRecord::with(['warehouse', 'title'])->get() as $r) {
+                fputcsv($out, [$r->warehouse?->name, $r->title?->ntid, $r->stock_class, $r->quantity]);
+            }
+            fclose($out);
+        }, 'stock-position.csv', ['Content-Type' => 'text/csv']);
+    }
+
     /** National statistics summary (open data). */
     public function stats()
     {

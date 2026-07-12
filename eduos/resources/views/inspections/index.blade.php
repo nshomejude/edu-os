@@ -13,7 +13,7 @@
 
     <div class="card mb">
         <h2>Record spot check</h2>
-        <form class="toolbar" method="post" action="{{ route('inspections.store') }}" style="margin:0">
+        <form class="toolbar" method="post" action="{{ route('inspections.store') }}" style="margin:0" enctype="multipart/form-data">
             @csrf
             <select class="input" name="school_id" required style="min-width:260px">
                 @foreach ($schools as $s)<option value="{{ $s->id }}">{{ $s->name_official }}</option>@endforeach
@@ -22,7 +22,8 @@
                 @foreach ($titles as $t)<option value="{{ $t->id }}">{{ $t->ntid }}</option>@endforeach
             </select>
             <input class="input" type="number" name="counted_qty" min="0" placeholder="Counted" required style="min-width:110px">
-            <input class="input" name="findings" placeholder="Findings (optional)" style="min-width:220px">
+            <input class="input" name="findings" placeholder="Findings (optional)" style="min-width:180px">
+            <input class="input" type="file" name="evidence" accept="image/*" style="min-width:180px;padding-top:11px">
             <button class="btn btn-primary">Record</button>
         </form>
     </div>
@@ -40,7 +41,7 @@
                     <td>{{ number_format($i->counted_qty) }}</td>
                     <td><b style="color:{{ $i->variance() === 0 ? 'var(--success)' : 'var(--error)' }}">{{ $i->variance() }}</b></td>
                     <td><span class="pill {{ $i->outcome === 'CONFORM' ? 'pill-success' : ($i->outcome === 'MINOR_FINDINGS' ? 'pill-transit' : 'pill-error') }}">{{ str_replace('_', ' ', $i->outcome) }}</span></td>
-                    <td>{{ $i->inspector }}</td>
+                    <td>{{ $i->inspector }} @if($i->evidence_path)<a class="rowlink" href="{{ asset('storage/'.$i->evidence_path) }}" target="_blank">evidence</a>@endif</td>
                     <td style="min-width:220px">
                         @if ($i->resolved_at)
                             <span class="pill pill-success" title="{{ $i->corrective_action }}">Resolved</span>

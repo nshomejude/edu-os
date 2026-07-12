@@ -24,6 +24,14 @@ Route::get('/api/schools', [\App\Http\Controllers\PublicApiController::class, 's
 Route::get('/api/stats', [\App\Http\Controllers\PublicApiController::class, 'stats'])->name('api.stats');
 Route::get('/api/openapi.json', [\App\Http\Controllers\PublicApiController::class, 'openapi'])->name('api.openapi');
 
+// AUTH-02/03/04: forgot / reset / MFA challenge (guest routes)
+Route::get('/forgot-password', [\App\Http\Controllers\AuthExtrasController::class, 'forgotForm'])->name('password.request');
+Route::post('/forgot-password', [\App\Http\Controllers\AuthExtrasController::class, 'sendReset'])->name('password.email');
+Route::get('/reset-password/{token}', [\App\Http\Controllers\AuthExtrasController::class, 'resetForm'])->name('password.reset');
+Route::post('/reset-password', [\App\Http\Controllers\AuthExtrasController::class, 'reset'])->name('password.update');
+Route::get('/mfa', [\App\Http\Controllers\AuthExtrasController::class, 'mfaChallenge'])->name('mfa.challenge');
+Route::post('/mfa', [\App\Http\Controllers\AuthExtrasController::class, 'mfaVerify'])->name('mfa.verify');
+
 Route::get('/login', [PlatformController::class, 'login'])->name('login');
 Route::post('/login', [PlatformController::class, 'authenticate'])->name('login.post');
 Route::post('/logout', [PlatformController::class, 'logout'])->name('logout');
@@ -80,6 +88,41 @@ Route::middleware('auth')->group(function () {
     Route::post('/redistribution/{proposal}/reject', [\App\Http\Controllers\RedistributionController::class, 'reject'])->name('redistribution.reject');
 
     Route::get('/about', fn () => view('about.index'))->name('about');
+
+    // PLAN module (screens 21–28)
+    Route::get('/plan', [\App\Http\Controllers\PlanController::class, 'index'])->name('plan.index');
+    Route::post('/plan', [\App\Http\Controllers\PlanController::class, 'store'])->name('plan.store')->middleware('can:programme');
+    Route::get('/plan/{campaign}', [\App\Http\Controllers\PlanController::class, 'show'])->name('plan.show');
+    Route::post('/plan/{campaign}/transition', [\App\Http\Controllers\PlanController::class, 'transition'])->name('plan.transition')->middleware('can:programme');
+    Route::post('/plan/{campaign}/execute', [\App\Http\Controllers\PlanController::class, 'execute'])->name('plan.execute')->middleware('can:programme');
+    Route::post('/allocations/{allocation}', [\App\Http\Controllers\PlanController::class, 'updateLine'])->name('plan.line')->middleware('can:programme');
+
+    // LOG module (screens 58–64)
+    Route::get('/logistics', [\App\Http\Controllers\LogisticsController::class, 'index'])->name('logistics.index');
+    Route::post('/logistics/vehicles', [\App\Http\Controllers\LogisticsController::class, 'storeVehicle'])->name('logistics.vehicles')->middleware('can:logistics');
+    Route::post('/logistics/drivers', [\App\Http\Controllers\LogisticsController::class, 'storeDriver'])->name('logistics.drivers')->middleware('can:logistics');
+    Route::post('/trips/{trip}/incident', [\App\Http\Controllers\LogisticsController::class, 'incident'])->name('trips.incident')->middleware('can:logistics');
+    Route::post('/trips/{trip}/arrive', [\App\Http\Controllers\LogisticsController::class, 'arrive'])->name('trips.arrive')->middleware('can:logistics');
+
+    // SHIP additions (screens 46–57)
+    Route::post('/shipments/{shipment}/approve', [ShipmentController::class, 'approve'])->name('shipments.approve')->middleware('can:warehouse-approve');
+    Route::get('/shipments/{shipment}/picking', [ShipmentController::class, 'picking'])->name('shipments.picking');
+    Route::get('/shipments/{shipment}/pod', [ShipmentController::class, 'pod'])->name('shipments.pod');
+    Route::get('/schedule', [ShipmentController::class, 'schedule'])->name('shipments.schedule');
+    Route::get('/network', [ShipmentController::class, 'network'])->name('shipments.network');
+
+    // EXC + ADM-03 + AUTH-05/06 + REP-04
+    Route::get('/exceptions', [\App\Http\Controllers\ExceptionController::class, 'index'])->name('exceptions.index');
+    Route::post('/exceptions/escalate', [\App\Http\Controllers\ExceptionController::class, 'escalate'])->name('exceptions.escalate');
+    Route::get('/audit-trail', [\App\Http\Controllers\AuditController::class, 'index'])->name('audit.index');
+    Route::get('/profile/mfa', [\App\Http\Controllers\AuthExtrasController::class, 'mfaSetup'])->name('mfa.setup');
+    Route::post('/profile/mfa', [\App\Http\Controllers\AuthExtrasController::class, 'mfaEnable'])->name('mfa.enable');
+    Route::post('/profile/mfa/disable', [\App\Http\Controllers\AuthExtrasController::class, 'mfaDisable'])->name('mfa.disable');
+    Route::get('/profile/sessions', [\App\Http\Controllers\AuthExtrasController::class, 'sessions'])->name('sessions.index');
+    Route::post('/profile/sessions/revoke', [\App\Http\Controllers\AuthExtrasController::class, 'revokeOtherSessions'])->name('sessions.revoke');
+    Route::get('/exports', fn () => view('reports.exports'))->name('exports.index');
+    Route::get('/reports/shipments.csv', [\App\Http\Controllers\PublicApiController::class, 'shipmentsCsv'])->name('reports.shipments.csv');
+    Route::get('/reports/stock.csv', [\App\Http\Controllers\PublicApiController::class, 'stockCsv'])->name('reports.stock.csv');
 
     // Profile & password management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');

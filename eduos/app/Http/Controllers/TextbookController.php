@@ -41,6 +41,7 @@ class TextbookController extends Controller
             'grade_code' => 'required|string|max:2',
             'language' => 'required|in:EN,FR,BI',
             'tracking_granularity' => 'required|in:COPY,BATCH',
+            'isbn' => 'nullable|string|max:17',
         ]);
         $data['subject_code'] = strtoupper($data['subject_code']);
         $data['grade_code'] = strtoupper($data['grade_code']);
@@ -121,6 +122,7 @@ class TextbookController extends Controller
         $data = $request->validate([
             'title_en' => 'nullable|string|max:300|required_without:title_fr',
             'title_fr' => 'nullable|string|max:300|required_without:title_en',
+            'isbn' => 'nullable|string|max:17',
         ]);
         $textbook->update($data);
 

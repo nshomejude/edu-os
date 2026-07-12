@@ -90,6 +90,12 @@ class PlatformController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
+        $candidate = \App\Models\User::where('email', $credentials['email'])->where('is_active', 1)->first();
+        if ($candidate && $candidate->mfa_enabled && \Illuminate\Support\Facades\Hash::check($credentials['password'], $candidate->password)) {
+            session(['mfa:pending' => $candidate->id]);
+
+            return redirect()->route('mfa.challenge');
+        }
         if (auth()->attempt($credentials + ['is_active' => 1], true)) {
             $request->session()->regenerate();
 
