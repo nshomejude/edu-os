@@ -31,7 +31,7 @@
                 @endforeach
             </div>
             <div class="detail-grid" style="margin-top:14px;grid-template-columns:1fr 1fr">
-                <div><div class="dt">Condition</div><div class="dd">{{ $copy->condition }}</div></div>
+                <div><div class="dt">{{ __('Condition') }}</div><div class="dd">{{ $copy->condition }}</div></div>
                 <div><div class="dt">Minted</div><div class="dd">{{ $copy->created_at->format('d M Y') }}</div></div>
             </div>
             <div class="toolbar" style="margin-top:16px">

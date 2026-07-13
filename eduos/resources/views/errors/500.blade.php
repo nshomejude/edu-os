@@ -11,7 +11,7 @@
         <div style="width:110px;height:110px;margin:0 auto 14px;">@include('partials.eduos-seal')</div>
         <h1 style="font-size:56px;font-family:var(--serif);color:var(--cameroon-gold);margin-bottom:4px;">500</h1>
         <p style="color:var(--text-2);margin-bottom:22px;">An unexpected error occurred. The incident has been logged.</p>
-        <a class="btn btn-primary" href="/" style="justify-content:center">Back to the dashboard</a>
+        <a class="btn btn-primary" href="/" style="justify-content:center">{{ __('Back to the dashboard') }}</a>
     </div>
 </div>
 </body>

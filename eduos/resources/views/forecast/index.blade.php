@@ -12,7 +12,7 @@
 
     <div class="card">
         <table class="table">
-            <thead><tr><th>Title</th><th>Grade</th><th>Learners (need)</th><th>At schools</th><th>Coverage</th><th>Gap</th><th>Warehouse avail.</th><th>To procure</th><th>Schools w/o stock</th></tr></thead>
+            <thead><tr><th>{{ __('Title') }}</th><th>{{ __('Grade') }}</th><th>Learners (need)</th><th>At schools</th><th>Coverage</th><th>Gap</th><th>Warehouse avail.</th><th>To procure</th><th>Schools w/o stock</th></tr></thead>
             <tbody>
             @forelse ($rows as $r)
                 <tr>
@@ -36,7 +36,7 @@
         </table>
         <h2 style="margin-top:24px">RPT-RPL — Replacement planning (per-copy condition &amp; lifecycle)</h2>
         <table class="table">
-            <thead><tr><th>Title</th><th>Tracked copies</th><th>Under repair</th><th>Lost</th><th>Retired/disposed</th><th>Poor condition</th><th>Replace now</th></tr></thead>
+            <thead><tr><th>{{ __('Title') }}</th><th>Tracked copies</th><th>Under repair</th><th>Lost</th><th>Retired/disposed</th><th>Poor condition</th><th>Replace now</th></tr></thead>
             <tbody>
             @forelse ($replacement as $r)
                 <tr>

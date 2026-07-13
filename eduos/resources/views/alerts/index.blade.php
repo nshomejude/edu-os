@@ -3,17 +3,17 @@
 @section('content')
     <div class="pagehead">
         <div>
-            <h1>Alerts</h1>
+            <h1>{{ __('Alerts') }}</h1>
             <div class="sub">Operational notifications — discrepancies, campaigns, catalogue changes</div>
         </div>
-        <form method="post" action="{{ route('alerts.readall') }}">@csrf<button class="btn btn-secondary">Mark all read</button></form>
+        <form method="post" action="{{ route('alerts.readall') }}">@csrf<button class="btn btn-secondary">{{ __('Mark all read') }}</button></form>
     </div>
 
     @include('partials.flash')
 
     <div class="card">
         <table class="table">
-            <thead><tr><th>Severity</th><th>Alert</th><th>When</th><th></th></tr></thead>
+            <thead><tr><th>{{ __('Severity') }}</th><th>{{ __('Alert') }}</th><th>{{ __('When') }}</th><th></th></tr></thead>
             <tbody>
             @forelse ($alerts as $a)
                 <tr style="{{ $a->read_at ? 'opacity:.55' : '' }}">
@@ -26,12 +26,12 @@
                     <td style="white-space:nowrap">{{ $a->created_at->diffForHumans() }}</td>
                     <td>
                         @if (! $a->read_at)
-                            <form method="post" action="{{ route('alerts.read', $a) }}">@csrf<button class="btn btn-sm btn-secondary">Mark read</button></form>
+                            <form method="post" action="{{ route('alerts.read', $a) }}">@csrf<button class="btn btn-sm btn-secondary">{{ __('Mark read') }}</button></form>
                         @endif
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="4">No alerts.</td></tr>
+                <tr><td colspan="4">{{ __('No alerts.') }}</td></tr>
             @endforelse
             </tbody>
         </table>

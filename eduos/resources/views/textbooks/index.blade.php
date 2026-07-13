@@ -46,7 +46,7 @@
                 @endforeach
             </select>
             <select class="input" name="tracking_granularity" style="min-width:120px"><option>BATCH</option><option>COPY</option></select>
-            <button class="btn btn-primary">Register</button>
+            <button class="btn btn-primary">{{ __('Register') }}</button>
         </form>
     </div>
 
@@ -54,21 +54,21 @@
         <form class="toolbar" method="get">
             <input class="input" type="search" name="q" value="{{ request('q') }}" placeholder="Search title or NTID…">
             <select class="input" name="ministry">
-                <option value="">Both ministries</option>
+                <option value="">{{ __('Both ministries') }}</option>
                 <option @selected(request('ministry') === 'MINEDUB')>MINEDUB</option>
                 <option @selected(request('ministry') === 'MINESEC')>MINESEC</option>
             </select>
             <select class="input" name="status">
-                <option value="">All statuses</option>
+                <option value="">{{ __('All statuses') }}</option>
                 @foreach (['DRAFT', 'APPROVED', 'SUSPENDED', 'RETIRED'] as $s)
                     <option @selected(request('status') === $s)>{{ $s }}</option>
                 @endforeach
             </select>
-            <button class="btn btn-secondary">Filter</button>
+            <button class="btn btn-secondary">{{ __('Filter') }}</button>
         </form>
 
         <table class="table">
-            <thead><tr><th>NTID</th><th>Title</th><th>Subject</th><th>Grade</th><th>Lang</th><th>Ministry</th><th>Status</th></tr></thead>
+            <thead><tr><th>NTID</th><th>{{ __('Title') }}</th><th>Subject</th><th>{{ __('Grade') }}</th><th>Lang</th><th>{{ __('Ministry') }}</th><th>{{ __('Status') }}</th></tr></thead>
             <tbody>
             @forelse ($titles as $t)
                 <tr>

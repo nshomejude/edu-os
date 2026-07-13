@@ -3,11 +3,11 @@
 @section('content')
     <div class="pagehead">
         <div>
-            <h1>Schools</h1>
+            <h1>{{ __('Schools') }}</h1>
             <div class="sub">National School Registry (NSR) — authoritative register of institutions</div>
         </div>
         <div class="toolbar" style="margin:0">
-            @can('ministry')<a class="btn btn-secondary" href="{{ route('inspections.index') }}">Inspections</a>@endcan
+            @can('ministry')<a class="btn btn-secondary" href="{{ route('inspections.index') }}">{{ __('Inspections') }}</a>@endcan
             <a class="btn btn-primary" href="{{ route('schools.create') }}">+ Register School</a>
         </div>
     </div>
@@ -31,15 +31,15 @@
                 @endforeach
             </select>
             <select class="input" name="ministry">
-                <option value="">Both ministries</option>
+                <option value="">{{ __('Both ministries') }}</option>
                 <option @selected(request('ministry') === 'MINEDUB')>MINEDUB</option>
                 <option @selected(request('ministry') === 'MINESEC')>MINESEC</option>
             </select>
-            <button class="btn btn-secondary">Filter</button>
+            <button class="btn btn-secondary">{{ __('Filter') }}</button>
         </form>
 
         <table class="table">
-            <thead><tr><th>NSID</th><th>School</th><th>Ministry</th><th>Type</th><th>Region</th><th>Access</th><th>Status</th></tr></thead>
+            <thead><tr><th>NSID</th><th>{{ __('School') }}</th><th>{{ __('Ministry') }}</th><th>{{ __('Type') }}</th><th>{{ __('Region') }}</th><th>Access</th><th>{{ __('Status') }}</th></tr></thead>
             <tbody>
             @forelse ($schools as $s)
                 <tr>

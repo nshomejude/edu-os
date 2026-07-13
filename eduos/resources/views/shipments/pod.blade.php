@@ -3,17 +3,17 @@
 @section('content')
     <a class="backlink" href="{{ route('shipments.show', $shipment) }}">← {{ $shipment->shipment_no }}</a>
     <div class="pagehead">
-        <div><h1>Proof of Delivery</h1><div class="sub">Digital receipt — POD-05</div></div>
-        <button class="btn btn-secondary" onclick="window.print()">Print</button>
+        <div><h1>{{ __('Proof of Delivery') }}</h1><div class="sub">Digital receipt — POD-05</div></div>
+        <button class="btn btn-secondary" onclick="window.print()">{{ __('Print') }}</button>
     </div>
     <div class="card" style="max-width:720px">
         @include('partials.doc-header', ['docTitle' => 'PROOF OF DELIVERY — OFFICIAL RECEIPT', 'docNo' => $shipment->shipment_no])
         <div class="detail-grid" style="grid-template-columns:1fr 1fr">
-            <div><div class="dt">Shipment</div><div class="dd">{{ $shipment->shipment_no }}</div></div>
-            <div><div class="dt">Status</div><div class="dd">{{ $shipment->status }}</div></div>
-            <div><div class="dt">From</div><div class="dd">{{ $shipment->origin_name }}</div></div>
+            <div><div class="dt">{{ __('Shipment') }}</div><div class="dd">{{ $shipment->shipment_no }}</div></div>
+            <div><div class="dt">{{ __('Status') }}</div><div class="dd">{{ $shipment->status }}</div></div>
+            <div><div class="dt">{{ __('From') }}</div><div class="dd">{{ $shipment->origin_name }}</div></div>
             <div><div class="dt">To</div><div class="dd">{{ $shipment->destination_name }}</div></div>
-            <div><div class="dt">Title</div><div class="dd">{{ $shipment->title?->ntid }}</div></div>
+            <div><div class="dt">{{ __('Title') }}</div><div class="dd">{{ $shipment->title?->ntid }}</div></div>
             <div><div class="dt">Dispatched / received</div><div class="dd">{{ number_format($shipment->books) }} / {{ number_format($shipment->received_books) }}</div></div>
         </div>
         @php($received = $shipment->custodyEvents->firstWhere('event_type', 'RECEIVED'))

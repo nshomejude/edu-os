@@ -19,7 +19,7 @@
             <input class="input" name="name" placeholder="{{ __('Name') }}" required>
             <select class="input" name="sex" style="min-width:90px"><option>M</option><option>F</option></select>
             <input class="input" name="class_level" placeholder="{{ __('Class') }}" required style="min-width:100px">
-            <button class="btn btn-primary btn-sm">Register</button>
+            <button class="btn btn-primary btn-sm">{{ __('Register') }}</button>
         </form>
     </div>
     @endcan

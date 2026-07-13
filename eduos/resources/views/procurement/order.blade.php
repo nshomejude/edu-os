@@ -9,12 +9,12 @@
     </div>
     <div class="card mb">
         <div class="detail-grid">
-            <div><div class="dt">Title</div><div class="dd">{{ $order->title->ntid }}</div></div>
-            <div><div class="dt">Quantity</div><div class="dd">{{ number_format($order->quantity) }}</div></div>
+            <div><div class="dt">{{ __('Title') }}</div><div class="dd">{{ $order->title->ntid }}</div></div>
+            <div><div class="dt">{{ __('Quantity') }}</div><div class="dd">{{ number_format($order->quantity) }}</div></div>
             <div><div class="dt">Unit price</div><div class="dd">{{ number_format($order->unit_price_fcfa) }} FCFA</div></div>
             <div><div class="dt">Order value</div><div class="dd">{{ number_format($order->quantity * $order->unit_price_fcfa) }} FCFA</div></div>
-            <div><div class="dt">Placed</div><div class="dd">{{ $order->created_at->format('d M Y') }}</div></div>
-            <div><div class="dt">Batch</div><div class="dd">{{ $order->batch?->batch_no ?? 'Not delivered' }}</div></div>
+            <div><div class="dt">{{ __('Placed') }}</div><div class="dd">{{ $order->created_at->format('d M Y') }}</div></div>
+            <div><div class="dt">{{ __('Batch') }}</div><div class="dd">{{ $order->batch?->batch_no ?? 'Not delivered' }}</div></div>
         </div>
     </div>
     @if ($order->batch)

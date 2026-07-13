@@ -3,26 +3,26 @@
 @section('content')
     <a class="backlink" href="{{ route('inspections.index') }}">← Inspections</a>
     <div class="pagehead">
-        <div><h1>Inspection Report</h1><div class="sub">Physical verification vs custody ledger (VER-05)</div></div>
-        <button class="btn btn-secondary" onclick="window.print()">Print</button>
+        <div><h1>{{ __('Inspection Report') }}</h1><div class="sub">Physical verification vs custody ledger (VER-05)</div></div>
+        <button class="btn btn-secondary" onclick="window.print()">{{ __('Print') }}</button>
     </div>
 
     <div class="card" style="max-width:760px">
         @include('partials.doc-header', ['docTitle' => 'SCHOOL INSPECTION REPORT', 'docNo' => 'INSP-'.str_pad($inspection->id, 5, '0', STR_PAD_LEFT), 'ministry' => $inspection->school->ministry])
 
         <div class="detail-grid" style="grid-template-columns:1fr 1fr">
-            <div><div class="dt">School</div><div class="dd">{{ $inspection->school->name_official }} ({{ $inspection->school->nsid }})</div></div>
+            <div><div class="dt">{{ __('School') }}</div><div class="dd">{{ $inspection->school->name_official }} ({{ $inspection->school->nsid }})</div></div>
             <div><div class="dt">Inspection date</div><div class="dd">{{ $inspection->inspected_on->format('d M Y') }}</div></div>
-            <div><div class="dt">Inspector</div><div class="dd">{{ $inspection->inspector }}</div></div>
+            <div><div class="dt">{{ __('Inspector') }}</div><div class="dd">{{ $inspection->inspector }}</div></div>
             <div><div class="dt">Title inspected</div><div class="dd">{{ $inspection->title?->ntid ?? '—' }}</div></div>
             <div><div class="dt">Ledger quantity</div><div class="dd">{{ number_format($inspection->recorded_qty) }}</div></div>
             <div><div class="dt">Physically counted</div><div class="dd">{{ number_format($inspection->counted_qty) }}</div></div>
-            <div><div class="dt">Variance</div><div class="dd" style="color:{{ $inspection->variance() === 0 ? 'var(--success)' : 'var(--error)' }}"><b>{{ $inspection->variance() }}</b></div></div>
-            <div><div class="dt">Outcome</div><div class="dd">{{ str_replace('_', ' ', $inspection->outcome) }}</div></div>
+            <div><div class="dt">{{ __('Variance') }}</div><div class="dd" style="color:{{ $inspection->variance() === 0 ? 'var(--success)' : 'var(--error)' }}"><b>{{ $inspection->variance() }}</b></div></div>
+            <div><div class="dt">{{ __('Outcome') }}</div><div class="dd">{{ str_replace('_', ' ', $inspection->outcome) }}</div></div>
         </div>
 
         <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line, #E7E1D2)">
-            <div class="dt">Findings</div>
+            <div class="dt">{{ __('Findings') }}</div>
             <div class="dd" style="margin-bottom:10px">{{ $inspection->findings ?? 'None recorded.' }}</div>
             <div class="dt">Corrective action</div>
             <div class="dd">{{ $inspection->corrective_action ?? ($inspection->outcome === 'CONFORM' ? 'Not required — conforming.' : 'Pending.') }}</div>

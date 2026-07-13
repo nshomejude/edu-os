@@ -6,7 +6,7 @@
         <div class="sub">AVAILABLE lines under the configured threshold of {{ number_format($threshold) }} (INV-10)</div></div></div>
     <div class="card">
         <table class="table">
-            <thead><tr><th>Warehouse</th><th>Title</th><th>Available</th><th>Deficit vs threshold</th></tr></thead>
+            <thead><tr><th>{{ __('Warehouse') }}</th><th>{{ __('Title') }}</th><th>Available</th><th>Deficit vs threshold</th></tr></thead>
             <tbody>
             @forelse ($rows as $r)
                 <tr>

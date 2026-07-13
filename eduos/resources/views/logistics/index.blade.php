@@ -3,7 +3,7 @@
 @section('content')
     <div class="pagehead">
         <div>
-            <h1>Logistics Control</h1>
+            <h1>{{ __('Logistics Control') }}</h1>
             <div class="sub">Fleet, drivers, trips and incidents (LOG module)</div>
         </div>
         <div class="chips" style="margin:0">
@@ -14,26 +14,26 @@
     @include('partials.flash')
     @can('logistics')
     <div class="card mb">
-        <h2>Registries</h2>
+        <h2>{{ __('Registries') }}</h2>
         <form class="toolbar" method="post" action="{{ route('logistics.vehicles') }}" style="margin-bottom:10px">@csrf
             <input class="input" name="plate" placeholder="Plate (e.g. CE 1234 AB)" required>
             <input class="input" name="model" placeholder="Model" required>
             <input class="input" type="number" name="capacity_books" value="10000" min="100" required style="min-width:130px">
-            <button class="btn btn-secondary btn-sm">Add vehicle</button>
+            <button class="btn btn-secondary btn-sm">{{ __('Add vehicle') }}</button>
         </form>
         <form class="toolbar" method="post" action="{{ route('logistics.drivers') }}" style="margin:0">@csrf
             <input class="input" name="name" placeholder="Driver name" required>
             <input class="input" name="licence_no" placeholder="Licence №" required>
             <input class="input" name="phone" placeholder="Phone">
-            <button class="btn btn-secondary btn-sm">Add driver</button>
+            <button class="btn btn-secondary btn-sm">{{ __('Add driver') }}</button>
         </form>
     </div>
     @endcan
     <div class="grid-bottom">
         <div class="card">
-            <h2>Fleet</h2>
+            <h2>{{ __('Fleet') }}</h2>
             <table class="table">
-                <thead><tr><th>Plate</th><th>Model</th><th>Capacity</th><th>Status</th></tr></thead>
+                <thead><tr><th>Plate</th><th>Model</th><th>Capacity</th><th>{{ __('Status') }}</th></tr></thead>
                 <tbody>
                 @forelse ($vehicles as $v)
                     <tr><td class="num">{{ $v->plate }}</td><td>{{ $v->model }}</td><td>{{ number_format($v->capacity_books) }}</td>
@@ -41,9 +41,9 @@
                 @empty <tr><td colspan="4">No vehicles registered.</td></tr> @endforelse
                 </tbody>
             </table>
-            <h2 style="margin-top:18px">Drivers</h2>
+            <h2 style="margin-top:18px">{{ __('Drivers') }}</h2>
             <table class="table">
-                <thead><tr><th>Name</th><th>Licence</th><th>Phone</th><th>Status</th></tr></thead>
+                <thead><tr><th>{{ __('Name') }}</th><th>Licence</th><th>Phone</th><th>{{ __('Status') }}</th></tr></thead>
                 <tbody>
                 @forelse ($drivers as $d)
                     <tr><td class="num">{{ $d->name }}</td><td>{{ $d->licence_no }}</td><td>{{ $d->phone ?? '—' }}</td>
@@ -53,9 +53,9 @@
             </table>
         </div>
         <div class="card">
-            <h2>Trips</h2>
+            <h2>{{ __('Trips') }}</h2>
             <table class="table">
-                <thead><tr><th>Shipment</th><th>Vehicle / driver</th><th>Status</th><th></th></tr></thead>
+                <thead><tr><th>{{ __('Shipment') }}</th><th>{{ __('Vehicle / driver') }}</th><th>{{ __('Status') }}</th><th></th></tr></thead>
                 <tbody>
                 @forelse ($trips as $t)
                     <tr>
@@ -67,13 +67,13 @@
                                 @can('logistics')
                                 <form class="toolbar" method="post" action="{{ route('trips.incident', $t) }}" style="margin:0;gap:6px">@csrf
                                     <input class="input" name="incident_note" placeholder="Incident…" required style="min-width:130px;height:34px">
-                                    <button class="btn btn-sm btn-danger" style="height:34px">Report</button>
+                                    <button class="btn btn-sm btn-danger" style="height:34px">{{ __('Report') }}</button>
                                 </form>
                                 @endcan
                             @elseif ($t->status === 'INCIDENT')
                                 <span style="font-size:12.5px;color:var(--error)">{{ $t->incident_note }}</span>
                                 @can('logistics')
-                                <form method="post" action="{{ route('trips.arrive', $t) }}" style="margin-top:4px">@csrf<button class="btn btn-sm btn-secondary">Close trip</button></form>
+                                <form method="post" action="{{ route('trips.arrive', $t) }}" style="margin-top:4px">@csrf<button class="btn btn-sm btn-secondary">{{ __('Close trip') }}</button></form>
                                 @endcan
                             @endif
                         </td>

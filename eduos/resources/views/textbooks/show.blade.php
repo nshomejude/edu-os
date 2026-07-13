@@ -113,7 +113,7 @@
         <div class="card">
             <h2>Warehouse stock position</h2>
             <table class="table">
-                <thead><tr><th>Warehouse</th><th>Class</th><th>Qty</th></tr></thead>
+                <thead><tr><th>{{ __('Warehouse') }}</th><th>{{ __('Class') }}</th><th>{{ __('Qty') }}</th></tr></thead>
                 <tbody>
                 @forelse ($stock as $row)
                     <tr>

@@ -48,19 +48,19 @@
             </a>
             <a href="{{ route('plan.index') }}" class="{{ request()->routeIs('plan.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M4 4h16v3H4zM4 10h10v3H4zM4 16h16v3H4z"/></svg>
-                Planning
+                {{ __('Planning') }}
             </a>
             <a href="{{ route('logistics.index') }}" class="{{ request()->routeIs('logistics.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M3 5h11v9H3zM14 8h4l3 3v3h-7zM6.5 18.5a2 2 0 100-4 2 2 0 000 4zm11 0a2 2 0 100-4 2 2 0 000 4z"/></svg>
-                Logistics
+                {{ __('Logistics') }}
             </a>
             <a href="{{ route('exceptions.index') }}" class="{{ request()->routeIs('exceptions.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M12 2L1 21h22zM11 9h2v6h-2zm0 8h2v2h-2z"/></svg>
-                Exceptions
+                {{ __('Exceptions') }}
             </a>
             <a href="{{ route('audit.index') }}" class="{{ request()->routeIs('audit.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2zM8 8h8v1.6H8zm0 4h8v1.6H8z"/></svg>
-                Audit Trail
+                {{ __('Audit Trail') }}
             </a>
             <a href="{{ route('alerts.index') }}" class="{{ request()->routeIs('alerts.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6c0 6.5-2.5 8-2.5 8h17S18 14.5 18 8a6 6 0 00-6-6zM10.2 20a2 2 0 003.6 0z"/></svg>

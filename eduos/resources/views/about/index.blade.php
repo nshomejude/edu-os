@@ -41,8 +41,8 @@
                 <tbody>
                 <tr><td class="num">Schools (NSR)</td><td>Registry with NSID generation, duplicate detection, enrolment returns with division validation</td></tr>
                 <tr><td class="num">Textbook Tracking (NTR)</td><td>Approved catalogue, title lifecycle, editions, print batches, per-copy NCID passports</td></tr>
-                <tr><td class="num">Warehouses</td><td>Double-entry stock ledger by class (available / reserved / in-transit / quarantine), goods receipt</td></tr>
-                <tr><td class="num">Shipments</td><td>Chain of custody: confirm → dispatch → receive; discrepancy cases and resolution (accept-short / found / write-off)</td></tr>
+                <tr><td class="num">{{ __('Warehouses') }}</td><td>Double-entry stock ledger by class (available / reserved / in-transit / quarantine), goods receipt</td></tr>
+                <tr><td class="num">{{ __('Shipments') }}</td><td>Chain of custody: confirm → dispatch → receive; discrepancy cases and resolution (accept-short / found / write-off)</td></tr>
                 <tr><td class="num">School Operations</td><td>Class-level assignment, returns with condition capture, verification campaigns with reconciliation</td></tr>
                 <tr><td class="num">Redistribution</td><td>Surplus-to-shortage proposals — the engine proposes, a person approves</td></tr>
                 <tr><td class="num">Reports &amp; Alerts</td><td>Receipt-confirmation rate, coverage, loss analysis, operational notifications</td></tr>
@@ -73,9 +73,9 @@
             <h2>Credits</h2>
             <div class="detail-grid" style="grid-template-columns:1fr">
                 <div><div class="dt">Developed by</div><div class="dd">Opesware Technologies — Douala, Cameroun</div></div>
-                <div><div class="dt">Contact</div><div class="dd">eudos@opesware.com · +237 670 41 62 38 · www.opesware.com</div></div>
+                <div><div class="dt">{{ __('Contact') }}</div><div class="dd">eudos@opesware.com · +237 670 41 62 38 · www.opesware.com</div></div>
                 <div><div class="dt">For</div><div class="dd">MINEDUB · MINESEC — Republic of Cameroon</div></div>
-                <div><div class="dt">Documentation</div><div class="dd">github.com/nshomejude/edu-os — investment pack (EN/FR), specifications, master plan</div></div>
+                <div><div class="dt">{{ __('Documentation') }}</div><div class="dd">github.com/nshomejude/edu-os — investment pack (EN/FR), specifications, master plan</div></div>
                 <div><div class="dt">Design language</div><div class="dd">EduOS Heritage UI — government authority, academic excellence, African heritage</div></div>
             </div>
         </div>

@@ -2,7 +2,7 @@
 @section('title', 'Export Centre')
 @section('content')
     <a class="backlink" href="{{ route('reports.index') }}">← Reports</a>
-    <div class="pagehead"><div><h1>Export Centre</h1><div class="sub">Machine-readable extracts (REP-04)</div></div></div>
+    <div class="pagehead"><div><h1>{{ __('Export Centre') }}</h1><div class="sub">Machine-readable extracts (REP-04)</div></div></div>
     <div class="card" style="max-width:760px">
         <table class="table">
             <tbody>

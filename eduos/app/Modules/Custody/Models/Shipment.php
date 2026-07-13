@@ -42,6 +42,12 @@ class Shipment extends Model
 
     public function statusLabel(): string
     {
+        return __($this->statusKey());
+    }
+
+    /** Locale-independent label key: statusClass() and translations both key off this. */
+    public function statusKey(): string
+    {
         return match ($this->status) {
             'RECEIVED_FULL', 'CLOSED' => 'Delivered',
             'IN_TRANSIT', 'DISPATCHED', 'LOADED', 'ARRIVED' => 'In Transit',
@@ -53,7 +59,7 @@ class Shipment extends Model
 
     public function statusClass(): string
     {
-        return match ($this->statusLabel()) {
+        return match ($this->statusKey()) {
             'Delivered' => 'pill-success',
             'In Transit' => 'pill-transit',
             'Discrepancy', 'Lost' => 'pill-error',

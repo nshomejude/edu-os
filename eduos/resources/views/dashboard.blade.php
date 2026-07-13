@@ -86,7 +86,7 @@
                     </svg>
                     <div class="donut-center">
                         <div class="pct">{{ round($deliveredPct) }}%</div>
-                        <div class="lbl">Delivered</div>
+                        <div class="lbl">{{ __('Delivered') }}</div>
                     </div>
                 </div>
                 <div class="legend">

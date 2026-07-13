@@ -3,15 +3,15 @@
 @section('content')
     <a class="backlink" href="{{ route('shipments.show', $shipment) }}">← {{ $shipment->shipment_no }}</a>
     <div class="pagehead">
-        <div><h1>Picking list</h1><div class="sub">{{ $shipment->origin_name }} → {{ $shipment->destination_name }} (SHIP-04)</div></div>
-        <button class="btn btn-secondary" onclick="window.print()">Print</button>
+        <div><h1>{{ __('Picking list') }}</h1><div class="sub">{{ $shipment->origin_name }} → {{ $shipment->destination_name }} (SHIP-04)</div></div>
+        <button class="btn btn-secondary" onclick="window.print()">{{ __('Print') }}</button>
     </div>
     <div class="card">
         @include('partials.doc-header', ['docTitle' => 'WAREHOUSE PICKING LIST', 'docNo' => $shipment->shipment_no])
         <div class="detail-grid" style="margin-bottom:16px">
-            <div><div class="dt">Title</div><div class="dd">{{ $shipment->title?->ntid }}</div></div>
-            <div><div class="dt">Quantity</div><div class="dd">{{ number_format($shipment->books) }} books</div></div>
-            <div><div class="dt">Warehouse</div><div class="dd">{{ $shipment->origin_name }}</div></div>
+            <div><div class="dt">{{ __('Title') }}</div><div class="dd">{{ $shipment->title?->ntid }}</div></div>
+            <div><div class="dt">{{ __('Quantity') }}</div><div class="dd">{{ number_format($shipment->books) }} books</div></div>
+            <div><div class="dt">{{ __('Warehouse') }}</div><div class="dd">{{ $shipment->origin_name }}</div></div>
         </div>
         @php($perCarton = $perCarton ?? 40)
         @php($cartons = (int) ceil($shipment->books / $perCarton))

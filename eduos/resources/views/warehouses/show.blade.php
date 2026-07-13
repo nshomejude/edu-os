@@ -67,7 +67,7 @@
         <div class="card">
             <h2>Stock ledger by title &amp; class</h2>
             <table class="table">
-                <thead><tr><th>Title</th><th>Class</th><th>Qty</th></tr></thead>
+                <thead><tr><th>{{ __('Title') }}</th><th>{{ __('Class') }}</th><th>{{ __('Qty') }}</th></tr></thead>
                 <tbody>
                 @forelse ($stock as $titleId => $rows)
                     @foreach ($rows as $row)
@@ -86,7 +86,7 @@
         <div class="card">
             <h2>Recent outbound shipments</h2>
             <table class="table">
-                <thead><tr><th>Shipment</th><th>To</th><th>Status</th></tr></thead>
+                <thead><tr><th>{{ __('Shipment') }}</th><th>To</th><th>{{ __('Status') }}</th></tr></thead>
                 <tbody>
                 @forelse ($shipments as $s)
                     <tr>

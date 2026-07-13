@@ -3,7 +3,7 @@
 @section('content')
     <div class="pagehead">
         <div>
-            <h1>Exception Centre</h1>
+            <h1>{{ __('Exception Centre') }}</h1>
             <div class="sub">EXC module — every open abnormality with SLA ageing ({{ $slaHours }}h) and national escalation</div>
         </div>
         <div class="chips" style="margin:0">
@@ -21,9 +21,9 @@
 
     <div class="grid-bottom">
         <div class="card">
-            <h2>Delivery discrepancies</h2>
+            <h2>{{ __('Delivery discrepancies') }}</h2>
             <table class="table">
-                <thead><tr><th>Case</th><th>Destination</th><th>Variance</th><th>Age / SLA</th></tr></thead>
+                <thead><tr><th>Case</th><th>{{ __('Destination') }}</th><th>{{ __('Variance') }}</th><th>{{ __('Age / SLA') }}</th></tr></thead>
                 <tbody>
                 @forelse ($discrepancies as $d)
                     <tr>
@@ -36,9 +36,9 @@
                 </tbody>
             </table>
 
-            <h2 style="margin-top:18px">Transport incidents</h2>
+            <h2 style="margin-top:18px">{{ __('Transport incidents') }}</h2>
             <table class="table">
-                <thead><tr><th>Trip</th><th>Shipment</th><th>Note</th><th>Age / SLA</th></tr></thead>
+                <thead><tr><th>{{ __('Trip') }}</th><th>{{ __('Shipment') }}</th><th>Note</th><th>{{ __('Age / SLA') }}</th></tr></thead>
                 <tbody>
                 @forelse ($incidents as $t)
                     <tr>
@@ -55,7 +55,7 @@
         <div class="card">
             <h2>Unresolved inspection findings</h2>
             <table class="table">
-                <thead><tr><th>School</th><th>Outcome</th><th>Variance</th><th>Age / SLA</th></tr></thead>
+                <thead><tr><th>{{ __('School') }}</th><th>{{ __('Outcome') }}</th><th>{{ __('Variance') }}</th><th>{{ __('Age / SLA') }}</th></tr></thead>
                 <tbody>
                 @forelse ($inspections as $i)
                     <tr>
@@ -70,7 +70,7 @@
 
             <h2 style="margin-top:18px">Unread critical alerts</h2>
             <table class="table">
-                <thead><tr><th>Alert</th><th>Age / SLA</th></tr></thead>
+                <thead><tr><th>{{ __('Alert') }}</th><th>{{ __('Age / SLA') }}</th></tr></thead>
                 <tbody>
                 @forelse ($critical as $a)
                     <tr>
@@ -90,7 +90,7 @@
             <input class="input" name="subject" placeholder="Subject" required style="min-width:220px">
             <input class="input" name="detail" placeholder="What happened and why it needs national attention" required style="min-width:320px">
             <input class="input" name="link" placeholder="Link (optional, e.g. /shipments/12)" style="min-width:180px">
-            <button class="btn btn-danger">Escalate</button>
+            <button class="btn btn-danger">{{ __('Escalate') }}</button>
         </form>
         <p style="color:var(--text-2);font-size:13px;margin-top:8px">Escalation raises a CRITICAL ministry alert attributed to you; it cannot be withdrawn silently.</p>
     </div>

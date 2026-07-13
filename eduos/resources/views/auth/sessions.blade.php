@@ -4,12 +4,12 @@
     <a class="backlink" href="{{ route('profile') }}">← Profile</a>
     <div class="pagehead">
         <div><h1>Security &amp; Sessions</h1><div class="sub">Active sessions for your account (AUTH-06)</div></div>
-        <form method="post" action="{{ route('sessions.revoke') }}">@csrf<button class="btn btn-danger">Sign out other sessions</button></form>
+        <form method="post" action="{{ route('sessions.revoke') }}">@csrf<button class="btn btn-danger">{{ __('Sign out other sessions') }}</button></form>
     </div>
     @include('partials.flash')
     <div class="card">
         <table class="table">
-            <thead><tr><th>Session</th><th>IP</th><th>Device</th><th>Last activity</th></tr></thead>
+            <thead><tr><th>{{ __('Session') }}</th><th>IP</th><th>Device</th><th>Last activity</th></tr></thead>
             <tbody>
             @foreach ($sessions as $s)
                 <tr>
@@ -23,9 +23,9 @@
         </table>
     </div>
     <div class="card" style="margin-top:18px">
-        <h2>Login history (AUTH-01 audit)</h2>
+        <h2>{{ __('Login history (AUTH-01 audit)') }}</h2>
         <table class="table">
-            <thead><tr><th>When</th><th>Event</th><th>IP</th><th>Client</th></tr></thead>
+            <thead><tr><th>{{ __('When') }}</th><th>{{ __('Event') }}</th><th>IP</th><th>Client</th></tr></thead>
             <tbody>
             @forelse ($authEvents ?? [] as $ev)
                 <tr>

@@ -21,7 +21,7 @@
 
     <div class="card">
         <table class="table">
-            <thead><tr><th>Campaign</th><th>Year</th><th>Status</th><th>Submissions</th><th>Opened</th><th></th></tr></thead>
+            <thead><tr><th>{{ __('Campaign') }}</th><th>{{ __('Year') }}</th><th>{{ __('Status') }}</th><th>Submissions</th><th>Opened</th><th></th></tr></thead>
             <tbody>
             @forelse ($campaigns as $c)
                 <tr>

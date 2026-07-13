@@ -2,7 +2,7 @@
 @section('title', 'Enable two-factor')
 @section('content')
     <a class="backlink" href="{{ route('profile') }}">← Profile</a>
-    <div class="pagehead"><div><h1>Two-factor authentication</h1>
+    <div class="pagehead"><div><h1>{{ __('Two-factor authentication') }}</h1>
         <div class="sub">Scan with Google Authenticator / Aegis / FreeOTP, then confirm a code (AUTH-04)</div></div></div>
     @include('partials.flash')
     <div class="grid-bottom">

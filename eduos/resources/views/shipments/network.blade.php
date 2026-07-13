@@ -2,7 +2,7 @@
 @section('title', 'Distribution Network')
 @section('content')
     <a class="backlink" href="{{ route('shipments.index') }}">← Shipments</a>
-    <div class="pagehead"><div><h1>Distribution Network</h1><div class="sub">Origin → destination lanes by volume (SHIP-12)</div></div></div>
+    <div class="pagehead"><div><h1>{{ __('Distribution Network') }}</h1><div class="sub">Origin → destination lanes by volume (SHIP-12)</div></div></div>
     @php($dl = $lanes->take(16))
     @if ($dl->isNotEmpty())
     <div class="card mb">
@@ -35,7 +35,7 @@
     <div class="card">
         @php($max = max(1, $lanes->max('books')))
         <table class="table">
-            <thead><tr><th>Lane</th><th>Shipments</th><th style="width:40%">Volume</th><th>Books</th></tr></thead>
+            <thead><tr><th>{{ __('Lane') }}</th><th>{{ __('Shipments') }}</th><th style="width:40%">{{ __('Volume') }}</th><th>{{ __('Books') }}</th></tr></thead>
             <tbody>
             @foreach ($lanes as $lane)
                 <tr>

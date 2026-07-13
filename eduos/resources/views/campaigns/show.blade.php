@@ -55,7 +55,7 @@
     <div class="card">
         <h2>Reconciliation — counted vs expected per school</h2>
         <table class="table">
-            <thead><tr><th>School</th><th>Title</th><th>Expected</th><th>Counted</th><th>Variance</th><th>By</th></tr></thead>
+            <thead><tr><th>{{ __('School') }}</th><th>{{ __('Title') }}</th><th>{{ __('Expected') }}</th><th>{{ __('Counted') }}</th><th>{{ __('Variance') }}</th><th>By</th></tr></thead>
             <tbody>
             @forelse ($subs as $s)
                 <tr>

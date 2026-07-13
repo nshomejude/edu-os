@@ -3,26 +3,26 @@
 @section('content')
     <a class="backlink" href="{{ route('shipments.show', $shipment) }}">← {{ $shipment->shipment_no }}</a>
     <div class="pagehead">
-        <div><h1>Consignment Waybill</h1><div class="sub">Dispatch note — named custody (SHIP-07, FR-NWD-SM-01)</div></div>
-        <button class="btn btn-secondary" onclick="window.print()">Print</button>
+        <div><h1>{{ __('Consignment Waybill') }}</h1><div class="sub">Dispatch note — named custody (SHIP-07, FR-NWD-SM-01)</div></div>
+        <button class="btn btn-secondary" onclick="window.print()">{{ __('Print') }}</button>
     </div>
 
     <div class="card" style="max-width:760px">
         @include('partials.doc-header', ['docTitle' => 'CONSIGNMENT WAYBILL — DISPATCH NOTE', 'docNo' => $shipment->shipment_no])
 
         <div class="detail-grid" style="grid-template-columns:1fr 1fr">
-            <div><div class="dt">Consignment</div><div class="dd">{{ $shipment->title?->title_en ?? $shipment->title?->title_fr ?? '—' }} ({{ $shipment->title?->ntid }})</div></div>
-            <div><div class="dt">Quantity</div><div class="dd"><b>{{ number_format($shipment->books) }}</b> books</div></div>
+            <div><div class="dt">{{ __('Consignment') }}</div><div class="dd">{{ $shipment->title?->title_en ?? $shipment->title?->title_fr ?? '—' }} ({{ $shipment->title?->ntid }})</div></div>
+            <div><div class="dt">{{ __('Quantity') }}</div><div class="dd"><b>{{ number_format($shipment->books) }}</b> books</div></div>
             <div><div class="dt">From (consignor)</div><div class="dd">{{ $shipment->origin_name }}</div></div>
             <div><div class="dt">To (consignee)</div><div class="dd">{{ $shipment->destination_name }}</div></div>
             <div><div class="dt">Dispatch date</div><div class="dd">{{ $shipment->shipped_on->format('d M Y') }}</div></div>
-            <div><div class="dt">Status</div><div class="dd">{{ $shipment->statusLabel() }}</div></div>
+            <div><div class="dt">{{ __('Status') }}</div><div class="dd">{{ $shipment->statusLabel() }}</div></div>
         </div>
 
         <div class="detail-grid" style="grid-template-columns:1fr 1fr;margin-top:16px;padding-top:14px;border-top:1px solid var(--line, #E7E1D2)">
             <div><div class="dt">Carrier / waybill</div><div class="dd">{{ $dispatched?->notes ?? 'Not yet dispatched' }}</div></div>
-            <div><div class="dt">Vehicle</div><div class="dd">{{ $trip?->vehicle?->plate ?? '—' }} {{ $trip?->vehicle?->model }}</div></div>
-            <div><div class="dt">Driver</div><div class="dd">{{ $trip?->driver?->name ?? '—' }}{{ $trip?->driver?->licence_no ? ' · licence '.$trip->driver->licence_no : '' }}</div></div>
+            <div><div class="dt">{{ __('Vehicle') }}</div><div class="dd">{{ $trip?->vehicle?->plate ?? '—' }} {{ $trip?->vehicle?->model }}</div></div>
+            <div><div class="dt">{{ __('Driver') }}</div><div class="dd">{{ $trip?->driver?->name ?? '—' }}{{ $trip?->driver?->licence_no ? ' · licence '.$trip->driver->licence_no : '' }}</div></div>
             <div><div class="dt">Route</div><div class="dd">{{ $trip?->route_stops ?? $trip?->route_note ?? '—' }}</div></div>
         </div>
 

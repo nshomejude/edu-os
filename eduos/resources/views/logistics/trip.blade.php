@@ -9,7 +9,7 @@
             <div class="sub">{{ $trip->shipment->origin_name }} → {{ $trip->shipment->destination_name }} · {{ $trip->shipment->shipment_no }} (LOG-06)</div>
         </div>
         <div class="toolbar" style="margin:0">
-            <a class="btn btn-sm btn-secondary" href="{{ route('shipments.waybill', $trip->shipment) }}">Waybill</a>
+            <a class="btn btn-sm btn-secondary" href="{{ route('shipments.waybill', $trip->shipment) }}">{{ __('Waybill') }}</a>
             <span class="pill {{ $trip->status === 'ARRIVED' ? 'pill-success' : ($trip->status === 'INCIDENT' ? 'pill-error' : 'pill-info') }}">{{ $trip->status }}</span>
         </div>
     </div>
@@ -19,10 +19,10 @@
     <div class="card mb">
         <h2>Crew &amp; consignment</h2>
         <div class="detail-grid">
-            <div><div class="dt">Shipment</div><div class="dd"><a class="rowlink" href="{{ route('shipments.show', $trip->shipment) }}">{{ $trip->shipment->shipment_no }}</a> · {{ number_format($trip->shipment->books) }} books</div></div>
-            <div><div class="dt">Title</div><div class="dd">{{ $trip->shipment->title?->title_en ?? $trip->shipment->title?->title_fr ?? '—' }}</div></div>
-            <div><div class="dt">Vehicle</div><div class="dd">{{ $trip->vehicle?->plate ?? '—' }} {{ $trip->vehicle?->model }}</div></div>
-            <div><div class="dt">Driver</div><div class="dd">{{ $trip->driver?->name ?? '—' }}{{ $trip->driver?->phone ? ' · '.$trip->driver->phone : '' }}</div></div>
+            <div><div class="dt">{{ __('Shipment') }}</div><div class="dd"><a class="rowlink" href="{{ route('shipments.show', $trip->shipment) }}">{{ $trip->shipment->shipment_no }}</a> · {{ number_format($trip->shipment->books) }} books</div></div>
+            <div><div class="dt">{{ __('Title') }}</div><div class="dd">{{ $trip->shipment->title?->title_en ?? $trip->shipment->title?->title_fr ?? '—' }}</div></div>
+            <div><div class="dt">{{ __('Vehicle') }}</div><div class="dd">{{ $trip->vehicle?->plate ?? '—' }} {{ $trip->vehicle?->model }}</div></div>
+            <div><div class="dt">{{ __('Driver') }}</div><div class="dd">{{ $trip->driver?->name ?? '—' }}{{ $trip->driver?->phone ? ' · '.$trip->driver->phone : '' }}</div></div>
             <div><div class="dt">Departed</div><div class="dd">{{ $fmt($trip->departed_at) ?? '—' }}</div></div>
             <div><div class="dt">Arrived</div><div class="dd">{{ $fmt($trip->arrived_at) ?? 'En route' }}</div></div>
         </div>

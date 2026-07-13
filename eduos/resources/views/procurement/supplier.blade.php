@@ -10,7 +10,7 @@
     <div class="card">
         <h2>Order history</h2>
         <table class="table">
-            <thead><tr><th>Order</th><th>Title</th><th>Qty</th><th>Value FCFA</th><th>Status</th><th>Placed</th></tr></thead>
+            <thead><tr><th>{{ __('Order') }}</th><th>{{ __('Title') }}</th><th>{{ __('Qty') }}</th><th>Value FCFA</th><th>{{ __('Status') }}</th><th>{{ __('Placed') }}</th></tr></thead>
             <tbody>
             @forelse ($orders as $o)
                 <tr>

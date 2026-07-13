@@ -3,11 +3,11 @@
 @section('content')
     <div class="pagehead">
         <div>
-            <h1>Warehouses</h1>
+            <h1>{{ __('Warehouses') }}</h1>
             <div class="sub">NWIDMS — national, regional and divisional storage network</div>
         </div>
         <div class="toolbar" style="margin:0">
-            <a class="btn btn-secondary btn-sm" href="{{ route('warehouses.lowstock') }}">Low stock</a>
+            <a class="btn btn-secondary btn-sm" href="{{ route('warehouses.lowstock') }}">{{ __('Low stock') }}</a>
             <span class="chip">National stock position <b>{{ number_format($nationalStock) }}</b> books</span>
         </div>
     </div>
@@ -15,7 +15,7 @@
     @include('partials.flash')
 
     <div class="card mb">
-        <h2>Register warehouse</h2>
+        <h2>{{ __('Register warehouse') }}</h2>
         <form class="toolbar" method="post" action="{{ route('warehouses.store') }}" style="margin:0">
             @csrf
             <input class="input" name="name" placeholder="Warehouse name" required style="min-width:260px">
@@ -27,13 +27,13 @@
                     <option value="{{ $r->id }}">{{ $r->name_en }}</option>
                 @endforeach
             </select>
-            <button class="btn btn-primary">Register</button>
+            <button class="btn btn-primary">{{ __('Register') }}</button>
         </form>
     </div>
 
     <div class="card">
         <table class="table">
-            <thead><tr><th>ID</th><th>Warehouse</th><th>Tier</th><th>Region</th><th>Stock on hand</th></tr></thead>
+            <thead><tr><th>ID</th><th>{{ __('Warehouse') }}</th><th>Tier</th><th>{{ __('Region') }}</th><th>{{ __('Stock on hand') }}</th></tr></thead>
             <tbody>
             @foreach ($warehouses as $w)
                 <tr>

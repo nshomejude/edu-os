@@ -26,8 +26,8 @@
     <div class="card mb">
         <h2>Profile</h2>
         <div class="detail-grid">
-            <div><div class="dt">Ministry</div><div class="dd">{{ $school->ministry }}</div></div>
-            <div><div class="dt">Type</div><div class="dd">{{ str_replace('_', ' ', $school->school_type) }}</div></div>
+            <div><div class="dt">{{ __('Ministry') }}</div><div class="dd">{{ $school->ministry }}</div></div>
+            <div><div class="dt">{{ __('Type') }}</div><div class="dd">{{ str_replace('_', ' ', $school->school_type) }}</div></div>
             <div><div class="dt">Accessibility</div><div class="dd">{{ str_replace('_', ' ', $school->accessibility_class) }}</div></div>
             <div><div class="dt">Enrolment 2025/2026</div><div class="dd">{{ number_format($enrolments->sum(fn ($e) => $e->boys + $e->girls)) }} learners</div></div>
             <div><div class="dt">Textbooks on hand</div><div class="dd">{{ number_format($stock->sum('quantity')) }}</div></div>
@@ -46,7 +46,7 @@
                 <select class="input" name="connectivity">@foreach (['NONE','2G','3G','4G'] as $c)<option @selected($school->connectivity === $c)>{{ $c }}</option>@endforeach</select>
                 <input class="input" type="number" name="classrooms_total" value="{{ $school->classrooms_total }}" placeholder="Classrooms" style="min-width:110px">
                 <label style="display:flex;align-items:center;gap:6px;font-size:13px"><input type="checkbox" name="storage_secure" value="1" @checked($school->storage_secure)> Secure store</label>
-                <button class="btn btn-primary btn-sm">Save</button>
+                <button class="btn btn-primary btn-sm">{{ __('Save') }}</button>
             </form>
         </div>
     @endcan
@@ -68,12 +68,12 @@
                     <option value="{{ $stu->id }}">{{ $stu->lsid }} — {{ $stu->name }} ({{ $stu->class_level }})</option>
                 @endforeach
             </select>
-            <button class="btn btn-primary btn-sm">Assign</button>
+            <button class="btn btn-primary btn-sm">{{ __('Assign') }}</button>
         </form>
         @php($assignments = \App\Modules\SchoolOps\Models\Assignment::with('title')->where('school_id', $school->id)->orderByDesc('id')->limit(8)->get())
         @if ($assignments->isNotEmpty())
             <table class="table">
-                <thead><tr><th>Title</th><th>Class</th><th>Qty</th><th>Status</th><th>Condition</th><th></th></tr></thead>
+                <thead><tr><th>{{ __('Title') }}</th><th>{{ __('Class') }}</th><th>{{ __('Qty') }}</th><th>{{ __('Status') }}</th><th>{{ __('Condition') }}</th><th></th></tr></thead>
                 <tbody>
                 @foreach ($assignments as $a)
                     <tr>
@@ -104,7 +104,7 @@
         <div class="card">
             <h2>Enrolment by class — 2025/2026</h2>
             <table class="table">
-                <thead><tr><th>Class</th><th>Boys</th><th>Girls</th><th>Total</th><th>Validation</th></tr></thead>
+                <thead><tr><th>{{ __('Class') }}</th><th>Boys</th><th>Girls</th><th>Total</th><th>Validation</th></tr></thead>
                 <tbody>
                 @foreach ($enrolments as $e)
                     <tr>
@@ -114,7 +114,7 @@
                                 <form method="post" action="{{ route('schoolops.enrolment.validate', $e) }}" style="display:inline">@csrf<button class="btn btn-sm btn-secondary">Validate</button></form>
                                 <form method="post" action="{{ route('schoolops.enrolment.reject', $e) }}" class="toolbar" style="margin:4px 0 0;gap:6px">@csrf
                                     <input class="input" name="rejection_reason" placeholder="Reason" required style="min-width:130px;height:34px">
-                                    <button class="btn btn-sm btn-danger" style="height:34px">Reject</button>
+                                    <button class="btn btn-sm btn-danger" style="height:34px">{{ __('Reject') }}</button>
                                 </form>
                             @elseif ($e->validation_status === 'REJECTED')
                                 <span class="pill pill-error" title="{{ $e->rejection_reason }}">REJECTED</span>
@@ -151,7 +151,7 @@
 
             <h2 style="margin-top:22px">Recent inbound shipments</h2>
             <table class="table">
-                <thead><tr><th>Shipment</th><th>Status</th><th>Books</th></tr></thead>
+                <thead><tr><th>{{ __('Shipment') }}</th><th>{{ __('Status') }}</th><th>{{ __('Books') }}</th></tr></thead>
                 <tbody>
                 @forelse ($shipments as $s)
                     <tr>
@@ -180,7 +180,7 @@
             <button class="btn btn-primary">Submit requirement</button>
         </form>
         <table class="table">
-            <thead><tr><th>Title</th><th>Year</th><th>Qty</th><th>By</th><th>Status</th></tr></thead>
+            <thead><tr><th>{{ __('Title') }}</th><th>{{ __('Year') }}</th><th>{{ __('Qty') }}</th><th>By</th><th>{{ __('Status') }}</th></tr></thead>
             <tbody>
             @forelse (\App\Modules\Planning\Models\SchoolRequirement::with('title')->where('school_id', $school->id)->orderByDesc('id')->limit(10)->get() as $r)
                 <tr><td>{{ $r->title->ntid }}</td><td>{{ $r->academic_year }}</td><td>{{ number_format($r->quantity) }}</td><td>{{ $r->submitted_by }}</td>

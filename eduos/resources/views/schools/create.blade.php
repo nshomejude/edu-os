@@ -28,7 +28,7 @@
                     @error('name_official')<div class="err">{{ $message }}</div>@enderror
                 </div>
                 <div class="field">
-                    <label>Ministry</label>
+                    <label>{{ __('Ministry') }}</label>
                     <select class="input" name="ministry" required>
                         <option value="MINEDUB" @selected(old('ministry') === 'MINEDUB')>MINEDUB — Basic Education</option>
                         <option value="MINESEC" @selected(old('ministry') === 'MINESEC')>MINESEC — Secondary Education</option>
@@ -43,7 +43,7 @@
                     </select>
                 </div>
                 <div class="field">
-                    <label>Region</label>
+                    <label>{{ __('Region') }}</label>
                     <select class="input" name="region_id" required>
                         @foreach ($regions as $r)
                             <option value="{{ $r->id }}" @selected(old('region_id') == $r->id)>{{ $r->name_en }}</option>

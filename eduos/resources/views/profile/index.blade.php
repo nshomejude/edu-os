@@ -30,7 +30,7 @@
     </div>
 
     <div class="card" style="max-width:560px">
-        <h2>Change password</h2>
+        <h2>{{ __('Change password') }}</h2>
         <form method="post" action="{{ route('profile.password') }}">
             @csrf
             <div class="field" style="margin-bottom:14px">
@@ -45,7 +45,7 @@
                 <label>Confirm new password</label>
                 <input class="input" type="password" name="password_confirmation" required>
             </div>
-            <button class="btn btn-primary">Change password</button>
+            <button class="btn btn-primary">{{ __('Change password') }}</button>
         </form>
     </div>
 @endsection

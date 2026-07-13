@@ -3,40 +3,40 @@
 @section('content')
     <div class="pagehead">
         <div>
-            <h1>Shipments</h1>
-            <div class="sub">Chain-of-custody logistics — every movement attributable, no silent variance</div>
+            <h1>{{ __('Shipments') }}</h1>
+            <div class="sub">{{ __('Chain-of-custody logistics — every movement attributable, no silent variance') }}</div>
         </div>
         <div class="toolbar" style="margin:0">
-            <a class="btn btn-secondary" href="{{ route('shipments.schedule') }}">Schedule</a>
-            <a class="btn btn-secondary" href="{{ route('shipments.network') }}">Network</a>
+            <a class="btn btn-secondary" href="{{ route('shipments.schedule') }}">{{ __('Schedule') }}</a>
+            <a class="btn btn-secondary" href="{{ route('shipments.network') }}">{{ __('Network') }}</a>
             <a class="btn btn-secondary" href="{{ route('redistribution.index') }}">Redistribution</a>
-            <a class="btn btn-primary" href="{{ route('shipments.create') }}">+ New Shipment</a>
+            <a class="btn btn-primary" href="{{ route('shipments.create') }}">+ {{ __('New Shipment') }}</a>
         </div>
     </div>
 
     @include('partials.flash')
 
     <div class="chips">
-        <span class="chip">Open <b>{{ $counts['open'] }}</b></span>
-        <span class="chip">In transit <b>{{ $counts['transit'] }}</b></span>
-        <span class="chip">Delivered <b>{{ $counts['delivered'] }}</b></span>
-        <span class="chip">Discrepancies <b style="color:var(--error)">{{ $counts['discrepancy'] }}</b></span>
+        <span class="chip">{{ __('Open') }} <b>{{ $counts['open'] }}</b></span>
+        <span class="chip">{{ __('In transit') }} <b>{{ $counts['transit'] }}</b></span>
+        <span class="chip">{{ __('Delivered') }} <b>{{ $counts['delivered'] }}</b></span>
+        <span class="chip">{{ __('Discrepancies') }} <b style="color:var(--error)">{{ $counts['discrepancy'] }}</b></span>
     </div>
 
     <div class="card">
         <form class="toolbar" method="get">
-            <input class="input" type="search" name="q" value="{{ request('q') }}" placeholder="Search shipment №…">
+            <input class="input" type="search" name="q" value="{{ request('q') }}" placeholder="{{ __('Search shipment №…') }}">
             <select class="input" name="status">
-                <option value="">All statuses</option>
+                <option value="">{{ __('All statuses') }}</option>
                 @foreach (['CONFIRMED', 'DISPATCHED', 'IN_TRANSIT', 'RECEIVED_FULL', 'RECEIVED_WITH_DISCREPANCY'] as $s)
                     <option @selected(request('status') === $s)>{{ $s }}</option>
                 @endforeach
             </select>
-            <button class="btn btn-secondary">Filter</button>
+            <button class="btn btn-secondary">{{ __('Filter') }}</button>
         </form>
 
         <table class="table">
-            <thead><tr><th>Shipment ID</th><th>From</th><th>To</th><th>Status</th><th>Books</th><th>Received</th><th>Date</th></tr></thead>
+            <thead><tr><th>{{ __('Shipment ID') }}</th><th>{{ __('From') }}</th><th>{{ __('To') }}</th><th>{{ __('Status') }}</th><th>{{ __('Books') }}</th><th>{{ __('Received') }}</th><th>{{ __('Date') }}</th></tr></thead>
             <tbody>
             @forelse ($shipments as $s)
                 <tr>

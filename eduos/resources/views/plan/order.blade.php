@@ -3,22 +3,22 @@
 @section('content')
     <a class="backlink" href="{{ route('plan.show', $campaign) }}">← {{ $campaign->name }}</a>
     <div class="pagehead">
-        <div><h1>Distribution Order</h1><div class="sub">{{ $campaign->name }} · {{ $campaign->academic_year }} (PLAN-08)</div></div>
-        <button class="btn btn-secondary" onclick="window.print()">Print</button>
+        <div><h1>{{ __('Distribution Order') }}</h1><div class="sub">{{ $campaign->name }} · {{ $campaign->academic_year }} (PLAN-08)</div></div>
+        <button class="btn btn-secondary" onclick="window.print()">{{ __('Print') }}</button>
     </div>
 
     <div class="card" style="max-width:860px">
         @include('partials.doc-header', ['docTitle' => 'NATIONAL TEXTBOOK DISTRIBUTION ORDER', 'docNo' => 'CAMP-'.str_pad($campaign->id, 4, '0', STR_PAD_LEFT)])
 
         <div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr 1fr">
-            <div><div class="dt">Campaign</div><div class="dd">{{ $campaign->name }}</div></div>
-            <div><div class="dt">Academic year</div><div class="dd">{{ $campaign->academic_year }}</div></div>
-            <div><div class="dt">Status</div><div class="dd">{{ $campaign->status }}</div></div>
+            <div><div class="dt">{{ __('Campaign') }}</div><div class="dd">{{ $campaign->name }}</div></div>
+            <div><div class="dt">{{ __('Academic year') }}</div><div class="dd">{{ $campaign->academic_year }}</div></div>
+            <div><div class="dt">{{ __('Status') }}</div><div class="dd">{{ $campaign->status }}</div></div>
             <div><div class="dt">Allocation lines</div><div class="dd">{{ $allocations->count() }} · {{ number_format($allocations->sum('quantity')) }} books</div></div>
         </div>
 
         <table class="table" style="margin-top:16px">
-            <thead><tr><th>#</th><th>School</th><th>Region</th><th>Title</th><th>Books</th><th>Shipment</th></tr></thead>
+            <thead><tr><th>#</th><th>{{ __('School') }}</th><th>{{ __('Region') }}</th><th>{{ __('Title') }}</th><th>{{ __('Books') }}</th><th>{{ __('Shipment') }}</th></tr></thead>
             <tbody>
             @forelse ($allocations as $i => $a)
                 <tr>

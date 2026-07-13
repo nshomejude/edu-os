@@ -8,10 +8,10 @@
             <div class="sub">{{ $shipment->origin_name }} → {{ $shipment->destination_name }}</div>
         </div>
         <div class="toolbar" style="margin:0">
-            <a class="btn btn-sm btn-secondary" href="{{ route('shipments.picking', $shipment) }}">Picking list</a>
-            <a class="btn btn-sm btn-secondary" href="{{ route('shipments.waybill', $shipment) }}">Waybill</a>
+            <a class="btn btn-sm btn-secondary" href="{{ route('shipments.picking', $shipment) }}">{{ __('Picking list') }}</a>
+            <a class="btn btn-sm btn-secondary" href="{{ route('shipments.waybill', $shipment) }}">{{ __('Waybill') }}</a>
             @if (in_array($shipment->status, ['RECEIVED_FULL', 'RECEIVED_WITH_DISCREPANCY', 'CLOSED']))
-                <a class="btn btn-sm btn-secondary" href="{{ route('shipments.pod', $shipment) }}">Proof of delivery</a>
+                <a class="btn btn-sm btn-secondary" href="{{ route('shipments.pod', $shipment) }}">{{ __('Proof of delivery') }}</a>
             @endif
             <span class="pill {{ $shipment->statusClass() }}">{{ $shipment->statusLabel() }}</span>
         </div>
@@ -20,9 +20,9 @@
     @include('partials.flash')
 
     <div class="card mb">
-        <h2>Consignment</h2>
+        <h2>{{ __('Consignment') }}</h2>
         <div class="detail-grid">
-            <div><div class="dt">Title</div><div class="dd">{{ $shipment->title?->title_en ?? $shipment->title?->title_fr ?? '—' }}</div></div>
+            <div><div class="dt">{{ __('Title') }}</div><div class="dd">{{ $shipment->title?->title_en ?? $shipment->title?->title_fr ?? '—' }}</div></div>
             <div><div class="dt">Books dispatched</div><div class="dd">{{ number_format($shipment->books) }}</div></div>
             <div><div class="dt">Books received</div><div class="dd">
                 {{ $shipment->received_books !== null ? number_format($shipment->received_books) : 'Pending' }}
@@ -31,8 +31,8 @@
                 @endif
             </div></div>
             <div><div class="dt">Shipped on</div><div class="dd">{{ $shipment->shipped_on->format('d M Y') }}</div></div>
-            <div><div class="dt">Origin</div><div class="dd">{{ $shipment->origin_name }}</div></div>
-            <div><div class="dt">Destination</div><div class="dd">{{ $shipment->destination_name }}</div></div>
+            <div><div class="dt">{{ __('Origin') }}</div><div class="dd">{{ $shipment->origin_name }}</div></div>
+            <div><div class="dt">{{ __('Destination') }}</div><div class="dd">{{ $shipment->destination_name }}</div></div>
         </div>
     </div>
 
@@ -68,7 +68,7 @@
                         <option value="{{ $d->id }}">{{ $d->name }}</option>
                     @endforeach
                 </select>
-                <button class="btn btn-primary">Dispatch</button>
+                <button class="btn btn-primary">{{ __('Dispatch') }}</button>
                 <div class="spacer"></div>
             </form>
             <form method="post" action="{{ route('shipments.cancel', $shipment) }}" style="margin-top:10px">
@@ -90,7 +90,7 @@
                     <option>SHORTAGE</option><option>DAMAGE</option><option>WRONG_TITLE</option><option>EXCESS</option><option>OTHER</option>
                 </select>
                 <input class="input" type="file" name="discrepancy_evidence" accept="image/*" style="min-width:165px;padding-top:11px">
-                <button class="btn btn-primary">Confirm receipt</button>
+                <button class="btn btn-primary">{{ __('Confirm receipt') }}</button>
                 <span style="color:var(--text-2);font-size:13.5px">Any variance opens a discrepancy case automatically — it cannot be silently absorbed.</span>
             </form>
         </div>
@@ -113,7 +113,7 @@
     @endif
 
     <div class="card">
-        <h2>Chain of custody</h2>
+        <h2>{{ __('Chain of custody') }}</h2>
         @php($trip = \App\Modules\Logistics\Models\Trip::where('shipment_id', $shipment->id)->latest('id')->first())
         @if ($trip)<p style="margin-bottom:10px"><a class="rowlink" href="{{ route('trips.show', $trip) }}">Trip TRIP-{{ $trip->id }} — vehicle, route and timeline →</a></p>@endif
         <div class="timeline">

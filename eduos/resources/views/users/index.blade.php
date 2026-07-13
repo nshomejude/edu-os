@@ -3,7 +3,7 @@
 @section('content')
     <div class="pagehead">
         <div>
-            <h1>Users</h1>
+            <h1>{{ __('Users') }}</h1>
             <div class="sub">Named accounts only — every action is attributable (NFR-NTR-07)</div>
         </div>
     </div>
@@ -24,7 +24,7 @@
     @endcan
     <div class="card">
         <table class="table">
-            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Ministry</th><th>Since</th><th>Active</th></tr></thead>
+            <thead><tr><th>{{ __('Name') }}</th><th>{{ __('Email') }}</th><th>{{ __('Role') }}</th><th>{{ __('Ministry') }}</th><th>Since</th><th>Active</th></tr></thead>
             <tbody>
             @foreach ($users as $u)
                 <tr>
@@ -38,7 +38,7 @@
                                 <select class="input" name="ministry" style="height:34px;min-width:110px"><option value="">—</option><option @selected($u->ministry === 'MINEDUB')>MINEDUB</option><option @selected($u->ministry === 'MINESEC')>MINESEC</option></select>
                                 <select class="input" name="school_id" style="height:34px;min-width:150px"><option value="">School…</option>@foreach (\App\Modules\Registry\Models\School::orderBy('name_official')->get() as $sc)<option value="{{ $sc->id }}" @selected($u->school_id === $sc->id)>{{ Str::limit($sc->name_official, 24) }}</option>@endforeach</select>
                                 <select class="input" name="warehouse_id" style="height:34px;min-width:140px"><option value="">Warehouse…</option>@foreach (\App\Modules\Custody\Models\Warehouse::all() as $wh)<option value="{{ $wh->id }}" @selected($u->warehouse_id === $wh->id)>{{ Str::limit($wh->name, 20) }}</option>@endforeach</select>
-                                <button class="btn btn-sm btn-secondary" style="height:34px">Save</button>
+                                <button class="btn btn-sm btn-secondary" style="height:34px">{{ __('Save') }}</button>
                             </form>
                         @else
                             {{ $u->ministry ?? '—' }}

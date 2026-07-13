@@ -8,17 +8,17 @@
             <div class="sub">{{ $campaign->academic_year }} · created by {{ $campaign->created_by }}@if($campaign->approved_by) · approved by {{ $campaign->approved_by }}@endif</div>
         </div>
         <div class="toolbar" style="margin:0">
-            <a class="btn btn-sm btn-secondary" href="{{ route('plan.order', $campaign) }}">Distribution order</a>
+            <a class="btn btn-sm btn-secondary" href="{{ route('plan.order', $campaign) }}">{{ __('Distribution order') }}</a>
             <span class="pill {{ $campaign->status === 'APPROVED' ? 'pill-success' : 'pill-transit' }}">{{ $campaign->status }}</span>
             @can('programme')
                 @if ($campaign->status === 'DRAFT')
-                    <form method="post" action="{{ route('plan.transition', $campaign) }}">@csrf<input type="hidden" name="to" value="REVIEW"><button class="btn btn-sm btn-secondary">Submit for review</button></form>
+                    <form method="post" action="{{ route('plan.transition', $campaign) }}">@csrf<input type="hidden" name="to" value="REVIEW"><button class="btn btn-sm btn-secondary">{{ __('Submit for review') }}</button></form>
                 @elseif ($campaign->status === 'REVIEW')
-                    <form method="post" action="{{ route('plan.transition', $campaign) }}">@csrf<input type="hidden" name="to" value="APPROVED"><button class="btn btn-sm btn-primary">Approve</button></form>
+                    <form method="post" action="{{ route('plan.transition', $campaign) }}">@csrf<input type="hidden" name="to" value="APPROVED"><button class="btn btn-sm btn-primary">{{ __('Approve') }}</button></form>
                 @elseif ($campaign->status === 'APPROVED')
                     <form method="post" action="{{ route('plan.execute', $campaign) }}">@csrf<button class="btn btn-sm btn-primary">Execute — create shipments</button></form>
                 @elseif ($campaign->status === 'EXECUTING')
-                    <form method="post" action="{{ route('plan.transition', $campaign) }}">@csrf<input type="hidden" name="to" value="CLOSED"><button class="btn btn-sm btn-danger">Close campaign</button></form>
+                    <form method="post" action="{{ route('plan.transition', $campaign) }}">@csrf<input type="hidden" name="to" value="CLOSED"><button class="btn btn-sm btn-danger">{{ __('Close campaign') }}</button></form>
                 @endif
             @endcan
         </div>
@@ -33,7 +33,7 @@
     <div class="card">
         <h2>Allocation workspace</h2>
         <table class="table">
-            <thead><tr><th>School</th><th>Region</th><th>Title</th><th>Quantity</th><th>Shipment</th></tr></thead>
+            <thead><tr><th>{{ __('School') }}</th><th>{{ __('Region') }}</th><th>{{ __('Title') }}</th><th>{{ __('Quantity') }}</th><th>{{ __('Shipment') }}</th></tr></thead>
             <tbody>
             @foreach ($allocations as $a)
                 <tr>
@@ -45,7 +45,7 @@
                             @can('programme')
                             <form class="toolbar" method="post" action="{{ route('plan.line', $a) }}" style="margin:0;gap:6px">@csrf
                                 <input class="input" type="number" name="quantity" value="{{ $a->quantity }}" min="0" style="min-width:110px;height:34px">
-                                <button class="btn btn-sm btn-secondary" style="height:34px">Save</button>
+                                <button class="btn btn-sm btn-secondary" style="height:34px">{{ __('Save') }}</button>
                             </form>
                             @else {{ number_format($a->quantity) }} @endcan
                         @else

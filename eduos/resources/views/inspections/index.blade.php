@@ -12,7 +12,7 @@
     @include('partials.flash')
 
     <div class="card mb">
-        <h2>Record spot check</h2>
+        <h2>{{ __('Record spot check') }}</h2>
         <form class="toolbar" method="post" action="{{ route('inspections.store') }}" style="margin:0" enctype="multipart/form-data">
             @csrf
             <select class="input" name="school_id" required style="min-width:260px">
@@ -24,13 +24,13 @@
             <input class="input" type="number" name="counted_qty" min="0" placeholder="Counted" required style="min-width:110px">
             <input class="input" name="findings" placeholder="Findings (optional)" style="min-width:180px">
             <input class="input" type="file" name="evidence" accept="image/*" style="min-width:180px;padding-top:11px">
-            <button class="btn btn-primary">Record</button>
+            <button class="btn btn-primary">{{ __('Record') }}</button>
         </form>
     </div>
 
     <div class="card">
         <table class="table">
-            <thead><tr><th>Date</th><th>School</th><th>Title</th><th>Ledger</th><th>Counted</th><th>Variance</th><th>Outcome</th><th>Inspector</th><th>Follow-up</th></tr></thead>
+            <thead><tr><th>{{ __('Date') }}</th><th>{{ __('School') }}</th><th>{{ __('Title') }}</th><th>{{ __('Ledger') }}</th><th>{{ __('Counted') }}</th><th>{{ __('Variance') }}</th><th>{{ __('Outcome') }}</th><th>{{ __('Inspector') }}</th><th>{{ __('Follow-up') }}</th></tr></thead>
             <tbody>
             @forelse ($inspections as $i)
                 <tr>
@@ -48,7 +48,7 @@
                         @elseif ($i->outcome !== 'CONFORM')
                             <form class="toolbar" method="post" action="{{ route('inspections.resolve', $i) }}" style="margin:0;gap:6px">@csrf
                                 <input class="input" name="corrective_action" placeholder="Corrective action" required style="min-width:150px;height:34px">
-                                <button class="btn btn-sm btn-secondary" style="height:34px">Resolve</button>
+                                <button class="btn btn-sm btn-secondary" style="height:34px">{{ __('Resolve') }}</button>
                             </form>
                         @else
                             —
@@ -63,7 +63,7 @@
         {{ $inspections->links('partials.pagination') }}
     </div>
     <div class="card" style="margin-top:18px">
-        <h2>Verification queue (VER-01)</h2>
+        <h2>{{ __('Verification queue (VER-01)') }}</h2>
         @can('division')
         <form class="toolbar" method="post" action="{{ route('inspections.assign') }}" style="margin-bottom:14px">@csrf
             <select class="input" name="school_id" required style="min-width:240px">
@@ -73,11 +73,11 @@
                 @foreach ($inspectors ?? [] as $i)<option value="{{ $i->id }}">{{ $i->name }}</option>@endforeach
             </select>
             <input class="input" type="date" name="due_on" required>
-            <button class="btn btn-secondary btn-sm">Assign</button>
+            <button class="btn btn-secondary btn-sm">{{ __('Assign') }}</button>
         </form>
         @endcan
         <table class="table">
-            <thead><tr><th>School</th><th>Inspector</th><th>Due</th><th>Status</th></tr></thead>
+            <thead><tr><th>{{ __('School') }}</th><th>{{ __('Inspector') }}</th><th>{{ __('Due') }}</th><th>{{ __('Status') }}</th></tr></thead>
             <tbody>
             @forelse ($assignments ?? [] as $a)
                 <tr>

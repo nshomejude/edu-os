@@ -16,29 +16,29 @@
         <h2>Case record</h2>
         <div class="detail-grid">
             @if ($type === 'discrepancy')
-                <div><div class="dt">Shipment</div><div class="dd"><a class="rowlink" href="{{ route('shipments.show', $case) }}">{{ $case->shipment_no }}</a></div></div>
-                <div><div class="dt">Destination</div><div class="dd">{{ $case->destination_name }}</div></div>
-                <div><div class="dt">Variance</div><div class="dd" style="color:var(--error)"><b>{{ $case->variance() }}</b> (frozen in QUARANTINE)</div></div>
+                <div><div class="dt">{{ __('Shipment') }}</div><div class="dd"><a class="rowlink" href="{{ route('shipments.show', $case) }}">{{ $case->shipment_no }}</a></div></div>
+                <div><div class="dt">{{ __('Destination') }}</div><div class="dd">{{ $case->destination_name }}</div></div>
+                <div><div class="dt">{{ __('Variance') }}</div><div class="dd" style="color:var(--error)"><b>{{ $case->variance() }}</b> (frozen in QUARANTINE)</div></div>
                 <div><div class="dt">Category</div><div class="dd">{{ $case->discrepancy_category ?? '—' }}</div></div>
                 <div><div class="dt">Receiver signature</div><div class="dd">{{ $case->received_signature ?? '—' }}</div></div>
                 <div><div class="dt">Evidence</div><div class="dd">
                     @if ($case->discrepancy_evidence_path)<a class="rowlink" href="{{ asset('storage/'.$case->discrepancy_evidence_path) }}">View photo</a>@else — @endif
                 </div></div>
             @elseif ($type === 'inspection')
-                <div><div class="dt">School</div><div class="dd"><a class="rowlink" href="{{ route('schools.show', $case->school) }}">{{ $case->school->name_official }}</a></div></div>
-                <div><div class="dt">Outcome</div><div class="dd">{{ str_replace('_', ' ', $case->outcome) }}</div></div>
+                <div><div class="dt">{{ __('School') }}</div><div class="dd"><a class="rowlink" href="{{ route('schools.show', $case->school) }}">{{ $case->school->name_official }}</a></div></div>
+                <div><div class="dt">{{ __('Outcome') }}</div><div class="dd">{{ str_replace('_', ' ', $case->outcome) }}</div></div>
                 <div><div class="dt">Counted vs recorded</div><div class="dd">{{ $case->counted_qty }} vs {{ $case->recorded_qty }}</div></div>
-                <div><div class="dt">Inspector</div><div class="dd">{{ $case->inspector }}</div></div>
-                <div><div class="dt">Findings</div><div class="dd">{{ $case->findings ?? '—' }}</div></div>
+                <div><div class="dt">{{ __('Inspector') }}</div><div class="dd">{{ $case->inspector }}</div></div>
+                <div><div class="dt">{{ __('Findings') }}</div><div class="dd">{{ $case->findings ?? '—' }}</div></div>
                 <div><div class="dt">Resolve at</div><div class="dd"><a class="rowlink" href="{{ route('inspections.index') }}">Inspections register →</a></div></div>
             @elseif ($type === 'incident')
-                <div><div class="dt">Trip</div><div class="dd"><a class="rowlink" href="{{ route('trips.show', $case) }}">TRIP-{{ $case->id }}</a></div></div>
-                <div><div class="dt">Shipment</div><div class="dd"><a class="rowlink" href="{{ route('shipments.show', $case->shipment) }}">{{ $case->shipment->shipment_no }}</a></div></div>
-                <div><div class="dt">Vehicle / driver</div><div class="dd">{{ $case->vehicle->plate ?? '—' }} · {{ $case->driver->name ?? '—' }}</div></div>
+                <div><div class="dt">{{ __('Trip') }}</div><div class="dd"><a class="rowlink" href="{{ route('trips.show', $case) }}">TRIP-{{ $case->id }}</a></div></div>
+                <div><div class="dt">{{ __('Shipment') }}</div><div class="dd"><a class="rowlink" href="{{ route('shipments.show', $case->shipment) }}">{{ $case->shipment->shipment_no }}</a></div></div>
+                <div><div class="dt">{{ __('Vehicle / driver') }}</div><div class="dd">{{ $case->vehicle->plate ?? '—' }} · {{ $case->driver->name ?? '—' }}</div></div>
                 <div><div class="dt">Incident</div><div class="dd" style="color:var(--error)">{{ $case->incident_note }}</div></div>
             @else
-                <div><div class="dt">Alert</div><div class="dd">{{ $case->title }}</div></div>
-                <div><div class="dt">Severity</div><div class="dd">{{ $case->severity }}</div></div>
+                <div><div class="dt">{{ __('Alert') }}</div><div class="dd">{{ $case->title }}</div></div>
+                <div><div class="dt">{{ __('Severity') }}</div><div class="dd">{{ $case->severity }}</div></div>
                 <div style="grid-column:1/-1"><div class="dt">Message</div><div class="dd">{{ $case->message }}</div></div>
                 @if ($case->link)<div><div class="dt">Linked record</div><div class="dd"><a class="rowlink" href="{{ $case->link }}">{{ $case->link }}</a></div></div>@endif
             @endif

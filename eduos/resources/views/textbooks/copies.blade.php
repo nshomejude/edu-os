@@ -12,7 +12,7 @@
 
     <div class="card">
         <table class="table">
-            <thead><tr><th>NCID</th><th>Batch</th><th>Lifecycle state</th><th>Condition</th></tr></thead>
+            <thead><tr><th>NCID</th><th>{{ __('Batch') }}</th><th>Lifecycle state</th><th>{{ __('Condition') }}</th></tr></thead>
             <tbody>
             @forelse ($copies as $c)
                 <tr>

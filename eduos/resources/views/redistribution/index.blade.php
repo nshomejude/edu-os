@@ -13,7 +13,7 @@
 
     <div class="card">
         <table class="table">
-            <thead><tr><th>#</th><th>From</th><th>To</th><th>Title</th><th>Qty</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>#</th><th>{{ __('From') }}</th><th>To</th><th>{{ __('Title') }}</th><th>{{ __('Qty') }}</th><th>Reason</th><th>{{ __('Status') }}</th><th></th></tr></thead>
             <tbody>
             @forelse ($proposals as $p)
                 <tr>
@@ -26,8 +26,8 @@
                     <td><span class="pill {{ $p->status === 'APPROVED' ? 'pill-success' : ($p->status === 'REJECTED' ? 'pill-pending' : 'pill-transit') }}">{{ $p->status }}</span></td>
                     <td style="white-space:nowrap">
                         @if ($p->status === 'PROPOSED')
-                            <form method="post" action="{{ route('redistribution.approve', $p) }}" style="display:inline">@csrf<button class="btn btn-sm btn-primary">Approve</button></form>
-                            <form method="post" action="{{ route('redistribution.reject', $p) }}" style="display:inline">@csrf<button class="btn btn-sm btn-secondary">Reject</button></form>
+                            <form method="post" action="{{ route('redistribution.approve', $p) }}" style="display:inline">@csrf<button class="btn btn-sm btn-primary">{{ __('Approve') }}</button></form>
+                            <form method="post" action="{{ route('redistribution.reject', $p) }}" style="display:inline">@csrf<button class="btn btn-sm btn-secondary">{{ __('Reject') }}</button></form>
                         @elseif ($p->shipment_id)
                             <a class="rowlink" href="{{ route('shipments.show', $p->shipment_id) }}">Shipment →</a>
                         @endif

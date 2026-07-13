@@ -12,7 +12,7 @@
     <div class="card">
         <h2>Textbook assignment history</h2>
         <table class="table">
-            <thead><tr><th>Title</th><th>Year</th><th>Status</th><th>Condition on return</th><th>By</th><th>Date</th></tr></thead>
+            <thead><tr><th>{{ __('Title') }}</th><th>{{ __('Year') }}</th><th>{{ __('Status') }}</th><th>Condition on return</th><th>By</th><th>{{ __('Date') }}</th></tr></thead>
             <tbody>
             @forelse ($assignments as $a)
                 <tr>

@@ -7,7 +7,7 @@
             <div class="sub">Operational intelligence — coverage, delivery performance, loss analysis</div>
         </div>
         <div class="toolbar" style="margin:0">
-            <a class="btn btn-secondary" href="{{ route('exports.index') }}">Export Centre</a>
+            <a class="btn btn-secondary" href="{{ route('exports.index') }}">{{ __('Export Centre') }}</a>
             <a class="btn btn-secondary" href="{{ route('forecast.index') }}">Demand forecast</a>
             <a class="btn btn-secondary" href="{{ route('campaigns.index') }}">Verification campaigns</a>
         </div>
@@ -27,7 +27,7 @@
         <div class="card mb">
             <h2>Drill-down — {{ $drill['region']->name_en }} region by division</h2>
             <table class="table">
-                <thead><tr><th>Division</th><th>Schools</th><th>Validated learners</th><th>Books at schools</th><th>Books / learner</th></tr></thead>
+                <thead><tr><th>Division</th><th>{{ __('Schools') }}</th><th>Validated learners</th><th>Books at schools</th><th>Books / learner</th></tr></thead>
                 <tbody>
                 @foreach ($drill['divisions'] as $d)
                     <tr>
@@ -60,7 +60,7 @@
         <div class="card">
             <h2>RPT-LCS — Shipments by status</h2>
             <table class="table">
-                <thead><tr><th>Status</th><th>Shipments</th><th>Books</th></tr></thead>
+                <thead><tr><th>{{ __('Status') }}</th><th>{{ __('Shipments') }}</th><th>{{ __('Books') }}</th></tr></thead>
                 <tbody>
                 @foreach ($byStatus as $row)
                     <tr>
@@ -76,7 +76,7 @@
         <div class="card">
             <h2>Stock position by class</h2>
             <table class="table">
-                <thead><tr><th>Class</th><th>Quantity</th></tr></thead>
+                <thead><tr><th>{{ __('Class') }}</th><th>{{ __('Quantity') }}</th></tr></thead>
                 <tbody>
                 @foreach ($stockByClass as $class => $qty)
                     <tr>
@@ -92,7 +92,7 @@
     <div class="card">
         <h2>RPT-LOSS — Open discrepancy cases (variance never silently absorbed)</h2>
         <table class="table">
-            <thead><tr><th>Shipment</th><th>Destination</th><th>Expected</th><th>Received</th><th>Variance</th><th>Date</th></tr></thead>
+            <thead><tr><th>{{ __('Shipment') }}</th><th>{{ __('Destination') }}</th><th>{{ __('Expected') }}</th><th>{{ __('Received') }}</th><th>{{ __('Variance') }}</th><th>{{ __('Date') }}</th></tr></thead>
             <tbody>
             @forelse ($discrepancies as $d)
                 <tr>
