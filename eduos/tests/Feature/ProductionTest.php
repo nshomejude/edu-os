@@ -98,7 +98,7 @@ class ProductionTest extends TestCase
             '/reports', '/reports/coverage', '/reports/campaign-performance', '/reports/performance',
             '/collections', '/charges', '/disposals', '/schedule', '/schools', '/schools/create', '/settings', '/shipments',
             '/shipments/create', '/textbooks', '/users', '/warehouses', '/up',
-            '/api/catalogue', '/api/schools', '/api/stats', '/api/openapi.json',
+            '/api/catalogue', '/api/schools', '/api/stats', '/api/openapi.json', '/verify',
             '/schools/'.$school->id, '/schools/'.$school->id.'/students',
             '/warehouses/'.$warehouse->id, '/textbooks/'.$title->id,
         ];

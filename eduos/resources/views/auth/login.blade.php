@@ -31,7 +31,10 @@
             </div>
             <button class="btn btn-primary" style="width:100%;justify-content:center;">{{ __('Sign in') }}</button>
         </form>
-        <p style="text-align:center;margin-top:12px"><a href="{{ route('password.request') }}" style="color:var(--heritage-green);font-size:13px">Forgot password?</a></p>
+        <p style="text-align:center;margin-top:12px">
+            <a href="{{ route('password.request') }}" style="color:var(--heritage-green);font-size:13px">Forgot password?</a>
+            · <a href="{{ route('verify') }}" style="color:var(--heritage-green);font-size:13px">Verify a textbook</a>
+        </p>
 
         <div style="margin-top:24px;border:1px dashed var(--cameroon-gold);border-radius:14px;padding:14px 16px;background:#FBF7EB;">
             <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--heritage-green);margin-bottom:8px;">

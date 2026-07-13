@@ -120,4 +120,30 @@ class PublicApiController extends Controller
             fclose($out);
         }, 'rpt-cov-coverage.csv', ['Content-Type' => 'text/csv']);
     }
+    /** Public QR verification (guest): is this a legitimate government copy? No school or learner data is exposed. */
+    public function verify(\Illuminate\Http\Request $request)
+    {
+        $ncid = trim((string) $request->query('ncid'));
+        $copy = null;
+        $verdict = null;
+        $chainIntact = null;
+        if ($ncid !== '') {
+            $copy = \App\Modules\Catalogue\Models\Copy::with('batch.title', 'batch.passportEvents')->where('ncid', $ncid)->first();
+            if (! $copy) {
+                $verdict = 'UNKNOWN';
+            } elseif ($copy->batch->recalled_at || $copy->lifecycle_state === 'RECALLED') {
+                $verdict = 'RECALLED';
+            } elseif (in_array($copy->lifecycle_state, ['RETIRED', 'DISPOSED'])) {
+                $verdict = 'WITHDRAWN';
+            } elseif ($copy->lifecycle_state === 'LOST') {
+                $verdict = 'REPORTED_LOST';
+            } else {
+                $verdict = 'AUTHENTIC';
+                $chainIntact = $copy->batch->passportEvents->every(fn ($e) => ! $e->hash || $e->verifyChainLink());
+            }
+        }
+
+        return view('verify', compact('ncid', 'copy', 'verdict', 'chainIntact'));
+    }
+
 }

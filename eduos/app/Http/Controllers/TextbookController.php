@@ -146,7 +146,7 @@ class TextbookController extends Controller
             new \BaconQrCode\Renderer\RendererStyle\RendererStyle(220),
             new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
         );
-        $qrSvg = (new \BaconQrCode\Writer($renderer))->writeString($copy->ncid);
+        $qrSvg = (new \BaconQrCode\Writer($renderer))->writeString(route('verify', ['ncid' => $copy->ncid]));
 
         return view('textbooks.copy', compact('copy', 'qrSvg'));
     }

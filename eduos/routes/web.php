@@ -23,6 +23,7 @@ Route::get('/api/catalogue', [\App\Http\Controllers\PublicApiController::class, 
 Route::get('/api/schools', [\App\Http\Controllers\PublicApiController::class, 'schools'])->name('api.schools');
 Route::get('/api/stats', [\App\Http\Controllers\PublicApiController::class, 'stats'])->name('api.stats');
 Route::get('/api/openapi.json', [\App\Http\Controllers\PublicApiController::class, 'openapi'])->name('api.openapi');
+Route::get('/verify', [\App\Http\Controllers\PublicApiController::class, 'verify'])->name('verify')->middleware('throttle:30,1');
 
 // AUTH-02/03/04: forgot / reset / MFA challenge (guest routes)
 Route::get('/forgot-password', [\App\Http\Controllers\AuthExtrasController::class, 'forgotForm'])->name('password.request');
