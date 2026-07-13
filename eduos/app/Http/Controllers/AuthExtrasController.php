@@ -54,8 +54,26 @@ class AuthExtrasController extends Controller
             ['token' => Hash::make($token), 'created_at' => now()]
         );
 
-        // Production: delivered by email/SMS. Demo: shown on screen.
-        return back()->with('flash', 'Reset link (demo delivery): '.route('password.reset', ['token' => $token, 'email' => $email]));
+        $link = route('password.reset', ['token' => $token, 'email' => $email]);
+        // Real mailer configured: deliver by email and never disclose the link
+        if (! in_array(config('mail.default'), ['log', 'array'])) {
+            try {
+                \Illuminate\Support\Facades\Mail::raw(
+                    "Reset your EduOS password (valid 60 minutes): {$link}",
+                    fn ($m) => $m->to($email)->subject('EduOS Cameroon — password reset')
+                );
+
+                return back()->with('flash', 'If that account exists, a reset link has been emailed.');
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+        if (app()->environment('production')) {
+            return back()->with('flash', 'If that account exists, a reset link has been issued.');
+        }
+
+        // Demo: shown on screen
+        return back()->with('flash', 'Reset link (demo delivery): '.$link);
     }
 
     public function resetForm(Request $request, string $token)
@@ -74,7 +92,7 @@ class AuthExtrasController extends Controller
         if (! $row || ! Hash::check($data['token'], $row->token) || now()->diffInMinutes($row->created_at) > 60) {
             return back()->with('flash_error', 'Invalid or expired reset token.');
         }
-        User::where('email', $data['email'])->update(['password' => Hash::make($data['password'])]);
+        User::where('email', $data['email'])->update(['password' => Hash::make($data['password']), 'must_change_password' => false]);
         DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
         \App\Modules\Platform\Models\AuthEvent::log('PASSWORD_RESET', $data['email']);
 

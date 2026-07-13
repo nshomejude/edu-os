@@ -43,10 +43,12 @@ class PlatformController extends Controller
             'ministry' => 'nullable|in:MINEDUB,MINESEC',
             'school_id' => 'nullable|exists:schools,id',
         ]);
-        $data['password'] = \Illuminate\Support\Facades\Hash::make('password');
+        $temp = \Illuminate\Support\Str::random(12);
+        $data['password'] = \Illuminate\Support\Facades\Hash::make($temp);
         $user = User::create($data);
+        $user->forceFill(['must_change_password' => true])->save();
 
-        return back()->with('flash', "User {$user->email} created (initial password: password).");
+        return back()->with('flash', "User {$user->email} created. Temporary password (shown once): {$temp} — they must change it at first login.");
     }
 
     /** Edit role/ministry/scoping after creation (RBAC scoping was previously write-once). */

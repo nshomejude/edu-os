@@ -19,16 +19,20 @@ class ProfileController extends Controller
             'current_password' => 'required|current_password',
             'password' => 'required|string|min:8|confirmed',
         ]);
-        $request->user()->update(['password' => Hash::make($data['password'])]);
+        $request->user()->forceFill([
+            'password' => Hash::make($data['password']), 'must_change_password' => false,
+        ])->save();
 
         return back()->with('flash', 'Password changed.');
     }
 
-    /** Admin reset: back to the initial password, forcing a change at next login is future work. */
+    /** Admin reset: random temporary password, rotation forced at next login. */
     public function resetPassword(\App\Models\User $user)
     {
-        $user->update(['password' => Hash::make('password')]);
+        $temp = \Illuminate\Support\Str::random(12);
+        $user->forceFill(['password' => Hash::make($temp), 'must_change_password' => true])->save();
+        \App\Modules\Platform\Models\AuthEvent::log('PASSWORD_RESET', $user->email, $user->id);
 
-        return back()->with('flash', "Password for {$user->email} reset to the initial value.");
+        return back()->with('flash', "Temporary password for {$user->email} (shown once): {$temp} — rotation forced at next login.");
     }
 }

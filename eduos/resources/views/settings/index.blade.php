@@ -48,7 +48,7 @@
             <h2>Platform</h2>
             <div class="detail-grid" style="grid-template-columns:1fr 1fr">
                 <div><div class="dt">Environment</div><div class="dd">{{ app()->environment() }} (demo seed data)</div></div>
-                <div><div class="dt">Version</div><div class="dd">EduOS v0.1 — Phase I skeleton</div></div>
+                <div><div class="dt">Version</div><div class="dd">EduOS v1.0 — production candidate</div></div>
                 <div><div class="dt">Languages</div><div class="dd">English · Français (FR UI in build plan)</div></div>
                 <div><div class="dt">Design language</div><div class="dd">EduOS Heritage UI</div></div>
             </div>
