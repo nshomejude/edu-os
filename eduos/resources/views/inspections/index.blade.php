@@ -62,4 +62,34 @@
         </table>
         {{ $inspections->links('partials.pagination') }}
     </div>
+    <div class="card" style="margin-top:18px">
+        <h2>Verification queue (VER-01)</h2>
+        @can('division')
+        <form class="toolbar" method="post" action="{{ route('inspections.assign') }}" style="margin-bottom:14px">@csrf
+            <select class="input" name="school_id" required style="min-width:240px">
+                @foreach ($schools as $s)<option value="{{ $s->id }}">{{ $s->name_official }}</option>@endforeach
+            </select>
+            <select class="input" name="inspector_id" required style="min-width:180px">
+                @foreach ($inspectors ?? [] as $i)<option value="{{ $i->id }}">{{ $i->name }}</option>@endforeach
+            </select>
+            <input class="input" type="date" name="due_on" required>
+            <button class="btn btn-secondary btn-sm">Assign</button>
+        </form>
+        @endcan
+        <table class="table">
+            <thead><tr><th>School</th><th>Inspector</th><th>Due</th><th>Status</th></tr></thead>
+            <tbody>
+            @forelse ($assignments ?? [] as $a)
+                <tr>
+                    <td>{{ $a->school->name_official }}</td>
+                    <td>{{ $a->inspector->name }}</td>
+                    <td>{{ $a->due_on->format('d M Y') }} @if ($a->status === 'ASSIGNED' && $a->due_on->isPast())<span class="pill pill-error">OVERDUE</span>@endif</td>
+                    <td><span class="pill {{ $a->status === 'DONE' ? 'pill-success' : 'pill-info' }}">{{ $a->status }}</span></td>
+                </tr>
+            @empty
+                <tr><td colspan="4">Queue empty — assign schools for verification.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
 @endsection

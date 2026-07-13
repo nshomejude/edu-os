@@ -22,4 +22,22 @@
             </tbody>
         </table>
     </div>
+    <div class="card" style="margin-top:18px">
+        <h2>Login history (AUTH-01 audit)</h2>
+        <table class="table">
+            <thead><tr><th>When</th><th>Event</th><th>IP</th><th>Client</th></tr></thead>
+            <tbody>
+            @forelse ($authEvents ?? [] as $ev)
+                <tr>
+                    <td>{{ $ev->created_at->format('d M Y H:i') }}</td>
+                    <td><span class="pill {{ in_array($ev->event, ['LOGIN_OK', 'MFA_OK']) ? 'pill-success' : 'pill-error' }}">{{ str_replace('_', ' ', $ev->event) }}</span></td>
+                    <td>{{ $ev->ip ?? '—' }}</td>
+                    <td style="font-size:12.5px;color:var(--text-2)">{{ \Illuminate\Support\Str::limit($ev->user_agent, 60) }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="4">No recorded events yet.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
 @endsection

@@ -36,6 +36,15 @@
             <input class="input" name="grade_code" placeholder="Grade" required maxlength="2" style="min-width:90px">
             <select class="input" name="language" style="min-width:90px"><option>EN</option><option>FR</option><option>BI</option></select>
             <input class="input" name="isbn" placeholder="ISBN (optional)" style="min-width:150px">
+            <input class="input" name="publisher" placeholder="Publisher" style="min-width:140px">
+            <input class="input" type="number" name="pages" placeholder="Pages" style="min-width:85px">
+            <input class="input" type="number" name="weight_grams" placeholder="Weight g" style="min-width:95px">
+            <select class="input" name="curriculum_version_id" style="min-width:190px">
+                <option value="">Curriculum…</option>
+                @foreach (\App\Modules\Catalogue\Models\CurriculumVersion::where('status', 'ACTIVE')->get() as $cv)
+                    <option value="{{ $cv->id }}">{{ $cv->name }} ({{ $cv->year }})</option>
+                @endforeach
+            </select>
             <select class="input" name="tracking_granularity" style="min-width:120px"><option>BATCH</option><option>COPY</option></select>
             <button class="btn btn-primary">Register</button>
         </form>

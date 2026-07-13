@@ -59,7 +59,7 @@
                 <tbody>
                 @forelse ($trips as $t)
                     <tr>
-                        <td><a class="rowlink" href="{{ route('shipments.show', $t->shipment) }}">{{ $t->shipment->shipment_no }}</a></td>
+                        <td><a class="rowlink" href="{{ route('trips.show', $t) }}">TRIP-{{ $t->id }}</a> · <a class="rowlink" href="{{ route('shipments.show', $t->shipment) }}">{{ $t->shipment->shipment_no }}</a></td>
                         <td>{{ $t->vehicle->plate ?? '—' }} · {{ $t->driver->name ?? '—' }}</td>
                         <td><span class="pill {{ $t->status === 'ARRIVED' ? 'pill-success' : ($t->status === 'INCIDENT' ? 'pill-error' : 'pill-info') }}">{{ $t->status }}</span></td>
                         <td style="min-width:230px">

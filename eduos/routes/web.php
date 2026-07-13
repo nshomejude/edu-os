@@ -33,7 +33,7 @@ Route::get('/mfa', [\App\Http\Controllers\AuthExtrasController::class, 'mfaChall
 Route::post('/mfa', [\App\Http\Controllers\AuthExtrasController::class, 'mfaVerify'])->name('mfa.verify');
 
 Route::get('/login', [PlatformController::class, 'login'])->name('login');
-Route::post('/login', [PlatformController::class, 'authenticate'])->name('login.post');
+Route::post('/login', [PlatformController::class, 'authenticate'])->name('login.post')->middleware('throttle:20,1');
 Route::post('/logout', [PlatformController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
@@ -124,6 +124,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/inventory/low-stock', [WarehouseController::class, 'lowStock'])->name('warehouses.lowstock');
     Route::get('/procurement/orders/{order}', [\App\Http\Controllers\ProcurementController::class, 'showOrder'])->name('procurement.order')->middleware('can:procurement');
     Route::get('/procurement/suppliers/{supplier}', [\App\Http\Controllers\ProcurementController::class, 'showSupplier'])->name('procurement.supplier')->middleware('can:procurement');
+    // Depth pass: requirements, adjustments, trip detail, verification queue, exception cases
+    Route::post('/schools/{school}/requirements', [\App\Http\Controllers\SchoolOpsController::class, 'submitRequirement'])->name('schoolops.requirement')->middleware('can:school-ops');
+    Route::post('/warehouses/{warehouse}/adjust', [WarehouseController::class, 'adjust'])->name('warehouses.adjust')->middleware('can:warehouse-approve');
+    Route::get('/trips/{trip}', [\App\Http\Controllers\LogisticsController::class, 'showTrip'])->name('trips.show');
+    Route::post('/inspections/assign', [\App\Http\Controllers\InspectionController::class, 'assign'])->name('inspections.assign')->middleware('can:division');
+    Route::get('/exceptions/{type}/{id}', [\App\Http\Controllers\ExceptionController::class, 'show'])->name('exceptions.show')->whereIn('type', ['discrepancy', 'inspection', 'incident', 'alert']);
     Route::get('/exports', fn () => view('reports.exports'))->name('exports.index');
     Route::get('/reports/shipments.csv', [\App\Http\Controllers\PublicApiController::class, 'shipmentsCsv'])->name('reports.shipments.csv');
     Route::get('/reports/stock.csv', [\App\Http\Controllers\PublicApiController::class, 'stockCsv'])->name('reports.stock.csv');

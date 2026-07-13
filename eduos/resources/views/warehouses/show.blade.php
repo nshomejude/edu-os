@@ -101,4 +101,23 @@
             </table>
         </div>
     </div>
+    @can('warehouse-approve')
+    <div class="card" style="margin-top:18px">
+        <h2>Manual stock adjustment (INV-08)</h2>
+        <form class="toolbar" method="post" action="{{ route('warehouses.adjust', $warehouse) }}" style="margin:0">@csrf
+            <select class="input" name="textbook_title_id" required style="min-width:230px">
+                @foreach (\App\Modules\Catalogue\Models\TextbookTitle::where('status', 'APPROVED')->get() as $t)
+                    <option value="{{ $t->id }}">{{ $t->ntid }}</option>
+                @endforeach
+            </select>
+            <input class="input" type="number" name="delta" placeholder="± copies" required style="min-width:110px">
+            <select class="input" name="reason" required>
+                <option>DAMAGE</option><option>LOSS</option><option>THEFT</option><option>CORRECTION</option><option>FOUND</option>
+            </select>
+            <input class="input" name="note" placeholder="Note (journalled)" style="min-width:180px">
+            <button class="btn btn-danger">Post adjustment</button>
+        </form>
+        <p style="color:var(--text-2);font-size:13px;margin-top:8px">Adjustments post to the AVAILABLE ledger and are permanently journalled with your name and the reason code.</p>
+    </div>
+    @endcan
 @endsection

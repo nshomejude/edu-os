@@ -177,4 +177,23 @@ class SchoolOpsController extends Controller
 
         return back()->with('flash', 'Enrolment return validated.');
     }
+    /** PLAN-03: a school submits its own textbook requirement for the planning cycle. */
+    public function submitRequirement(\Illuminate\Http\Request $request, \App\Modules\Registry\Models\School $school)
+    {
+        $data = $request->validate([
+            'textbook_title_id' => 'required|exists:textbook_titles,id',
+            'quantity' => 'required|integer|min:1|max:100000',
+            'note' => 'nullable|string|max:200',
+        ]);
+        \App\Modules\Planning\Models\SchoolRequirement::updateOrCreate(
+            [
+                'school_id' => $school->id, 'textbook_title_id' => $data['textbook_title_id'],
+                'academic_year' => \App\Modules\Platform\Models\Setting::get('academic_year', '2025/2026'),
+            ],
+            ['quantity' => $data['quantity'], 'note' => $data['note'] ?? null, 'submitted_by' => auth()->user()->name, 'status' => 'SUBMITTED']
+        );
+
+        return back()->with('flash', 'Requirement submitted — it will be considered at the next campaign draft (PLAN-03).');
+    }
+
 }

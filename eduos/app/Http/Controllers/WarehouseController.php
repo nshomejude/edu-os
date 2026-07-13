@@ -160,4 +160,21 @@ class WarehouseController extends Controller
 
         return redirect()->route('shipments.show', $shipment)->with('flash', "Transfer {$shipment->shipment_no} confirmed to {$dest->name}.");
     }
+    /** INV-08: manual stock adjustment with a reason code; journalled, approval-tier gated. */
+    public function adjust(Request $request, Warehouse $warehouse)
+    {
+        $data = $request->validate([
+            'textbook_title_id' => 'required|exists:textbook_titles,id',
+            'delta' => 'required|integer|between:-100000,100000|not_in:0',
+            'reason' => 'required|in:DAMAGE,LOSS,THEFT,CORRECTION,FOUND',
+            'note' => 'nullable|string|max:200',
+        ]);
+        $rec = StockRecord::post($warehouse->id, $data['textbook_title_id'], 'AVAILABLE', (int) $data['delta']);
+        \App\Modules\Custody\Models\StockTransaction::latest('id')->first()?->update([
+            'context' => "ADJUSTMENT {$data['reason']}".(! empty($data['note']) ? " — {$data['note']}" : ''),
+        ]);
+
+        return back()->with('flash', sprintf('Adjustment posted: %+d (%s). AVAILABLE balance now %d.', $data['delta'], $data['reason'], $rec->quantity));
+    }
+
 }

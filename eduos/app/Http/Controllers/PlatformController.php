@@ -102,6 +102,14 @@ class PlatformController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
+        // AUTH-01 §H: lockout after 5 failed attempts (per email+IP, 5-minute decay)
+        $key = 'login:'.strtolower($credentials['email']).'|'.$request->ip();
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 5)) {
+            \App\Modules\Platform\Models\AuthEvent::log('LOGIN_LOCKOUT', $credentials['email']);
+            $wait = \Illuminate\Support\Facades\RateLimiter::availableIn($key);
+
+            return back()->withInput()->withErrors(['email' => "Too many failed attempts — account locked for {$wait}s (AUTH-01)."]);
+        }
         $candidate = \App\Models\User::where('email', $credentials['email'])->where('is_active', 1)->first();
         if ($candidate && $candidate->mfa_enabled && \Illuminate\Support\Facades\Hash::check($credentials['password'], $candidate->password)) {
             session(['mfa:pending' => $candidate->id]);
@@ -109,16 +117,23 @@ class PlatformController extends Controller
             return redirect()->route('mfa.challenge');
         }
         if (auth()->attempt($credentials + ['is_active' => 1], true)) {
+            \Illuminate\Support\Facades\RateLimiter::clear($key);
+            \App\Modules\Platform\Models\AuthEvent::log('LOGIN_OK', $credentials['email'], auth()->id());
             $request->session()->regenerate();
 
             return redirect()->intended(route('dashboard'));
         }
+        \Illuminate\Support\Facades\RateLimiter::hit($key, 300);
+        \App\Modules\Platform\Models\AuthEvent::log('LOGIN_FAIL', $credentials['email']);
 
         return back()->withInput()->withErrors(['email' => 'Invalid credentials.']);
     }
 
     public function logout(Request $request)
     {
+        if (auth()->check()) {
+            \App\Modules\Platform\Models\AuthEvent::log('LOGOUT', auth()->user()->email, auth()->id());
+        }
         auth()->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

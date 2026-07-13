@@ -75,4 +75,12 @@ class LogisticsController extends Controller
 
         return back()->with('flash', 'Trip closed; vehicle and driver released.');
     }
+    /** LOG-06: trip details — consignment, crew, route and the custody timeline. */
+    public function showTrip(Trip $trip)
+    {
+        $trip->load(['shipment.custodyEvents', 'shipment.title', 'vehicle', 'driver']);
+
+        return view('logistics.trip', compact('trip'));
+    }
+
 }

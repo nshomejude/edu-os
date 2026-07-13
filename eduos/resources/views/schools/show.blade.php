@@ -166,4 +166,30 @@
             </table>
         </div>
     </div>
+    @can('school-ops')
+    <div class="card" style="margin-top:18px">
+        <h2>Textbook requirements (PLAN-03)</h2>
+        <form class="toolbar" method="post" action="{{ route('schoolops.requirement', $school) }}" style="margin-bottom:12px">@csrf
+            <select class="input" name="textbook_title_id" required style="min-width:230px">
+                @foreach (\App\Modules\Catalogue\Models\TextbookTitle::where('status', 'APPROVED')->get() as $t)
+                    <option value="{{ $t->id }}">{{ $t->ntid }}</option>
+                @endforeach
+            </select>
+            <input class="input" type="number" name="quantity" min="1" placeholder="Copies needed" required style="min-width:130px">
+            <input class="input" name="note" placeholder="Justification (optional)" style="min-width:200px">
+            <button class="btn btn-primary">Submit requirement</button>
+        </form>
+        <table class="table">
+            <thead><tr><th>Title</th><th>Year</th><th>Qty</th><th>By</th><th>Status</th></tr></thead>
+            <tbody>
+            @forelse (\App\Modules\Planning\Models\SchoolRequirement::with('title')->where('school_id', $school->id)->orderByDesc('id')->limit(10)->get() as $r)
+                <tr><td>{{ $r->title->ntid }}</td><td>{{ $r->academic_year }}</td><td>{{ number_format($r->quantity) }}</td><td>{{ $r->submitted_by }}</td>
+                    <td><span class="pill {{ $r->status === 'CONSIDERED' ? 'pill-success' : 'pill-info' }}">{{ $r->status }}</span></td></tr>
+            @empty
+                <tr><td colspan="5">No requirements submitted for this school.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @endcan
 @endsection

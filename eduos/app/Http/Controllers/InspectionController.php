@@ -17,6 +17,9 @@ class InspectionController extends Controller
             'inspections' => Inspection::with(['school', 'title'])->orderByDesc('inspected_on')->paginate(15),
             'schools' => School::where('status', 'OPERATIONAL')->orderBy('name_official')->get(),
             'titles' => \App\Modules\Catalogue\Models\TextbookTitle::where('status', 'APPROVED')->get(),
+            'assignments' => \App\Modules\SchoolOps\Models\InspectionAssignment::with(['school', 'inspector'])
+                ->orderBy('status')->orderBy('due_on')->limit(30)->get(),
+            'inspectors' => \App\Models\User::whereIn('role', ['INSPECTOR', 'ADMIN'])->where('is_active', 1)->orderBy('name')->get(),
         ]);
     }
 
@@ -45,6 +48,10 @@ class InspectionController extends Controller
             'outcome' => $outcome,
         ]);
 
+        // VER-01: recording a check completes any open assignment for this school
+        \App\Modules\SchoolOps\Models\InspectionAssignment::where('school_id', $data['school_id'])
+            ->where('status', 'ASSIGNED')->update(['status' => 'DONE']);
+
         if ($outcome === 'MAJOR_FINDINGS') {
             Alert::create([
                 'severity' => 'CRITICAL',
@@ -64,4 +71,17 @@ class InspectionController extends Controller
 
         return back()->with('flash', 'Corrective action recorded; inspection closed.');
     }
+    /** VER-01: supervisors assign schools to inspectors with a due date. */
+    public function assign(Request $request)
+    {
+        $data = $request->validate([
+            'school_id' => 'required|exists:schools,id',
+            'inspector_id' => 'required|exists:users,id',
+            'due_on' => 'required|date',
+        ]);
+        \App\Modules\SchoolOps\Models\InspectionAssignment::create($data + ['assigned_by' => auth()->user()->name]);
+
+        return back()->with('flash', 'Inspection assigned to the verification queue.');
+    }
+
 }

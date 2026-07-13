@@ -123,6 +123,7 @@ class ShipmentController extends Controller
             'vehicle_id' => 'nullable|exists:vehicles,id',
             'driver_id' => 'nullable|exists:drivers,id',
             'route_note' => 'nullable|string|max:200',
+            'route_stops' => 'nullable|string|max:400',
         ]);
         StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'RESERVED', -$shipment->books);
         StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', $shipment->books);
@@ -142,6 +143,7 @@ class ShipmentController extends Controller
             'driver_id' => $data['driver_id'] ?? null,
             'status' => 'EN_ROUTE', 'departed_at' => now(),
             'route_note' => $data['route_note'] ?? null,
+            'route_stops' => $data['route_stops'] ?? null,
         ]);
         $trip->vehicle?->update(['status' => 'ON_TRIP']);
         $trip->driver?->update(['status' => 'ON_TRIP']);
@@ -155,16 +157,26 @@ class ShipmentController extends Controller
         if (! in_array($shipment->status, ['IN_TRANSIT', 'DISPATCHED', 'ARRIVED'])) {
             return back()->with('flash_error', "ILLEGAL_TRANSITION: {$shipment->status} → RECEIVED.");
         }
-        $data = $request->validate(['received_books' => 'required|integer|min:0']);
+        $data = $request->validate([
+            'received_books' => 'required|integer|min:0',
+            'received_signature' => 'nullable|string|max:120',
+            'discrepancy_category' => 'nullable|in:SHORTAGE,DAMAGE,WRONG_TITLE,EXCESS,OTHER',
+            'discrepancy_evidence' => 'nullable|image|max:4096',
+        ]);
+        $evidencePath = $request->hasFile('discrepancy_evidence')
+            ? $request->file('discrepancy_evidence')->store('evidence', 'public') : null;
         $received = min($data['received_books'], $shipment->books);
         $variance = $received - $shipment->books;
 
         StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', -$shipment->books);
 
-        $shipment->update([
+        $shipment->forceFill([
             'received_books' => $received,
             'status' => $variance === 0 ? 'RECEIVED_FULL' : 'RECEIVED_WITH_DISCREPANCY',
-        ]);
+            'received_signature' => $data['received_signature'] ?? (auth()->user()->name ?? null),
+            'discrepancy_category' => $variance === 0 ? null : ($data['discrepancy_category'] ?? 'SHORTAGE'),
+            'discrepancy_evidence_path' => $evidencePath,
+        ])->save();
         // Trip closes on receipt (LOG)
         $trip = \App\Modules\Logistics\Models\Trip::where('shipment_id', $shipment->id)->latest('id')->first();
         if ($trip && $trip->status !== 'ARRIVED') {

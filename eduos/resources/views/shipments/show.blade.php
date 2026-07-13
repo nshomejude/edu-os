@@ -59,7 +59,8 @@
                         <option value="{{ $v->id }}">{{ $v->plate }} ({{ $v->model }})</option>
                     @endforeach
                 </select>
-                <input class="input" name="route_note" placeholder="Route (e.g. Ydé–Obala–Bafia)" style="min-width:200px">
+                <input class="input" name="route_note" placeholder="Route note" style="min-width:150px">
+                <input class="input" name="route_stops" placeholder="Stops in order (Obala; Bafia; Ntui)" style="min-width:220px">
                 <select class="input" name="driver_id" style="min-width:150px">
                     <option value="">Driver…</option>
                     @foreach (\App\Modules\Logistics\Models\Driver::where('status', 'AVAILABLE')->get() as $d)
@@ -79,9 +80,15 @@
     @if (in_array($shipment->status, ['DISPATCHED', 'IN_TRANSIT', 'ARRIVED']))
         <div class="card mb">
             <h2>School receipt — counted quantity (FR-NWD-SM-02)</h2>
-            <form class="toolbar" method="post" action="{{ route('shipments.receive', $shipment) }}" style="margin:0">
+            <form class="toolbar" method="post" action="{{ route('shipments.receive', $shipment) }}" style="margin:0" enctype="multipart/form-data">
                 @csrf
                 <input class="input" type="number" name="received_books" min="0" placeholder="Counted books" required>
+                <input class="input" name="received_signature" placeholder="Receiver signature (full name)" required style="min-width:210px">
+                <select class="input" name="discrepancy_category" style="min-width:165px">
+                    <option value="">If short: category…</option>
+                    <option>SHORTAGE</option><option>DAMAGE</option><option>WRONG_TITLE</option><option>EXCESS</option><option>OTHER</option>
+                </select>
+                <input class="input" type="file" name="discrepancy_evidence" accept="image/*" style="min-width:165px;padding-top:11px">
                 <button class="btn btn-primary">Confirm receipt</button>
                 <span style="color:var(--text-2);font-size:13.5px">Any variance opens a discrepancy case automatically — it cannot be silently absorbed.</span>
             </form>
@@ -106,6 +113,8 @@
 
     <div class="card">
         <h2>Chain of custody</h2>
+        @php($trip = \App\Modules\Logistics\Models\Trip::where('shipment_id', $shipment->id)->latest('id')->first())
+        @if ($trip)<p style="margin-bottom:10px"><a class="rowlink" href="{{ route('trips.show', $trip) }}">Trip TRIP-{{ $trip->id }} — vehicle, route and timeline →</a></p>@endif
         <div class="timeline">
             @foreach ($shipment->custodyEvents as $ev)
                 <div class="tl {{ $ev->event_type === 'DISCREPANCY_OPENED' ? 'warn' : '' }}">

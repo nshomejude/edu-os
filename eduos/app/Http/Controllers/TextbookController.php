@@ -42,7 +42,14 @@ class TextbookController extends Controller
             'language' => 'required|in:EN,FR,BI',
             'tracking_granularity' => 'required|in:COPY,BATCH',
             'isbn' => 'nullable|string|max:17',
+            'publisher' => 'nullable|string|max:160',
+            'pages' => 'nullable|integer|min:1|max:2000',
+            'weight_grams' => 'nullable|integer|min:1|max:5000',
+            'curriculum_version_id' => 'nullable|exists:curriculum_versions,id',
         ]);
+        if (! empty($data['isbn']) && ! self::isbnValid($data['isbn'])) {
+            return back()->withInput()->with('flash_error', 'ISBN-13 check digit does not verify — check the number (BOOK-05).');
+        }
         $data['subject_code'] = strtoupper($data['subject_code']);
         $data['grade_code'] = strtoupper($data['grade_code']);
         $min = $data['ministry'] === 'MINEDUB' ? 'B' : 'S';
@@ -53,7 +60,9 @@ class TextbookController extends Controller
             'language' => $data['language'],
         ])->count() + 1;
         $data['ntid'] = sprintf('CM-TB-%s-%s-%s-%s-%04d-01', $min, $data['subject_code'], $data['grade_code'], $data['language'], $seq);
-        $title = TextbookTitle::create($data);   // status defaults to DRAFT
+        $extras = array_intersect_key($data, array_flip(['publisher', 'pages', 'weight_grams', 'curriculum_version_id']));
+        $title = TextbookTitle::create(array_diff_key($data, $extras));   // status defaults to DRAFT
+        $title->forceFill($extras)->save();
 
         return redirect()->route('textbooks.show', $title)
             ->with('flash', "Title registered as {$title->ntid} in DRAFT — approve it to enter the catalogue (FR-NTR-02).");
@@ -234,4 +243,19 @@ class TextbookController extends Controller
 
         return back()->with('flash', "Batch {$batch->batch_no} registered ({$batch->quantity} copies, QA pending".($minted ? ", {$minted} NCIDs minted" : '').').');
     }
+    /** BOOK-05: ISBN-13 checksum validation. */
+    public static function isbnValid(string $isbn): bool
+    {
+        $d = preg_replace('/[^0-9]/', '', $isbn);
+        if (strlen($d) !== 13) {
+            return false;
+        }
+        $sum = 0;
+        foreach (str_split(substr($d, 0, 12)) as $i => $c) {
+            $sum += (int) $c * ($i % 2 ? 3 : 1);
+        }
+
+        return (10 - $sum % 10) % 10 === (int) $d[12];
+    }
+
 }

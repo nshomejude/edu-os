@@ -19,6 +19,12 @@
         <div style="margin-top:18px;padding:14px;border:1px dashed var(--cameroon-gold);border-radius:12px;background:#FBF7EB">
             <div class="dt">Received by</div>
             <div class="dd">{{ $received?->actor ?? '—' }} · {{ $received?->occurred_at?->format('d M Y H:i') }}</div>
+            <div class="dt" style="margin-top:10px">Receiver signature (POD-05)</div>
+            <div class="dd" style="font-family:Georgia,serif;font-style:italic;font-size:18px">{{ $shipment->received_signature ?? $received?->actor ?? '—' }}</div>
+            @if ($shipment->discrepancy_category)
+                <div class="dt" style="margin-top:10px">Discrepancy category (POD-04)</div>
+                <div class="dd">{{ $shipment->discrepancy_category }}@if ($shipment->discrepancy_evidence_path) · <a class="rowlink" href="{{ asset('storage/'.$shipment->discrepancy_evidence_path) }}">evidence photo</a>@endif</div>
+            @endif
             <div class="dt" style="margin-top:10px">Custody chain fingerprint (sha256)</div>
             <div style="font-family:monospace;font-size:11px;word-break:break-all">{{ $shipment->custodyEvents->last()?->hash ?? 'n/a' }}</div>
         </div>

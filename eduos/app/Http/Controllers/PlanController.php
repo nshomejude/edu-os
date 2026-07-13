@@ -41,6 +41,11 @@ class PlanController extends Controller
                 ->where('validation_status', 'VALIDATED')
                 ->selectRaw('school_id, sum(boys + girls) n')->groupBy('school_id')->pluck('n', 'school_id');
             foreach ($learners as $schoolId => $need) {
+                // PLAN-03: a school's own submitted requirement can raise the derived need
+                $asked = \App\Modules\Planning\Models\SchoolRequirement::where('school_id', $schoolId)
+                    ->where('textbook_title_id', $title->id)
+                    ->where('academic_year', $campaign->academic_year)->sum('quantity');
+                $need = max($need, $asked);
                 $have = SchoolStock::where('school_id', $schoolId)
                     ->where('textbook_title_id', $title->id)->sum('quantity');
                 $gap = min(2000, max(0, $need - $have));   // per-line cap for demo scale
@@ -54,6 +59,9 @@ class PlanController extends Controller
                 }
             }
         }
+
+        \App\Modules\Planning\Models\SchoolRequirement::where('academic_year', $campaign->academic_year)
+            ->where('status', 'SUBMITTED')->update(['status' => 'CONSIDERED']);
 
         return redirect()->route('plan.show', $campaign)
             ->with('flash', "Campaign drafted with {$generated} allocation lines from enrolment-based demand.");
