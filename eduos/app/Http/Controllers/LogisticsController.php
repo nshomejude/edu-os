@@ -56,6 +56,8 @@ class LogisticsController extends Controller
             'shipment_id' => $trip->shipment_id, 'event_type' => 'TRANSPORT_INCIDENT',
             'actor' => auth()->user()->name, 'notes' => $note, 'occurred_at' => now(),
         ]);
+        \App\Modules\Platform\Models\ExceptionCase::open('INCIDENT', 'HIGH',
+            "Transport incident on trip TRIP-{$trip->id}: ".\Illuminate\Support\Str::limit($note, 120), $trip->id);
         Alert::create([
             'severity' => 'CRITICAL',
             'title' => "Transport incident — {$trip->shipment->shipment_no}",

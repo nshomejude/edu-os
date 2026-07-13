@@ -14,6 +14,28 @@
 
     @include('partials.flash')
 
+    <div class="card mb">
+        <h2>Case registry — persistent, owned, severity-based SLA (EXC-01)</h2>
+        <table class="table">
+            <thead><tr><th>Case</th><th>Type</th><th>{{ __('Title') }}</th><th>Severity</th><th>{{ __('Status') }}</th><th>Owner</th><th>SLA</th></tr></thead>
+            <tbody>
+            @forelse ($cases ?? [] as $c)
+                <tr>
+                    <td><a class="rowlink" href="{{ route('cases.show', $c) }}">{{ $c->case_no }}</a></td>
+                    <td>{{ $c->type }}</td>
+                    <td>{{ \Illuminate\Support\Str::limit($c->title, 46) }}</td>
+                    <td><span class="pill {{ in_array($c->severity, ['HIGH', 'CRITICAL']) ? 'pill-error' : ($c->severity === 'MEDIUM' ? 'pill-transit' : 'pill-info') }}">{{ $c->severity }}</span></td>
+                    <td><span class="pill {{ in_array($c->status, ['RESOLVED', 'CLOSED']) ? 'pill-success' : 'pill-info' }}">{{ str_replace('_', ' ', $c->status) }}</span></td>
+                    <td>{{ $c->assigned_to ?? '—' }}</td>
+                    <td>{{ $c->breached() ? '⚠ breach' : $c->slaHours().'h' }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="7">No cases yet — they open automatically from discrepancies, incidents, major findings and escalations.</td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+
     @php($age = fn ($t) => (int) $t->diffInHours(now()))
     @php($slaPill = fn ($t) => $age($t) > $slaHours
         ? '<span class="pill pill-error">SLA BREACH</span>'

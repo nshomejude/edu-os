@@ -92,6 +92,7 @@
                         <span style="color:var(--text-2);font-size:13.5px">{{ $batch->printer }} · {{ number_format($batch->quantity) }} copies</span>
                         <span class="pill {{ $batch->qa_status === 'PASSED' ? 'pill-success' : ($batch->qa_status === 'FAILED' ? 'pill-error' : 'pill-transit') }}">QA {{ $batch->qa_status }}</span>
                         <a class="rowlink" href="{{ route('batches.recall', $batch) }}" style="font-size:12.5px;{{ $batch->recalled_at ? 'color:var(--error);font-weight:700' : '' }}">{{ $batch->recalled_at ? 'RECALLED' : 'Recall / trace' }}</a>
+                        @can('procurement')<a class="rowlink" href="{{ route('batches.labels', $batch) }}" style="font-size:12.5px">Labels CSV</a>@endcan
                         @can('procurement')
                             @foreach (['PASSED' => 'Pass QA', 'FAILED' => 'Fail QA'] as $q => $ql)
                                 @if ($batch->qa_status !== $q)

@@ -214,6 +214,8 @@ class ShipmentController extends Controller
                 'actor' => 'System', 'notes' => "Variance {$variance}; frozen in QUARANTINE", 'occurred_at' => now(),
             ]);
             StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'QUARANTINE', abs($variance));
+            \App\Modules\Platform\Models\ExceptionCase::open('DISCREPANCY', 'HIGH',
+                "Variance {$variance} on {$shipment->shipment_no} → {$shipment->destination_name}", $shipment->id);
             Alert::create([
                 'severity' => 'CRITICAL',
                 'title' => "Discrepancy on {$shipment->shipment_no}",

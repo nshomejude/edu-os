@@ -113,7 +113,7 @@ class ProcurementController extends Controller
             $rows = [];
             for ($i = 1; $i <= $minted; $i++) {
                 $rows[] = [
-                    'ncid' => sprintf('%s-%05d-%06d', $title->ntid, $batch->id, $i),
+                    'ncid' => \App\Support\CheckDigit::append(sprintf('%s-%05d-%06d', $title->ntid, $batch->id, $i)),
                     'print_batch_id' => $batch->id, 'lifecycle_state' => 'PRINTED',
                     'condition' => 'NEW', 'created_at' => now(), 'updated_at' => now(),
                 ];

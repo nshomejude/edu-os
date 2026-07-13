@@ -134,6 +134,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/plan/{campaign}/order', [\App\Http\Controllers\PlanController::class, 'order'])->name('plan.order');
     Route::post('/inspections/assign', [\App\Http\Controllers\InspectionController::class, 'assign'])->name('inspections.assign')->middleware('can:division');
     Route::get('/exceptions/{type}/{id}', [\App\Http\Controllers\ExceptionController::class, 'show'])->name('exceptions.show')->whereIn('type', ['discrepancy', 'inspection', 'incident', 'alert']);
+    Route::get('/cases/{case}', [\App\Http\Controllers\ExceptionController::class, 'caseShow'])->name('cases.show');
+    Route::post('/cases/{case}/assign', [\App\Http\Controllers\ExceptionController::class, 'caseAssign'])->name('cases.assign');
+    Route::post('/cases/{case}/transition', [\App\Http\Controllers\ExceptionController::class, 'caseTransition'])->name('cases.transition');
+    Route::get('/imports', [\App\Http\Controllers\ImportController::class, 'index'])->name('imports.index')->middleware('can:ministry');
+    Route::post('/imports/schools', [\App\Http\Controllers\ImportController::class, 'schools'])->name('imports.schools')->middleware('can:ministry');
+    Route::post('/imports/titles', [\App\Http\Controllers\ImportController::class, 'titles'])->name('imports.titles')->middleware('can:ministry');
+    Route::post('/imports/stock', [\App\Http\Controllers\ImportController::class, 'stock'])->name('imports.stock')->middleware('can:ministry');
+    Route::get('/batches/{batch}/labels.csv', [TextbookController::class, 'labels'])->name('batches.labels')->middleware('can:procurement');
     Route::get('/exports', fn () => view('reports.exports'))->name('exports.index');
     Route::get('/reports/shipments.csv', [\App\Http\Controllers\PublicApiController::class, 'shipmentsCsv'])->name('reports.shipments.csv');
     Route::get('/reports/stock.csv', [\App\Http\Controllers\PublicApiController::class, 'stockCsv'])->name('reports.stock.csv');

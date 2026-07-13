@@ -53,6 +53,8 @@ class InspectionController extends Controller
             ->where('status', 'ASSIGNED')->update(['status' => 'DONE']);
 
         if ($outcome === 'MAJOR_FINDINGS') {
+            \App\Modules\Platform\Models\ExceptionCase::open('INSPECTION', 'HIGH',
+                "Major inspection variance at {$inspection->school->name_official}", $inspection->id);
             Alert::create([
                 'severity' => 'CRITICAL',
                 'title' => 'Inspection: major stock variance',

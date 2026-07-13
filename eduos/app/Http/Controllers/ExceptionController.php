@@ -26,6 +26,7 @@ class ExceptionController extends Controller
             'incidents' => Trip::where('status', 'INCIDENT')->with(['shipment', 'vehicle', 'driver'])->get(),
             'critical' => Alert::where('severity', 'CRITICAL')->whereNull('read_at')->orderByDesc('id')->get(),
             'slaHours' => self::slaHours(),
+            'cases' => \App\Modules\Platform\Models\ExceptionCase::orderByRaw("status in ('RESOLVED','CLOSED','REJECTED')")->orderByDesc('id')->limit(30)->get(),
         ]);
     }
 
@@ -60,6 +61,7 @@ class ExceptionController extends Controller
             'detail' => 'required|string|max:500',
             'link' => 'nullable|string|max:160',
         ]);
+        \App\Modules\Platform\Models\ExceptionCase::open('ESCALATION', 'CRITICAL', $data['subject']);
         Alert::create([
             'severity' => 'CRITICAL',
             'title' => 'ESCALATION: '.$data['subject'],
@@ -69,4 +71,44 @@ class ExceptionController extends Controller
 
         return back()->with('flash', 'Escalated to national level; the ministry alert is live.');
     }
+    /** EXC-02: persistent case page with ownership and the governed status machine. */
+    public function caseShow(\App\Modules\Platform\Models\ExceptionCase $case)
+    {
+        $staff = \App\Models\User::where('is_active', 1)
+            ->whereNotIn('role', ['READONLY'])->orderBy('name')->get(['name', 'role']);
+
+        return view('cases.show', compact('case', 'staff'));
+    }
+
+    public function caseAssign(\Illuminate\Http\Request $request, \App\Modules\Platform\Models\ExceptionCase $case)
+    {
+        $who = $request->validate(['assigned_to' => 'required|string|max:120'])['assigned_to'];
+        $case->update(['assigned_to' => $who, 'status' => $case->status === 'OPEN' ? 'ASSIGNED' : $case->status]);
+
+        return back()->with('flash', "Case assigned to {$who}.");
+    }
+
+    /** EXC-03/04: transitions with mandatory reason on resolution; high-severity closure is ministry-tier. */
+    public function caseTransition(\Illuminate\Http\Request $request, \App\Modules\Platform\Models\ExceptionCase $case)
+    {
+        $data = $request->validate(['to' => 'required|string|max:20', 'reason' => 'nullable|string|max:300']);
+        $to = strtoupper($data['to']);
+        if (! in_array($to, \App\Modules\Platform\Models\ExceptionCase::TRANSITIONS[$case->status] ?? [])) {
+            return back()->with('flash_error', "ILLEGAL_TRANSITION: {$case->status} → {$to}.");
+        }
+        if (in_array($to, ['RESOLVED', 'REJECTED', 'CLOSED']) && empty($data['reason'])) {
+            return back()->with('flash_error', 'Resolution requires a reason and a responsible actor (EXC rule).');
+        }
+        if ($to === 'CLOSED' && in_array($case->severity, ['HIGH', 'CRITICAL']) && ! auth()->user()->can('ministry')) {
+            return back()->with('flash_error', 'HIGH and CRITICAL cases can only be closed by the ministry tier.');
+        }
+        $case->update([
+            'status' => $to,
+            'reason' => $data['reason'] ?? $case->reason,
+            'resolved_at' => in_array($to, ['RESOLVED', 'REJECTED']) ? now() : ($to === 'REOPENED' ? null : $case->resolved_at),
+        ]);
+
+        return back()->with('flash', "Case {$case->case_no} → ".str_replace('_', ' ', $to).' by '.auth()->user()->name.'.');
+    }
+
 }

@@ -32,6 +32,10 @@
                     <input class="input" type="number" name="carton_size" value="{{ \App\Modules\Platform\Models\Setting::get('carton_size', '40') }}" min="10" max="200" required></div>
                 <div class="field"><label>Replacement fee (FCFA/book)</label>
                     <input class="input" type="number" name="replacement_fee_fcfa" value="{{ \App\Modules\Platform\Models\Setting::get('replacement_fee_fcfa', '1500') }}" min="0" max="100000" required></div>
+                @foreach (['low' => 168, 'medium' => 72, 'high' => 24, 'critical' => 8] as $sev => $def)
+                    <div class="field"><label>SLA {{ strtoupper($sev) }} (hours)</label>
+                        <input class="input" type="number" name="exception_sla_{{ $sev }}_hours" value="{{ \App\Modules\Platform\Models\Setting::get('exception_sla_'.$sev.'_hours', (string) $def) }}" min="1" max="2000"></div>
+                @endforeach
                 <button class="btn btn-primary" style="align-self:flex-end">{{ __('Save') }}</button>
             </form>
             @else
@@ -39,7 +43,7 @@
             @endcan
         </div>
         <div class="card">
-            <h2>Ledger integrity (FR-NTR-DM-02)</h2>
+            <h2>Ledger integrity (FR-NTR-DM-02) · <a class="rowlink" href="{{ route('imports.index') }}" style="font-size:13px">Data imports →</a></h2>
             <p style="color:var(--text-2);font-size:14px;margin-bottom:14px">
                 Every passport and custody event is chained by SHA-256 to its predecessor.
                 Verification walks all chains and raises a CRITICAL alert on tampering.

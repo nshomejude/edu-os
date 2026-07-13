@@ -256,7 +256,7 @@ class TextbookController extends Controller
             $rows = [];
             for ($i = 1; $i <= $minted; $i++) {
                 $rows[] = [
-                    'ncid' => sprintf('%s-%05d-%06d', $textbook->ntid, $batch->id, $i),
+                    'ncid' => \App\Support\CheckDigit::append(sprintf('%s-%05d-%06d', $textbook->ntid, $batch->id, $i)),
                     'print_batch_id' => $batch->id, 'lifecycle_state' => 'PRINTED',
                     'condition' => 'NEW', 'created_at' => now(), 'updated_at' => now(),
                 ];
@@ -374,6 +374,22 @@ class TextbookController extends Controller
         $other->forceFill(['counterpart_id' => $textbook->id])->save();
 
         return back()->with('flash', "Linked {$textbook->ntid} ↔ {$other->ntid} as language counterparts.");
+    }
+
+    /** FR-NTR-06: printable label file for a batch — one row per copy (NCID, check digit intact). */
+    public function labels(PrintBatch $batch)
+    {
+        $copies = \App\Modules\Catalogue\Models\Copy::where('print_batch_id', $batch->id)->orderBy('id')->get(['ncid']);
+        $title = TextbookTitle::find($batch->textbook_title_id);
+        $csv = "ncid,ntid,batch_no,title\n";
+        foreach ($copies as $c) {
+            $csv .= sprintf("%s,%s,%s,\"%s\"\n", $c->ncid, $title?->ntid, $batch->batch_no, str_replace('"', "'", $title?->title_en ?? $title?->title_fr ?? ''));
+        }
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="labels-'.$batch->batch_no.'.csv"',
+        ]);
     }
 
 }
