@@ -79,6 +79,18 @@ class PlatformController extends Controller
         return view('settings.index');
     }
 
+    public function saveSettings(Request $request)
+    {
+        $data = $request->validate([
+            'academic_year' => 'required|string|max:9',
+            'low_stock_threshold' => 'required|integer|min:0',
+        ]);
+        \App\Modules\Platform\Models\Setting::put('academic_year', $data['academic_year']);
+        \App\Modules\Platform\Models\Setting::put('low_stock_threshold', (string) $data['low_stock_threshold']);
+
+        return back()->with('flash', 'System configuration saved.');
+    }
+
     public function login()
     {
         return view('auth.login');

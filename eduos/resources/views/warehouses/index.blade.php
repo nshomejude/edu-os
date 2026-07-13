@@ -6,7 +6,10 @@
             <h1>Warehouses</h1>
             <div class="sub">NWIDMS — national, regional and divisional storage network</div>
         </div>
-        <span class="chip">National stock position <b>{{ number_format($nationalStock) }}</b> books</span>
+        <div class="toolbar" style="margin:0">
+            <a class="btn btn-secondary btn-sm" href="{{ route('warehouses.lowstock') }}">Low stock</a>
+            <span class="chip">National stock position <b>{{ number_format($nationalStock) }}</b> books</span>
+        </div>
     </div>
 
     @include('partials.flash')

@@ -21,6 +21,11 @@ class StockRecord extends Model
 
     public const LOW_STOCK_THRESHOLD = 2000;
 
+    public static function lowStockThreshold(): int
+    {
+        return (int) \App\Modules\Platform\Models\Setting::get('low_stock_threshold', (string) self::LOW_STOCK_THRESHOLD);
+    }
+
     /** Post a quantity change; ledger rule: quantities never edited directly elsewhere. */
     public static function post(int $warehouseId, int $titleId, string $class, int $delta): self
     {
@@ -40,7 +45,7 @@ class StockRecord extends Model
         ]);
 
         // Low-stock alert (Problem 26): fire once per warehouse/title while unread
-        if ($class === 'AVAILABLE' && $delta < 0 && $rec->quantity < self::LOW_STOCK_THRESHOLD) {
+        if ($class === 'AVAILABLE' && $delta < 0 && $rec->quantity < self::lowStockThreshold()) {
             $title = \App\Modules\Catalogue\Models\TextbookTitle::find($titleId);
             $wh = Warehouse::find($warehouseId);
             $marker = "/warehouses/{$warehouseId}?low={$titleId}";
@@ -49,7 +54,7 @@ class StockRecord extends Model
                 \App\Modules\Platform\Models\Alert::create([
                     'severity' => 'WARNING',
                     'title' => "Low stock: {$title?->ntid} at {$wh?->name}",
-                    'message' => "AVAILABLE stock fell to {$rec->quantity} (threshold ".self::LOW_STOCK_THRESHOLD."). Consider replenishment or redistribution.",
+                    'message' => "AVAILABLE stock fell to {$rec->quantity} (threshold ".self::lowStockThreshold()."). Consider replenishment or redistribution.",
                     'link' => $marker,
                 ]);
             }

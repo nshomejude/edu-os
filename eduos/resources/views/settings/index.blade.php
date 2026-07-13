@@ -18,6 +18,21 @@
             <form method="post" action="{{ route('logout') }}" style="margin-top:18px">@csrf<button class="btn btn-danger">Sign out</button></form>
         </div>
         <div class="card">
+            <h2>System configuration (ADM-02)</h2>
+            @can('ministry')
+            <form class="toolbar" method="post" action="{{ route('settings.save') }}" style="margin:0">
+                @csrf
+                <div class="field"><label>Academic year</label>
+                    <input class="input" name="academic_year" value="{{ \App\Modules\Platform\Models\Setting::get('academic_year', '2025/2026') }}" required></div>
+                <div class="field"><label>Low-stock threshold</label>
+                    <input class="input" type="number" name="low_stock_threshold" value="{{ \App\Modules\Custody\Models\StockRecord::lowStockThreshold() }}" min="0" required></div>
+                <button class="btn btn-primary" style="align-self:flex-end">Save</button>
+            </form>
+            @else
+            <p style="color:var(--text-2)">Ministry administrators manage system configuration.</p>
+            @endcan
+        </div>
+        <div class="card">
             <h2>Ledger integrity (FR-NTR-DM-02)</h2>
             <p style="color:var(--text-2);font-size:14px;margin-bottom:14px">
                 Every passport and custody event is chained by SHA-256 to its predecessor.

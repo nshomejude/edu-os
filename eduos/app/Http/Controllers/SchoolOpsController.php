@@ -41,7 +41,7 @@ class SchoolOpsController extends Controller
 
         Assignment::create($data + [
             'school_id' => $school->id,
-            'academic_year' => '2025/2026',
+            'academic_year' => \App\Modules\Platform\Models\Setting::get('academic_year', '2025/2026'),
             'actor' => auth()->user()->name,
         ]);
         \App\Modules\Catalogue\Models\Copy::advance($data['textbook_title_id'], 'AT_SCHOOL', 'ASSIGNED', $data['quantity'], $school->id);
@@ -87,7 +87,7 @@ class SchoolOpsController extends Controller
     public function openCampaign(Request $request)
     {
         $data = $request->validate(['name' => 'required|string|max:160']);
-        $c = Campaign::create($data + ['academic_year' => '2025/2026', 'status' => 'OPEN', 'opened_at' => now()]);
+        $c = Campaign::create($data + ['academic_year' => \App\Modules\Platform\Models\Setting::get('academic_year', '2025/2026'), 'status' => 'OPEN', 'opened_at' => now()]);
 
         return redirect()->route('campaigns.show', $c)->with('flash', "Campaign \"{$c->name}\" opened.");
     }

@@ -37,6 +37,22 @@ class ProcurementController extends Controller
         return back()->with('flash', "Order {$order->order_no} placed ({$order->quantity} copies @ {$order->unit_price_fcfa} FCFA).");
     }
 
+    /** PROC-03: order details. */
+    public function showOrder(ProcurementOrder $order)
+    {
+        $order->load(['supplier', 'title', 'batch.passportEvents']);
+
+        return view('procurement.order', compact('order'));
+    }
+
+    /** PROC-05: supplier details with order history. */
+    public function showSupplier(Supplier $supplier)
+    {
+        $orders = ProcurementOrder::with('title')->where('supplier_id', $supplier->id)->orderByDesc('id')->get();
+
+        return view('procurement.supplier', compact('supplier', 'orders'));
+    }
+
     public function storeSupplier(Request $request)
     {
         $data = $request->validate([

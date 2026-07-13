@@ -122,6 +122,7 @@ class ShipmentController extends Controller
             'waybill' => 'required|string|max:60',
             'vehicle_id' => 'nullable|exists:vehicles,id',
             'driver_id' => 'nullable|exists:drivers,id',
+            'route_note' => 'nullable|string|max:200',
         ]);
         StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'RESERVED', -$shipment->books);
         StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', $shipment->books);
@@ -140,6 +141,7 @@ class ShipmentController extends Controller
             'vehicle_id' => $data['vehicle_id'] ?? null,
             'driver_id' => $data['driver_id'] ?? null,
             'status' => 'EN_ROUTE', 'departed_at' => now(),
+            'route_note' => $data['route_note'] ?? null,
         ]);
         $trip->vehicle?->update(['status' => 'ON_TRIP']);
         $trip->driver?->update(['status' => 'ON_TRIP']);

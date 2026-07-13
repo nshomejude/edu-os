@@ -12,6 +12,15 @@
             <div><div class="dt">Quantity</div><div class="dd">{{ number_format($shipment->books) }} books</div></div>
             <div><div class="dt">Warehouse</div><div class="dd">{{ $shipment->origin_name }}</div></div>
         </div>
+        @php($perCarton = 40)
+        @php($cartons = (int) ceil($shipment->books / $perCarton))
+        <h2>Packing plan (SHIP-05) — {{ $cartons }} cartons @ {{ $perCarton }} books</h2>
+        <div class="chips" style="margin-bottom:16px">
+            @for ($c = 1; $c <= min($cartons, 30); $c++)
+                <span class="chip">CTN-{{ str_pad($c, 3, '0', STR_PAD_LEFT) }} <b>{{ $c < $cartons ? $perCarton : $shipment->books - ($cartons - 1) * $perCarton }}</b></span>
+            @endfor
+            @if ($cartons > 30)<span class="chip">+{{ $cartons - 30 }} more</span>@endif
+        </div>
         <h2>Copies to pick (first {{ $copies->count() }} NCIDs)</h2>
         <table class="table">
             <thead><tr><th>#</th><th>NCID</th><th>Picked ☐</th></tr></thead>

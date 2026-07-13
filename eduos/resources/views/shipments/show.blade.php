@@ -59,6 +59,7 @@
                         <option value="{{ $v->id }}">{{ $v->plate }} ({{ $v->model }})</option>
                     @endforeach
                 </select>
+                <input class="input" name="route_note" placeholder="Route (e.g. Ydé–Obala–Bafia)" style="min-width:200px">
                 <select class="input" name="driver_id" style="min-width:150px">
                     <option value="">Driver…</option>
                     @foreach (\App\Modules\Logistics\Models\Driver::where('status', 'AVAILABLE')->get() as $d)

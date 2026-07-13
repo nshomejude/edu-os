@@ -120,6 +120,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/mfa/disable', [\App\Http\Controllers\AuthExtrasController::class, 'mfaDisable'])->name('mfa.disable');
     Route::get('/profile/sessions', [\App\Http\Controllers\AuthExtrasController::class, 'sessions'])->name('sessions.index');
     Route::post('/profile/sessions/revoke', [\App\Http\Controllers\AuthExtrasController::class, 'revokeOtherSessions'])->name('sessions.revoke');
+    Route::post('/settings/save', [PlatformController::class, 'saveSettings'])->name('settings.save')->middleware('can:ministry');
+    Route::get('/inventory/low-stock', [WarehouseController::class, 'lowStock'])->name('warehouses.lowstock');
+    Route::get('/procurement/orders/{order}', [\App\Http\Controllers\ProcurementController::class, 'showOrder'])->name('procurement.order')->middleware('can:procurement');
+    Route::get('/procurement/suppliers/{supplier}', [\App\Http\Controllers\ProcurementController::class, 'showSupplier'])->name('procurement.supplier')->middleware('can:procurement');
     Route::get('/exports', fn () => view('reports.exports'))->name('exports.index');
     Route::get('/reports/shipments.csv', [\App\Http\Controllers\PublicApiController::class, 'shipmentsCsv'])->name('reports.shipments.csv');
     Route::get('/reports/stock.csv', [\App\Http\Controllers\PublicApiController::class, 'stockCsv'])->name('reports.stock.csv');

@@ -30,7 +30,7 @@ class PlanController extends Controller
     {
         $data = $request->validate(['name' => 'required|string|max:160']);
         $campaign = DistributionCampaign::create($data + [
-            'academic_year' => '2025/2026', 'created_by' => auth()->user()->name,
+            'academic_year' => \App\Modules\Platform\Models\Setting::get('academic_year', '2025/2026'), 'created_by' => auth()->user()->name,
         ]);
 
         // Enrolment-based demand: validated learners per grade minus school stock

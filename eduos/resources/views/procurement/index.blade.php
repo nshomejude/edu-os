@@ -42,7 +42,7 @@
             <tbody>
             @foreach ($suppliers as $sup)
                 <tr>
-                    <td class="num">{{ $sup->name }}</td>
+                    <td class="num"><a class="rowlink" href="{{ route('procurement.supplier', $sup) }}">{{ $sup->name }}</a></td>
                     <td>{{ $sup->type }}</td>
                     <td>{{ $sup->contact ?? '—' }}</td>
                     <td>
@@ -65,7 +65,7 @@
             <tbody>
             @forelse ($orders as $o)
                 <tr>
-                    <td class="num">{{ $o->order_no }}</td>
+                    <td class="num"><a class="rowlink" href="{{ route('procurement.order', $o) }}">{{ $o->order_no }}</a></td>
                     <td>{{ $o->supplier->name }}</td>
                     <td>{{ $o->title->ntid }}</td>
                     <td>{{ number_format($o->quantity) }}</td>

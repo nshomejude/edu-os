@@ -37,6 +37,17 @@ class WarehouseController extends Controller
         return redirect()->route('warehouses.show', $wh)->with('flash', "Warehouse {$wh->wh_id} registered.");
     }
 
+    /** INV-10: stock lines below the configured threshold. */
+    public function lowStock()
+    {
+        $threshold = StockRecord::lowStockThreshold();
+        $rows = StockRecord::with(['warehouse', 'title'])
+            ->where('stock_class', 'AVAILABLE')->where('quantity', '<', $threshold)
+            ->orderBy('quantity')->get();
+
+        return view('warehouses.low-stock', compact('rows', 'threshold'));
+    }
+
     public function show(Warehouse $warehouse)
     {
         $stock = StockRecord::with('title')->where('warehouse_id', $warehouse->id)

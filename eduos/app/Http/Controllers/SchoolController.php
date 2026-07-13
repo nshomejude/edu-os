@@ -102,7 +102,7 @@ class SchoolController extends Controller
         ]);
         $student = \App\Modules\Registry\Models\Student::create($data + [
             'lsid' => sprintf('CM-STU-%07d', \App\Modules\Registry\Models\Student::count() + 1),
-            'school_id' => $school->id, 'academic_year' => '2025/2026',
+            'school_id' => $school->id, 'academic_year' => \App\Modules\Platform\Models\Setting::get('academic_year', '2025/2026'),
         ]);
 
         return back()->with('flash', "Learner registered as {$student->lsid}.");
