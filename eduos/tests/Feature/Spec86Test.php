@@ -129,4 +129,22 @@ class Spec86Test extends TestCase
         $this->actingAs($this->admin)->get('/schedule')->assertOk();
         $this->actingAs($this->admin)->get('/network')->assertOk();
     }
+
+    public function test_role_dashboards_render_scoped_views(): void
+    {
+        foreach ([
+            'PROCUREMENT_OFFICER' => 'Procurement Dashboard',
+            'STOREKEEPER' => 'Warehouse Operations Dashboard',
+            'TRANSPORT_OFFICER' => 'Logistics Control Dashboard',
+            'INSPECTOR' => 'Verification',
+            'DIVISION_OFFICER' => 'Regional Oversight Dashboard',
+        ] as $role => $needle) {
+            $u = User::create(['name' => $role, 'email' => strtolower($role).'@d.cm', 'password' => 'x', 'role' => $role]);
+            $this->actingAs($u)->get('/')->assertOk()->assertSee($needle);
+        }
+        $head = User::create(['name' => 'Head', 'email' => 'head@d.cm', 'password' => 'x', 'role' => 'SCHOOL_HEAD', 'school_id' => $this->school->id]);
+        $this->actingAs($head)->get('/')->assertOk()->assertSee('School Delivery Dashboard');
+        // national roles keep the command dashboard
+        $this->actingAs($this->admin)->get('/')->assertOk()->assertSee('Distribution Overview');
+    }
 }
