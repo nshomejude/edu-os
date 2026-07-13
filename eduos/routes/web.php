@@ -128,6 +128,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/schools/{school}/requirements', [\App\Http\Controllers\SchoolOpsController::class, 'submitRequirement'])->name('schoolops.requirement')->middleware('can:school-ops');
     Route::post('/warehouses/{warehouse}/adjust', [WarehouseController::class, 'adjust'])->name('warehouses.adjust')->middleware('can:warehouse-approve');
     Route::get('/trips/{trip}', [\App\Http\Controllers\LogisticsController::class, 'showTrip'])->name('trips.show');
+    Route::get('/shipments/{shipment}/waybill', [ShipmentController::class, 'waybill'])->name('shipments.waybill');
+    Route::get('/inspections/{inspection}/report', [\App\Http\Controllers\InspectionController::class, 'report'])->name('inspections.report')->middleware('can:inspect');
+    Route::get('/plan/{campaign}/order', [\App\Http\Controllers\PlanController::class, 'order'])->name('plan.order');
     Route::post('/inspections/assign', [\App\Http\Controllers\InspectionController::class, 'assign'])->name('inspections.assign')->middleware('can:division');
     Route::get('/exceptions/{type}/{id}', [\App\Http\Controllers\ExceptionController::class, 'show'])->name('exceptions.show')->whereIn('type', ['discrepancy', 'inspection', 'incident', 'alert']);
     Route::get('/exports', fn () => view('reports.exports'))->name('exports.index');

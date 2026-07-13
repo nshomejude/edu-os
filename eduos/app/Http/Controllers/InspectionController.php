@@ -84,4 +84,12 @@ class InspectionController extends Controller
         return back()->with('flash', 'Inspection assigned to the verification queue.');
     }
 
+    /** VER-05: printable inspection report. */
+    public function report(Inspection $inspection)
+    {
+        $inspection->load(['school', 'title']);
+
+        return view('inspections.report', compact('inspection'));
+    }
+
 }

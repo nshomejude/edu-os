@@ -310,4 +310,15 @@ class ShipmentController extends Controller
 
         return back()->with('flash', "Discrepancy resolved as {$res}; case closed, quarantine cleared.");
     }
+    /** SHIP-07: printable consignment waybill / dispatch note. */
+    public function waybill(Shipment $shipment)
+    {
+        $shipment->load(['title', 'custodyEvents']);
+        $trip = \App\Modules\Logistics\Models\Trip::with(['vehicle', 'driver'])
+            ->where('shipment_id', $shipment->id)->latest('id')->first();
+        $dispatched = $shipment->custodyEvents->firstWhere('event_type', 'DISPATCHED');
+
+        return view('shipments.waybill', compact('shipment', 'trip', 'dispatched'));
+    }
+
 }

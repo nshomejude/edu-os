@@ -7,7 +7,10 @@
             <h1 style="font-size:22px">{{ $copy->ncid }}</h1>
             <div class="sub">{{ $copy->batch->title->title_en ?? $copy->batch->title->title_fr }} · batch {{ $copy->batch->batch_no }}</div>
         </div>
-        <span class="pill {{ in_array($copy->lifecycle_state, ['ASSIGNED','AT_SCHOOL']) ? 'pill-success' : ($copy->lifecycle_state === 'LOST' ? 'pill-error' : 'pill-info') }}">{{ str_replace('_', ' ', $copy->lifecycle_state) }}</span>
+        <div class="toolbar" style="margin:0">
+            <button class="btn btn-sm btn-secondary" onclick="window.print()">Print passport</button>
+            <span class="pill {{ in_array($copy->lifecycle_state, ['ASSIGNED','AT_SCHOOL']) ? 'pill-success' : ($copy->lifecycle_state === 'LOST' ? 'pill-error' : 'pill-info') }}">{{ str_replace('_', ' ', $copy->lifecycle_state) }}</span>
+        </div>
     </div>
 
     <div class="grid-bottom">
@@ -54,6 +57,10 @@
             <h2>Copy label (FR-NTR-ID-04)</h2>
             <div style="display:inline-block;padding:16px;border:1px solid var(--border);border-radius:14px;background:#fff">
                 {!! $qrSvg !!}
+                <div style="margin-top:12px">
+                    {!! \App\Support\Barcode::svg($copy->ncid, 38) !!}
+                    <div style="font-family:monospace;font-size:10.5px;letter-spacing:1.5px;margin-top:3px;text-align:center">{{ $copy->ncid }}</div>
+                </div>
             </div>
             <div style="font-family:monospace;font-size:11.5px;margin-top:10px;color:var(--text-2)">{{ $copy->ncid }}</div>
             <p style="color:var(--text-2);font-size:13px;margin-top:12px">QR payload is the bare NCID — scannable by low-end Android cameras at print size.</p>

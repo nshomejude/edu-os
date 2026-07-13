@@ -41,7 +41,7 @@
                     <td>{{ number_format($i->counted_qty) }}</td>
                     <td><b style="color:{{ $i->variance() === 0 ? 'var(--success)' : 'var(--error)' }}">{{ $i->variance() }}</b></td>
                     <td><span class="pill {{ $i->outcome === 'CONFORM' ? 'pill-success' : ($i->outcome === 'MINOR_FINDINGS' ? 'pill-transit' : 'pill-error') }}">{{ str_replace('_', ' ', $i->outcome) }}</span></td>
-                    <td>{{ $i->inspector }} @if($i->evidence_path)<a class="rowlink" href="{{ asset('storage/'.$i->evidence_path) }}" target="_blank">evidence</a>@endif</td>
+                    <td>{{ $i->inspector }} · <a class="rowlink" href="{{ route('inspections.report', $i) }}">report</a>@if($i->evidence_path) · <a class="rowlink" href="{{ asset('storage/'.$i->evidence_path) }}" target="_blank">evidence</a>@endif</td>
                     <td style="min-width:220px">
                         @if ($i->resolved_at)
                             <span class="pill pill-success" title="{{ $i->corrective_action }}">Resolved</span>

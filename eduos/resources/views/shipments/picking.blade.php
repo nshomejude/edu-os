@@ -7,6 +7,7 @@
         <button class="btn btn-secondary" onclick="window.print()">Print</button>
     </div>
     <div class="card">
+        @include('partials.doc-header', ['docTitle' => 'WAREHOUSE PICKING LIST', 'docNo' => $shipment->shipment_no])
         <div class="detail-grid" style="margin-bottom:16px">
             <div><div class="dt">Title</div><div class="dd">{{ $shipment->title?->ntid }}</div></div>
             <div><div class="dt">Quantity</div><div class="dd">{{ number_format($shipment->books) }} books</div></div>
@@ -32,5 +33,6 @@
             @endforelse
             </tbody>
         </table>
+        @include('partials.doc-codes', ['code' => $shipment->shipment_no, 'qrText' => route('shipments.show', $shipment)])
     </div>
 @endsection

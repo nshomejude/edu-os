@@ -163,4 +163,12 @@ class PlanController extends Controller
 
         return back()->with('flash', "Execution: {$created} shipments created".($skipped ? ", {$skipped} lines skipped for stock shortage (visible for redistribution)" : '').'.');
     }
+    /** PLAN-08: printable distribution order. */
+    public function order(DistributionCampaign $campaign)
+    {
+        $allocations = $campaign->allocations()->with(['school.region', 'title', 'shipment'])->get();
+
+        return view('plan.order', compact('campaign', 'allocations'));
+    }
+
 }

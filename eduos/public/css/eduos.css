@@ -372,3 +372,15 @@ textarea.input { height:auto; padding:12px 14px; }
   .pagehead { flex-direction: column; gap: 12px; }
   .donut-wrap { flex-direction: column; }
 }
+
+
+/* ---- Print: documents come out clean, application chrome hidden ---- */
+@media print {
+    .sidebar, .backlink, .btn, .datecard, form, .viewall, .no-print { display: none !important; }
+    body { background: #fff !important; }
+    .main { margin-left: 0 !important; }
+    .content { padding: 10px !important; max-width: 100% !important; }
+    .card { box-shadow: none !important; border: 1px solid #D9D3C2 !important; break-inside: avoid; }
+    a { color: inherit !important; text-decoration: none !important; }
+    .pagehead { margin-bottom: 10px !important; }
+}

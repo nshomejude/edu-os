@@ -160,4 +160,38 @@ class DepthTest extends TestCase
         $this->assertSame(90, (int) \App\Modules\Catalogue\Models\PrintBatch::first()->quantity);   // only good units enter custody
         $this->assertTrue(\App\Modules\Platform\Models\Alert::where('title', 'like', 'Supplier delivery rejects%')->exists());
     }
+
+    public function test_printable_documents_render_with_barcodes_and_qr(): void
+    {
+        // waybill after dispatch
+        StockRecord::post($this->warehouse->id, $this->title->id, 'AVAILABLE', 100);
+        $this->actingAs($this->admin)->post(route('shipments.store'), [
+            'origin_warehouse_id' => $this->warehouse->id, 'destination_school_id' => $this->school->id,
+            'textbook_title_id' => $this->title->id, 'books' => 50,
+        ]);
+        $shipment = Shipment::latest('id')->first();
+        $this->actingAs($this->admin)->post(route('shipments.approve', $shipment));
+        $this->actingAs($this->admin)->post(route('shipments.dispatch', $shipment), ['carrier' => 'C', 'waybill' => 'W-1']);
+        $this->actingAs($this->admin)->get(route('shipments.waybill', $shipment))
+            ->assertOk()->assertSee('CONSIGNMENT WAYBILL')->assertSee('REPUBLIC OF CAMEROON')->assertSee($shipment->shipment_no);
+
+        // picking list carries the document header and machine-readable codes
+        $picking = $this->actingAs($this->admin)->get(route('shipments.picking', $shipment));
+        $picking->assertOk()->assertSee('WAREHOUSE PICKING LIST')->assertSee('Scan to verify');
+
+        // inspection report
+        $this->actingAs($this->admin)->post(route('inspections.store'), [
+            'school_id' => $this->school->id, 'textbook_title_id' => $this->title->id, 'counted_qty' => 0,
+        ]);
+        $inspection = \App\Modules\SchoolOps\Models\Inspection::first();
+        $this->actingAs($this->admin)->get(route('inspections.report', $inspection))
+            ->assertOk()->assertSee('SCHOOL INSPECTION REPORT')->assertSee('INSP-'.str_pad($inspection->id, 5, '0', STR_PAD_LEFT));
+
+        // distribution order
+        $programme = User::create(['name' => 'P2', 'email' => 'p2@t.cm', 'password' => 'x', 'role' => 'PROGRAMME_ADMIN']);
+        $this->actingAs($programme)->post(route('plan.store'), ['name' => 'Wave D']);
+        $campaign = DistributionCampaign::first();
+        $this->actingAs($this->admin)->get(route('plan.order', $campaign))
+            ->assertOk()->assertSee('NATIONAL TEXTBOOK DISTRIBUTION ORDER')->assertSee('separation of duties');
+    }
 }

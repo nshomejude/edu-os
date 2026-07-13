@@ -7,6 +7,7 @@
         <button class="btn btn-secondary" onclick="window.print()">Print</button>
     </div>
     <div class="card" style="max-width:720px">
+        @include('partials.doc-header', ['docTitle' => 'PROOF OF DELIVERY — OFFICIAL RECEIPT', 'docNo' => $shipment->shipment_no])
         <div class="detail-grid" style="grid-template-columns:1fr 1fr">
             <div><div class="dt">Shipment</div><div class="dd">{{ $shipment->shipment_no }}</div></div>
             <div><div class="dt">Status</div><div class="dd">{{ $shipment->status }}</div></div>
@@ -28,6 +29,7 @@
             <div class="dt" style="margin-top:10px">Custody chain fingerprint (sha256)</div>
             <div style="font-family:monospace;font-size:11px;word-break:break-all">{{ $shipment->custodyEvents->last()?->hash ?? 'n/a' }}</div>
         </div>
+        @include('partials.doc-codes', ['code' => $shipment->shipment_no, 'qrText' => route('shipments.show', $shipment)])
         <p style="color:var(--text-2);font-size:12.5px;margin-top:14px">
             This receipt is reproducible from the tamper-evident custody chain. Any alteration of the underlying events invalidates the fingerprint above.
         </p>

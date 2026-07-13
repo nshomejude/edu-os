@@ -9,6 +9,7 @@
         </div>
         <div class="toolbar" style="margin:0">
             <a class="btn btn-sm btn-secondary" href="{{ route('shipments.picking', $shipment) }}">Picking list</a>
+            <a class="btn btn-sm btn-secondary" href="{{ route('shipments.waybill', $shipment) }}">Waybill</a>
             @if (in_array($shipment->status, ['RECEIVED_FULL', 'RECEIVED_WITH_DISCREPANCY', 'CLOSED']))
                 <a class="btn btn-sm btn-secondary" href="{{ route('shipments.pod', $shipment) }}">Proof of delivery</a>
             @endif

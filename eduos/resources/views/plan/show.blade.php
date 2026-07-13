@@ -8,6 +8,7 @@
             <div class="sub">{{ $campaign->academic_year }} · created by {{ $campaign->created_by }}@if($campaign->approved_by) · approved by {{ $campaign->approved_by }}@endif</div>
         </div>
         <div class="toolbar" style="margin:0">
+            <a class="btn btn-sm btn-secondary" href="{{ route('plan.order', $campaign) }}">Distribution order</a>
             <span class="pill {{ $campaign->status === 'APPROVED' ? 'pill-success' : 'pill-transit' }}">{{ $campaign->status }}</span>
             @can('programme')
                 @if ($campaign->status === 'DRAFT')

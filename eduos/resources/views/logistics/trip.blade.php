@@ -8,7 +8,10 @@
             <h1>Trip TRIP-{{ $trip->id }}</h1>
             <div class="sub">{{ $trip->shipment->origin_name }} → {{ $trip->shipment->destination_name }} · {{ $trip->shipment->shipment_no }} (LOG-06)</div>
         </div>
-        <span class="pill {{ $trip->status === 'ARRIVED' ? 'pill-success' : ($trip->status === 'INCIDENT' ? 'pill-error' : 'pill-info') }}">{{ $trip->status }}</span>
+        <div class="toolbar" style="margin:0">
+            <a class="btn btn-sm btn-secondary" href="{{ route('shipments.waybill', $trip->shipment) }}">Waybill</a>
+            <span class="pill {{ $trip->status === 'ARRIVED' ? 'pill-success' : ($trip->status === 'INCIDENT' ? 'pill-error' : 'pill-info') }}">{{ $trip->status }}</span>
+        </div>
     </div>
 
     @include('partials.flash')
