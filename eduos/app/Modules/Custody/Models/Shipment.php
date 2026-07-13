@@ -9,7 +9,7 @@ class Shipment extends Model
     protected $fillable = [
         'shipment_no', 'origin_name', 'destination_name',
         'status', 'books', 'shipped_on',
-        'origin_warehouse_id', 'destination_school_id', 'textbook_title_id', 'received_books',
+        'origin_warehouse_id', 'origin_school_id', 'destination_school_id', 'textbook_title_id', 'received_books',
         'discrepancy_resolution', 'resolved_at', 'destination_warehouse_id', 'approved_by', 'approved_at',
     ];
 

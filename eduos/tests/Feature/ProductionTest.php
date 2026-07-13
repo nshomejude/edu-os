@@ -95,7 +95,7 @@ class ProductionTest extends TestCase
             '/', '/about', '/alerts', '/audit-trail', '/campaigns', '/exceptions', '/exports',
             '/forecast', '/inspections', '/inventory/low-stock', '/logistics', '/network', '/plan',
             '/procurement', '/profile', '/profile/mfa', '/profile/sessions', '/redistribution',
-            '/reports', '/reports/coverage', '/reports/campaign-performance', '/reports/performance',
+            '/reports', '/reports/coverage', '/reports/campaign-performance', '/reports/performance', '/reports/season-readiness',
             '/collections', '/charges', '/disposals', '/schedule', '/schools', '/schools/create', '/settings', '/shipments',
             '/shipments/create', '/textbooks', '/users', '/warehouses', '/up',
             '/api/catalogue', '/api/schools', '/api/stats', '/api/openapi.json', '/verify',

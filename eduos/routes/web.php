@@ -128,6 +128,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/procurement/suppliers/{supplier}', [\App\Http\Controllers\ProcurementController::class, 'showSupplier'])->name('procurement.supplier')->middleware('can:procurement');
     // Depth pass: requirements, adjustments, trip detail, verification queue, exception cases
     Route::post('/schools/{school}/requirements', [\App\Http\Controllers\SchoolOpsController::class, 'submitRequirement'])->name('schoolops.requirement')->middleware('can:school-ops');
+    Route::post('/schools/{school}/return-warehouse', [\App\Http\Controllers\SchoolOpsController::class, 'returnToWarehouse'])->name('schoolops.return_wh')->middleware('can:school-ops');
     Route::post('/warehouses/{warehouse}/adjust', [WarehouseController::class, 'adjust'])->name('warehouses.adjust')->middleware('can:warehouse-ops');
     Route::post('/adjustments/{adjustment}/approve', [WarehouseController::class, 'approveAdjustment'])->name('adjustments.approve')->middleware('can:warehouse-approve');
     Route::post('/adjustments/{adjustment}/reject', [WarehouseController::class, 'rejectAdjustment'])->name('adjustments.reject')->middleware('can:warehouse-approve');
@@ -152,6 +153,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/coverage', [ReportController::class, 'coverage'])->name('reports.coverage');
     Route::get('/reports/campaign-performance', [ReportController::class, 'campaignPerformance'])->name('reports.campaign_performance');
     Route::get('/reports/performance', [ReportController::class, 'performance'])->name('reports.performance');
+    Route::get('/reports/season-readiness', [ReportController::class, 'seasonReadiness'])->name('reports.season');
     Route::get('/collections', [\App\Http\Controllers\CollectionController::class, 'index'])->name('collections.index');
     Route::post('/collections', [\App\Http\Controllers\CollectionController::class, 'open'])->name('collections.open')->middleware('can:ministry');
     Route::post('/collections/bulk-return', [\App\Http\Controllers\CollectionController::class, 'bulkReturn'])->name('collections.bulk')->middleware('can:school-ops');

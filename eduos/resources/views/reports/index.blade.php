@@ -10,6 +10,7 @@
             <a class="btn btn-secondary" href="{{ route('reports.coverage') }}">Coverage</a>
             <a class="btn btn-secondary" href="{{ route('reports.campaign_performance') }}">Campaign fulfilment</a>
             <a class="btn btn-secondary" href="{{ route('reports.performance') }}">Loss &amp; suppliers</a>
+            <a class="btn btn-secondary" href="{{ route('reports.season') }}">Season readiness</a>
             <a class="btn btn-secondary" href="{{ route('collections.index') }}">Collections</a>
             <a class="btn btn-secondary" href="{{ route('exports.index') }}">{{ __('Export Centre') }}</a>
             <a class="btn btn-secondary" href="{{ route('forecast.index') }}">Demand forecast</a>

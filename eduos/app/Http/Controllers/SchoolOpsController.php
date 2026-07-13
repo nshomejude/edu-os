@@ -201,4 +201,52 @@ class SchoolOpsController extends Controller
         return back()->with('flash', 'Requirement submitted — it will be considered at the next campaign draft (PLAN-03).');
     }
 
+    /** Return chain (spec §18): send surplus/collected books from a school back to a warehouse. */
+    public function returnToWarehouse(Request $request, School $school)
+    {
+        \Illuminate\Support\Facades\Gate::authorize('operate-school', $school);
+        $data = $request->validate([
+            'textbook_title_id' => 'required|exists:textbook_titles,id',
+            'warehouse_id' => 'required|exists:warehouses,id',
+            'quantity' => 'required|integer|min:1|max:100000',
+        ]);
+        $onHand = SchoolStock::where('school_id', $school->id)
+            ->where('textbook_title_id', $data['textbook_title_id'])->sum('quantity');
+        $assigned = Assignment::where('school_id', $school->id)
+            ->where('textbook_title_id', $data['textbook_title_id'])->where('status', 'ASSIGNED')->sum('quantity');
+        if ($onHand - $assigned < $data['quantity']) {
+            return back()->with('flash_error', 'Only unassigned stock can be returned: '.($onHand - $assigned).' available.');
+        }
+
+        // write the books out of school stock (oldest rows first)
+        $left = $data['quantity'];
+        foreach (SchoolStock::where('school_id', $school->id)
+            ->where('textbook_title_id', $data['textbook_title_id'])->orderBy('id')->get() as $row) {
+            $take = min($left, $row->quantity);
+            $row->update(['quantity' => $row->quantity - $take]);
+            $left -= $take;
+            if ($left <= 0) {
+                break;
+            }
+        }
+
+        $wh = \App\Modules\Custody\Models\Warehouse::find($data['warehouse_id']);
+        $shipment = \App\Modules\Custody\Models\Shipment::create([
+            'shipment_no' => sprintf('SHP-%s-%06d', now()->format('Y'), \App\Modules\Custody\Models\Shipment::count() + 1),
+            'origin_name' => $school->name_official,
+            'destination_name' => $wh->name,
+            'textbook_title_id' => $data['textbook_title_id'],
+            'books' => $data['quantity'], 'status' => 'CONFIRMED', 'shipped_on' => now()->toDateString(),
+        ]);
+        $shipment->forceFill(['origin_school_id' => $school->id, 'destination_warehouse_id' => $wh->id])->save();
+        \App\Modules\Custody\Models\CustodyEvent::create([
+            'shipment_id' => $shipment->id, 'event_type' => 'RETURN_REQUESTED',
+            'actor' => auth()->user()->name, 'occurred_at' => now(),
+            'notes' => "{$data['quantity']} books returning from {$school->name_official} to {$wh->name}",
+        ]);
+        \App\Modules\Catalogue\Models\Copy::advance($data['textbook_title_id'], 'AT_SCHOOL', 'IN_TRANSIT', $data['quantity'], $school->id, $shipment->id);
+
+        return back()->with('flash', "Return {$shipment->shipment_no} raised — {$data['quantity']} books head back to {$wh->name} after approval and dispatch.");
+    }
+
 }

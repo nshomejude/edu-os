@@ -125,8 +125,10 @@ class ShipmentController extends Controller
             'route_note' => 'nullable|string|max:200',
             'route_stops' => 'nullable|string|max:400',
         ]);
-        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'RESERVED', -$shipment->books);
-        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', $shipment->books);
+        if ($shipment->origin_warehouse_id) {
+            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'RESERVED', -$shipment->books);
+            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', $shipment->books);
+        }
         $shipment->update(['status' => 'IN_TRANSIT']);
         \App\Modules\Catalogue\Models\Copy::advance($shipment->textbook_title_id, 'IN_WAREHOUSE', 'IN_TRANSIT', $shipment->books, null, $shipment->id);
         CustodyEvent::create([
@@ -173,7 +175,9 @@ class ShipmentController extends Controller
         $cumulative = $already + $received;
         $partial = $request->boolean('partial') && $cumulative < $shipment->books;
 
-        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', -$received);
+        if ($shipment->origin_warehouse_id) {
+            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', -$received);
+        }
 
         if ($shipment->destination_warehouse_id && $received > 0) {
             StockRecord::post($shipment->destination_warehouse_id, $shipment->textbook_title_id, 'AVAILABLE', $received);
@@ -234,8 +238,10 @@ class ShipmentController extends Controller
                 'shipment_id' => $shipment->id, 'event_type' => 'DISCREPANCY_OPENED',
                 'actor' => 'System', 'notes' => "Variance {$variance}; frozen in QUARANTINE", 'occurred_at' => now(),
             ]);
-            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', -$missing);
-            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'QUARANTINE', $missing);
+            if ($shipment->origin_warehouse_id) {
+                StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', -$missing);
+            }
+            StockRecord::post($shipment->origin_warehouse_id ?? $shipment->destination_warehouse_id, $shipment->textbook_title_id, 'QUARANTINE', $missing);
             \App\Modules\Platform\Models\ExceptionCase::open('DISCREPANCY', 'HIGH',
                 "Variance {$variance} on {$shipment->shipment_no} \u{2192} {$shipment->destination_name}", $shipment->id);
             Alert::create([
@@ -296,8 +302,10 @@ class ShipmentController extends Controller
         if (! in_array($shipment->status, ['CONFIRMED', 'LOADED'])) {
             return back()->with('flash_error', "ILLEGAL_TRANSITION: {$shipment->status} → CANCELLED (only pre-dispatch).");
         }
-        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'RESERVED', -$shipment->books);
-        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'AVAILABLE', $shipment->books);
+        if ($shipment->origin_warehouse_id) {
+            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'RESERVED', -$shipment->books);
+            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'AVAILABLE', $shipment->books);
+        }
         $shipment->update(['status' => 'CANCELLED']);
         CustodyEvent::create([
             'shipment_id' => $shipment->id, 'event_type' => 'CANCELLED',
@@ -317,7 +325,7 @@ class ShipmentController extends Controller
         $res = $request->validate(['resolution' => 'required|in:ACCEPT_SHORT,FOUND,WRITE_OFF'])['resolution'];
         $variance = abs($shipment->variance());
 
-        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'QUARANTINE', -$variance);
+        StockRecord::post($shipment->origin_warehouse_id ?? $shipment->destination_warehouse_id, $shipment->textbook_title_id, 'QUARANTINE', -$variance);
         if ($res === 'FOUND') {
             StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'AVAILABLE', $variance);
         }

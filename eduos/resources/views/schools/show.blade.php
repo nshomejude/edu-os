@@ -192,4 +192,24 @@
         </table>
     </div>
     @endcan
+    @can('school-ops')
+    <div class="card" style="margin-top:18px">
+        <h2>Return books to a warehouse (return chain)</h2>
+        <form class="toolbar" method="post" action="{{ route('schoolops.return_wh', $school) }}" style="margin:0">@csrf
+            <select class="input" name="textbook_title_id" required style="min-width:230px">
+                @foreach (\App\Modules\Catalogue\Models\TextbookTitle::where('status', 'APPROVED')->get() as $t)
+                    <option value="{{ $t->id }}">{{ $t->ntid }}</option>
+                @endforeach
+            </select>
+            <input class="input" type="number" name="quantity" min="1" placeholder="Copies" required style="min-width:110px">
+            <select class="input" name="warehouse_id" required style="min-width:220px">
+                @foreach (\App\Modules\Custody\Models\Warehouse::orderBy('name')->get() as $w)
+                    <option value="{{ $w->id }}">{{ $w->name }} ({{ $w->tier }})</option>
+                @endforeach
+            </select>
+            <button class="btn btn-secondary">Raise return shipment</button>
+        </form>
+        <p style="color:var(--text-2);font-size:13px;margin-top:8px">Only unassigned stock can return. The shipment follows the normal approval → dispatch → counted-receipt chain; the warehouse restocks on receipt.</p>
+    </div>
+    @endcan
 @endsection

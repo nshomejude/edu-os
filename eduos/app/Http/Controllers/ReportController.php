@@ -186,4 +186,29 @@ class ReportController extends Controller
         return view('reports.performance', compact('lanes', 'lossChart', 'suppliers', 'lostCopies', 'lostAssignments'));
     }
 
+    /** FR-NWD-15: season readiness — % of the year's allocations dispatched/received per region vs the Aug–Oct window. */
+    public function seasonReadiness()
+    {
+        $year = \App\Modules\Platform\Models\Setting::get('academic_year', '2025/2026');
+        $allocations = \App\Modules\Planning\Models\Allocation::with(['school.region', 'shipment'])
+            ->whereHas('campaign', fn ($q) => $q->where('academic_year', $year))->get();
+        $rows = $allocations->groupBy(fn ($a) => $a->school->region->name_en ?? '—')->map(function ($g, $name) {
+            $allocated = (int) $g->sum('quantity');
+            $dispatched = (int) $g->filter(fn ($a) => $a->shipment && $a->shipment->status !== 'CANCELLED')->sum(fn ($a) => $a->shipment->books);
+            $received = (int) $g->sum(fn ($a) => $a->shipment?->received_books ?? 0);
+
+            return (object) [
+                'region' => $name, 'allocated' => $allocated,
+                'dispatched' => $dispatched, 'received' => $received,
+                'dispatchedPct' => $allocated ? round($dispatched / $allocated * 100, 1) : 0,
+                'receivedPct' => $allocated ? round($received / $allocated * 100, 1) : 0,
+            ];
+        })->sortBy('receivedPct')->values();
+
+        $seasonStart = now()->month >= 9 ? now()->addYear()->setMonth(8)->setDay(1) : now()->setMonth(8)->setDay(1);
+        $daysToSeason = (int) now()->startOfDay()->diffInDays($seasonStart->startOfDay(), false);
+
+        return view('reports.season', compact('rows', 'year', 'daysToSeason'));
+    }
+
 }
