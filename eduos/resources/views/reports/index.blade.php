@@ -7,6 +7,10 @@
             <div class="sub">Operational intelligence — coverage, delivery performance, loss analysis</div>
         </div>
         <div class="toolbar" style="margin:0">
+            <a class="btn btn-secondary" href="{{ route('reports.coverage') }}">Coverage</a>
+            <a class="btn btn-secondary" href="{{ route('reports.campaign_performance') }}">Campaign fulfilment</a>
+            <a class="btn btn-secondary" href="{{ route('reports.performance') }}">Loss &amp; suppliers</a>
+            <a class="btn btn-secondary" href="{{ route('collections.index') }}">Collections</a>
             <a class="btn btn-secondary" href="{{ route('exports.index') }}">{{ __('Export Centre') }}</a>
             <a class="btn btn-secondary" href="{{ route('forecast.index') }}">Demand forecast</a>
             <a class="btn btn-secondary" href="{{ route('campaigns.index') }}">Verification campaigns</a>

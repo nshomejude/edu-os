@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 /** ADM-03: unified, chained, filterable audit trail across four event streams. */
 class AuditController extends Controller
 {
-    public function index(Request $request)
+    /** Merge the four streams with shared text/date filters. */
+    private function trail(Request $request, int $perStream, ?int $take)
     {
         $q = trim((string) $request->q);
         $from = $request->date('from');
@@ -22,7 +23,7 @@ class AuditController extends Controller
 
         $custody = $span(CustodyEvent::with('shipment'), 'occurred_at')
             ->when($q, fn ($w) => $w->where(fn ($x) => $x->where('event_type', 'like', "%{$q}%")->orWhere('actor', 'like', "%{$q}%")))
-            ->orderByDesc('id')->limit(40)->get()
+            ->orderByDesc('id')->limit($perStream)->get()
             ->map(fn ($e) => (object) [
                 'at' => $e->occurred_at, 'stream' => 'CUSTODY',
                 'what' => $e->event_type.' — '.$e->shipment?->shipment_no,
@@ -30,7 +31,7 @@ class AuditController extends Controller
             ]);
         $passport = $span(PassportEvent::with('batch'), 'occurred_at')
             ->when($q, fn ($w) => $w->where(fn ($x) => $x->where('event_type', 'like', "%{$q}%")->orWhere('actor', 'like', "%{$q}%")))
-            ->orderByDesc('id')->limit(40)->get()
+            ->orderByDesc('id')->limit($perStream)->get()
             ->map(fn ($e) => (object) [
                 'at' => $e->occurred_at, 'stream' => 'PASSPORT',
                 'what' => $e->event_type.' — '.$e->batch?->batch_no.' @ '.$e->location,
@@ -38,7 +39,7 @@ class AuditController extends Controller
             ]);
         $stock = $span(StockTransaction::with(['warehouse', 'title']), 'created_at')
             ->when($q, fn ($w) => $w->where('actor', 'like', "%{$q}%"))
-            ->orderByDesc('id')->limit(40)->get()
+            ->orderByDesc('id')->limit($perStream)->get()
             ->map(fn ($t) => (object) [
                 'at' => $t->created_at, 'stream' => 'STOCK',
                 'what' => sprintf('%+d %s %s @ %s (bal %d) · %s', $t->delta, $t->stock_class, $t->title?->ntid, $t->warehouse?->name, $t->balance_after, $t->context),
@@ -46,21 +47,30 @@ class AuditController extends Controller
             ]);
         $auth = $span(AuthEvent::query(), 'created_at')
             ->when($q, fn ($w) => $w->where(fn ($x) => $x->where('event', 'like', "%{$q}%")->orWhere('email', 'like', "%{$q}%")))
-            ->orderByDesc('id')->limit(40)->get()
+            ->orderByDesc('id')->limit($perStream)->get()
             ->map(fn ($e) => (object) [
                 'at' => $e->created_at, 'stream' => 'AUTH',
                 'what' => str_replace('_', ' ', $e->event).' — '.$e->email.($e->ip ? ' from '.$e->ip : ''),
                 'actor' => $e->email, 'chained' => false, 'intact' => null,
             ]);
 
-        $events = $custody->concat($passport)->concat($stock)->concat($auth)->sortByDesc('at')->take(120)->values();
+        $events = $custody->concat($passport)->concat($stock)->concat($auth)->sortByDesc('at')->values();
+
+        return $take ? $events->take($take)->values() : $events;
+    }
+
+    public function index(Request $request)
+    {
+        $q = trim((string) $request->q);
+        $events = $this->trail($request, 40, 120);
 
         return view('audit.index', compact('events', 'q'));
     }
-    /** REP: CSV export of the merged trail (same filters as the screen). */
+
+    /** REP: full CSV export — same filters, no screen cap (per-stream safety limit 10 000). */
     public function export(Request $request)
     {
-        $events = $this->index($request)->getData()['events'];
+        $events = $this->trail($request, 10000, null);
         $csv = "at,stream,event,actor,chained,intact\n";
         foreach ($events as $e) {
             $csv .= sprintf("%s,%s,\"%s\",\"%s\",%s,%s\n",
@@ -73,5 +83,4 @@ class AuditController extends Controller
             'Content-Disposition' => 'attachment; filename="audit-trail.csv"',
         ]);
     }
-
 }

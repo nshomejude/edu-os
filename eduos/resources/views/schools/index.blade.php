@@ -8,6 +8,7 @@
         </div>
         <div class="toolbar" style="margin:0">
             @can('ministry')<a class="btn btn-secondary" href="{{ route('inspections.index') }}">{{ __('Inspections') }}</a>@endcan
+            <a class="btn btn-secondary" href="{{ route('collections.index') }}">Collections</a>
             <a class="btn btn-primary" href="{{ route('schools.create') }}">+ Register School</a>
         </div>
     </div>

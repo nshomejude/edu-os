@@ -137,6 +137,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/shipments.csv', [\App\Http\Controllers\PublicApiController::class, 'shipmentsCsv'])->name('reports.shipments.csv');
     Route::get('/reports/stock.csv', [\App\Http\Controllers\PublicApiController::class, 'stockCsv'])->name('reports.stock.csv');
     Route::get('/reports/audit.csv', [\App\Http\Controllers\AuditController::class, 'export'])->name('reports.audit.csv');
+    Route::get('/reports/coverage', [ReportController::class, 'coverage'])->name('reports.coverage');
+    Route::get('/reports/campaign-performance', [ReportController::class, 'campaignPerformance'])->name('reports.campaign_performance');
+    Route::get('/reports/performance', [ReportController::class, 'performance'])->name('reports.performance');
+    Route::get('/collections', [\App\Http\Controllers\CollectionController::class, 'index'])->name('collections.index');
+    Route::post('/collections', [\App\Http\Controllers\CollectionController::class, 'open'])->name('collections.open')->middleware('can:ministry');
+    Route::post('/collections/bulk-return', [\App\Http\Controllers\CollectionController::class, 'bulkReturn'])->name('collections.bulk')->middleware('can:school-ops');
+    Route::post('/collections/{round}/close', [\App\Http\Controllers\CollectionController::class, 'close'])->name('collections.close')->middleware('can:ministry');
 
     // Profile & password management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
