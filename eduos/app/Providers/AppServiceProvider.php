@@ -66,5 +66,14 @@ class AppServiceProvider extends ServiceProvider
             return $u->role === 'ADMIN'
                 || (in_array($u->role, ['SCHOOL_HEAD', 'TEACHER']) && $u->school_id === $school->id);
         });
+
+        // Read-side: the audit trail (incl. auth events) is for oversight tiers only
+        Gate::define('view-audit', fn ($u) => $is($u, ['ADMIN', 'AUDITOR', 'INSPECTOR']));
+
+        // Read-side: learner records are minor-related PII — oversight roles, or your own school
+        Gate::define('view-learners', function ($u, $school) {
+            return in_array($u->role, ['ADMIN', 'PROGRAMME_ADMIN', 'DIVISION_OFFICER', 'SUBDIV_OFFICER', 'INSPECTOR', 'AUDITOR'])
+                || (in_array($u->role, ['SCHOOL_HEAD', 'TEACHER']) && $u->school_id === $school->id);
+        });
     }
 }

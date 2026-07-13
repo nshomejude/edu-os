@@ -15,6 +15,7 @@ class SchoolOpsController extends Controller
     /** Assignment: class-level by default; student-level when a learner is selected (FR-NTR-SM-02 upgrade). */
     public function assign(Request $request, School $school)
     {
+        \Illuminate\Support\Facades\Gate::authorize('operate-school', $school);
         $data = $request->validate([
             'textbook_title_id' => 'required|exists:textbook_titles,id',
             'class_level' => 'required|string|max:4',
@@ -52,6 +53,7 @@ class SchoolOpsController extends Controller
     /** Return with mandatory condition (FR-NTR-11). */
     public function returnBooks(Request $request, Assignment $assignment)
     {
+        \Illuminate\Support\Facades\Gate::authorize('operate-school', $assignment->school);
         $data = $request->validate(['condition_on_return' => 'required|in:GOOD,FAIR,POOR,UNUSABLE']);
         if ($assignment->status !== 'ASSIGNED') {
             return back()->with('flash_error', 'Already returned.');
@@ -114,6 +116,7 @@ class SchoolOpsController extends Controller
             'textbook_title_id' => 'required|exists:textbook_titles,id',
             'counted' => 'required|integer|min:0',
         ]);
+        \Illuminate\Support\Facades\Gate::authorize('operate-school', School::find($data['school_id']));
         $expected = SchoolStock::where('school_id', $data['school_id'])
             ->where('textbook_title_id', $data['textbook_title_id'])->sum('quantity');
 
@@ -150,6 +153,7 @@ class SchoolOpsController extends Controller
     /** Enrolment return: submit (school) then validate (division/admin) — FR-NSR-03. */
     public function submitEnrolment(Request $request, School $school)
     {
+        \Illuminate\Support\Facades\Gate::authorize('operate-school', $school);
         $data = $request->validate([
             'class_level' => 'required|string|max:4',
             'boys' => 'required|integer|min:0',
@@ -180,6 +184,7 @@ class SchoolOpsController extends Controller
     /** PLAN-03: a school submits its own textbook requirement for the planning cycle. */
     public function submitRequirement(\Illuminate\Http\Request $request, \App\Modules\Registry\Models\School $school)
     {
+        \Illuminate\Support\Facades\Gate::authorize('operate-school', $school);
         $data = $request->validate([
             'textbook_title_id' => 'required|exists:textbook_titles,id',
             'quantity' => 'required|integer|min:1|max:100000',

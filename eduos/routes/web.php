@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/schools/create', [SchoolController::class, 'create'])->name('schools.create');
     Route::post('/schools', [SchoolController::class, 'store'])->name('schools.store');
     Route::get('/schools/{school}', [SchoolController::class, 'show'])->name('schools.show');
-    Route::get('/schools/{school}/students', [SchoolController::class, 'students'])->name('schools.students');
+    Route::get('/schools/{school}/students', [SchoolController::class, 'students'])->name('schools.students')->middleware('can:view-learners,school');
     Route::get('/locale/{locale}', function (string $locale) {
         abort_unless(in_array($locale, ['en', 'fr']), 404);
         session(['locale' => $locale]);
@@ -115,7 +115,7 @@ Route::middleware('auth')->group(function () {
     // EXC + ADM-03 + AUTH-05/06 + REP-04
     Route::get('/exceptions', [\App\Http\Controllers\ExceptionController::class, 'index'])->name('exceptions.index');
     Route::post('/exceptions/escalate', [\App\Http\Controllers\ExceptionController::class, 'escalate'])->name('exceptions.escalate');
-    Route::get('/audit-trail', [\App\Http\Controllers\AuditController::class, 'index'])->name('audit.index');
+    Route::get('/audit-trail', [\App\Http\Controllers\AuditController::class, 'index'])->name('audit.index')->middleware('can:view-audit');
     Route::get('/profile/mfa', [\App\Http\Controllers\AuthExtrasController::class, 'mfaSetup'])->name('mfa.setup');
     Route::post('/profile/mfa', [\App\Http\Controllers\AuthExtrasController::class, 'mfaEnable'])->name('mfa.enable');
     Route::post('/profile/mfa/disable', [\App\Http\Controllers\AuthExtrasController::class, 'mfaDisable'])->name('mfa.disable');
@@ -137,7 +137,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/exports', fn () => view('reports.exports'))->name('exports.index');
     Route::get('/reports/shipments.csv', [\App\Http\Controllers\PublicApiController::class, 'shipmentsCsv'])->name('reports.shipments.csv');
     Route::get('/reports/stock.csv', [\App\Http\Controllers\PublicApiController::class, 'stockCsv'])->name('reports.stock.csv');
-    Route::get('/reports/audit.csv', [\App\Http\Controllers\AuditController::class, 'export'])->name('reports.audit.csv');
+    Route::get('/reports/audit.csv', [\App\Http\Controllers\AuditController::class, 'export'])->name('reports.audit.csv')->middleware('can:view-audit');
     Route::get('/reports/coverage', [ReportController::class, 'coverage'])->name('reports.coverage');
     Route::get('/reports/campaign-performance', [ReportController::class, 'campaignPerformance'])->name('reports.campaign_performance');
     Route::get('/reports/performance', [ReportController::class, 'performance'])->name('reports.performance');
@@ -204,12 +204,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/alerts', [PlatformController::class, 'alerts'])->name('alerts.index');
     Route::post('/alerts/{alert}/read', [PlatformController::class, 'markRead'])->name('alerts.read');
-    Route::get('/users', [PlatformController::class, 'users'])->name('users.index');
+    Route::get('/users', [PlatformController::class, 'users'])->name('users.index')->middleware('can:ministry');
     Route::get('/settings', [PlatformController::class, 'settings'])->name('settings.index');
     Route::post('/settings/verify-chains', function () {
         $code = \Illuminate\Support\Facades\Artisan::call('eduos:verify-chains');
         $out = trim(\Illuminate\Support\Facades\Artisan::output());
 
         return back()->with($code === 0 ? 'flash' : 'flash_error', $out);
-    })->name('settings.verify');
+    })->name('settings.verify')->middleware('can:ministry');
 });

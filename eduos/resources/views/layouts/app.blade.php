@@ -58,18 +58,22 @@
                 <svg viewBox="0 0 24 24"><path d="M12 2L1 21h22zM11 9h2v6h-2zm0 8h2v2h-2z"/></svg>
                 {{ __('Exceptions') }}
             </a>
+            @can('view-audit')
             <a href="{{ route('audit.index') }}" class="{{ request()->routeIs('audit.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2zM8 8h8v1.6H8zm0 4h8v1.6H8z"/></svg>
                 {{ __('Audit Trail') }}
             </a>
+            @endcan
             <a href="{{ route('alerts.index') }}" class="{{ request()->routeIs('alerts.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6c0 6.5-2.5 8-2.5 8h17S18 14.5 18 8a6 6 0 00-6-6zM10.2 20a2 2 0 003.6 0z"/></svg>
                 {{ __('Alerts') }} @if($unread > 0)<span class="badge">{{ $unread }}</span>@endif
             </a>
+            @can('ministry')
             <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24"><path d="M9 11a4 4 0 100-8 4 4 0 000 8zM1 21v-1.5A5.5 5.5 0 016.5 14h5a5.5 5.5 0 015.5 5.5V21zM16.6 3.7a4 4 0 010 6.7 5.6 5.6 0 000-6.7zM19.4 21v-1.5c0-1.7-.6-3.2-1.7-4.4a5.5 5.5 0 015.3 4.9V21z"/></svg>
                 {{ __('Users') }}
             </a>
+            @endcan
             <a href="{{ route('settings.index') }}" class="{{ request()->routeIs('settings.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill-rule="evenodd"><path d="M13.8 2l.5 2.3c.6.2 1.2.4 1.7.7l2-1.2 2.5 2.5-1.2 2c.3.5.5 1.1.7 1.7l2.3.5v3.6l-2.3.5c-.2.6-.4 1.2-.7 1.7l1.2 2-2.5 2.5-2-1.2c-.5.3-1.1.5-1.7.7l-.5 2.3h-3.6l-.5-2.3a8 8 0 01-1.7-.7l-2 1.2-2.5-2.5 1.2-2c-.3-.5-.5-1.1-.7-1.7L2 13.8v-3.6l2.3-.5c.2-.6.4-1.2.7-1.7L3.8 6 6.3 3.5l2 1.2c.5-.3 1.1-.5 1.7-.7l.5-2.3zM12 8.4a3.6 3.6 0 100 7.2 3.6 3.6 0 000-7.2z"/></svg>
                 {{ __('Settings') }}

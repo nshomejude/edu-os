@@ -59,6 +59,7 @@ class CollectionController extends Controller
             'school_id' => 'required|exists:schools,id',
             'condition_on_return' => 'required|in:GOOD,FAIR,POOR,UNUSABLE',
         ]);
+        \Illuminate\Support\Facades\Gate::authorize('operate-school', School::findOrFail($data['school_id']));
         $round = CollectionRound::where('status', 'OPEN')->latest('id')->first();
         if (! $round) {
             return back()->with('flash_error', 'No collection round is open.');
@@ -125,7 +126,10 @@ class CollectionController extends Controller
     /** Replacement-charge ledger for books lost at collection close. */
     public function charges()
     {
-        $charges = \App\Modules\SchoolOps\Models\ReplacementCharge::with(['school', 'title'])->orderByDesc('id')->get();
+        $charges = \App\Modules\SchoolOps\Models\ReplacementCharge::with(['school', 'title'])->orderByDesc('id')
+            ->when(in_array(auth()->user()->role, ['SCHOOL_HEAD', 'TEACHER']),
+                fn ($q) => $q->where('school_id', auth()->user()->school_id ?? 0))
+            ->get();
 
         return view('charges.index', [
             'charges' => $charges,

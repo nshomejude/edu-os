@@ -86,6 +86,7 @@ class SchoolController extends Controller
     /** Learner detail with assignment history. */
     public function student(\App\Modules\Registry\Models\Student $student)
     {
+        \Illuminate\Support\Facades\Gate::authorize('view-learners', \App\Modules\Registry\Models\School::findOrFail($student->school_id));
         $assignments = \App\Modules\SchoolOps\Models\Assignment::with('title')
             ->where('student_id', $student->id)->orderByDesc('id')->get();
 
@@ -95,6 +96,7 @@ class SchoolController extends Controller
     /** Learner registration (light Student Registry write path). */
     public function storeStudent(Request $request, School $school)
     {
+        \Illuminate\Support\Facades\Gate::authorize('operate-school', $school);
         $data = $request->validate([
             'name' => 'required|string|max:160',
             'sex' => 'required|in:M,F',
