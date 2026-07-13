@@ -78,13 +78,14 @@
         </div>
     @endif
 
-    @if (in_array($shipment->status, ['DISPATCHED', 'IN_TRANSIT', 'ARRIVED']))
+    @if (in_array($shipment->status, ['DISPATCHED', 'IN_TRANSIT', 'ARRIVED', 'PARTIALLY_RECEIVED']))
         <div class="card mb">
             <h2>School receipt — counted quantity (FR-NWD-SM-02)</h2>
             <form class="toolbar" method="post" action="{{ route('shipments.receive', $shipment) }}" style="margin:0" enctype="multipart/form-data">
                 @csrf
                 <input class="input" type="number" name="received_books" min="0" placeholder="Counted books" required>
                 <input class="input" name="received_signature" placeholder="Receiver signature (full name)" required style="min-width:210px">
+                <label style="font-size:12.5px;display:flex;align-items:center;gap:6px"><input type="checkbox" name="partial" value="1"> Partial — more expected</label>
                 <select class="input" name="discrepancy_category" style="min-width:165px">
                     <option value="">If short: category…</option>
                     <option>SHORTAGE</option><option>DAMAGE</option><option>WRONG_TITLE</option><option>EXCESS</option><option>OTHER</option>

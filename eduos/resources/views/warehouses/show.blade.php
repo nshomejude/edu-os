@@ -120,4 +120,34 @@
         <p style="color:var(--text-2);font-size:13px;margin-top:8px">Adjustments post to the AVAILABLE ledger and are permanently journalled with your name and the reason code.</p>
     </div>
     @endcan
+    @php($pending = \App\Modules\Custody\Models\StockAdjustment::with('title')->where('warehouse_id', $warehouse->id)->where('status', 'REQUESTED')->get())
+    @if ($pending->isNotEmpty())
+        <div class="card" style="margin-top:18px;border-color:var(--cameroon-gold)">
+            <h2>Adjustments awaiting approval (FR-NWD-04)</h2>
+            <table class="table">
+                <thead><tr><th>#</th><th>{{ __('Title') }}</th><th>Delta</th><th>Reason</th><th>Requested by</th><th></th></tr></thead>
+                <tbody>
+                @foreach ($pending as $a)
+                    <tr>
+                        <td>{{ $a->id }}</td>
+                        <td>{{ $a->title->ntid }}</td>
+                        <td><b style="color:{{ $a->delta < 0 ? 'var(--error)' : 'var(--success)' }}">{{ sprintf('%+d', $a->delta) }}</b></td>
+                        <td>{{ $a->reason }}@if($a->note) · <span style="color:var(--text-2);font-size:12px">{{ $a->note }}</span>@endif</td>
+                        <td>{{ $a->requested_by }}</td>
+                        <td>
+                            @can('warehouse-approve')
+                                <div class="toolbar" style="margin:0;gap:6px">
+                                    <form method="post" action="{{ route('adjustments.approve', $a) }}">@csrf<button class="btn btn-sm btn-primary">Approve &amp; post</button></form>
+                                    <form method="post" action="{{ route('adjustments.reject', $a) }}">@csrf<button class="btn btn-sm btn-danger">Reject</button></form>
+                                </div>
+                            @else
+                                <span style="font-size:12px;color:var(--text-2)">Awaiting manager</span>
+                            @endcan
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
 @endsection

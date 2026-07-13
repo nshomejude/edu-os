@@ -180,8 +180,9 @@ class DepthTest extends TestCase
         $picking = $this->actingAs($this->admin)->get(route('shipments.picking', $shipment));
         $picking->assertOk()->assertSee('WAREHOUSE PICKING LIST')->assertSee('Scan to verify');
 
-        // inspection report
-        $this->actingAs($this->admin)->post(route('inspections.store'), [
+        // inspection report — by an independent inspector (admin received this school's delivery, VER SOD)
+        $inspector = User::create(['name' => 'Indep', 'email' => 'indep@t.cm', 'password' => 'x', 'role' => 'INSPECTOR']);
+        $this->actingAs($inspector)->post(route('inspections.store'), [
             'school_id' => $this->school->id, 'textbook_title_id' => $this->title->id, 'counted_qty' => 0,
         ]);
         $inspection = \App\Modules\SchoolOps\Models\Inspection::first();

@@ -151,33 +151,70 @@ class ShipmentController extends Controller
         return back()->with('flash', "Shipment dispatched with {$data['carrier']} (waybill {$data['waybill']}).");
     }
 
-    /** Receipt: variance opens a DiscrepancyCase — never silently absorbed (FR-NWD-SM-02). */
+    /** Receipt: cumulative counting with declared partial deliveries; unexplained variance opens a DiscrepancyCase (FR-NWD-SM-02). */
     public function receive(Request $request, Shipment $shipment)
     {
-        if (! in_array($shipment->status, ['IN_TRANSIT', 'DISPATCHED', 'ARRIVED'])) {
-            return back()->with('flash_error', "ILLEGAL_TRANSITION: {$shipment->status} → RECEIVED.");
+        if (! in_array($shipment->status, ['IN_TRANSIT', 'DISPATCHED', 'ARRIVED', 'PARTIALLY_RECEIVED'])) {
+            return back()->with('flash_error', "ILLEGAL_TRANSITION: {$shipment->status} \u{2192} RECEIVED.");
         }
         $data = $request->validate([
             'received_books' => 'required|integer|min:0',
+            'partial' => 'nullable|boolean',
             'received_signature' => 'nullable|string|max:120',
             'discrepancy_category' => 'nullable|in:SHORTAGE,DAMAGE,WRONG_TITLE,EXCESS,OTHER',
             'discrepancy_evidence' => 'nullable|image|max:4096',
         ]);
         $evidencePath = $request->hasFile('discrepancy_evidence')
             ? $request->file('discrepancy_evidence')->store('evidence', 'public') : null;
-        $received = min($data['received_books'], $shipment->books);
-        $variance = $received - $shipment->books;
 
-        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', -$shipment->books);
+        $already = (int) ($shipment->received_books ?? 0);
+        $remaining = $shipment->books - $already;
+        $received = min($data['received_books'], $remaining);
+        $cumulative = $already + $received;
+        $partial = $request->boolean('partial') && $cumulative < $shipment->books;
 
+        StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', -$received);
+
+        if ($shipment->destination_warehouse_id && $received > 0) {
+            StockRecord::post($shipment->destination_warehouse_id, $shipment->textbook_title_id, 'AVAILABLE', $received);
+            \App\Modules\Catalogue\Models\Copy::whereIn('id',
+                \App\Modules\Catalogue\Models\Copy::where('shipment_id', $shipment->id)
+                    ->where('lifecycle_state', 'IN_TRANSIT')->limit($received)->pluck('id')
+            )->update(['lifecycle_state' => 'IN_WAREHOUSE', 'shipment_id' => null]);
+        }
+        if ($shipment->destination_school_id && $received > 0) {
+            \App\Modules\SchoolOps\Models\SchoolStock::create([
+                'school_id' => $shipment->destination_school_id,
+                'textbook_title_id' => $shipment->textbook_title_id,
+                'quantity' => $received, 'condition' => 'GOOD',
+            ]);
+            \App\Modules\Catalogue\Models\Copy::advance($shipment->textbook_title_id, 'IN_TRANSIT', 'AT_SCHOOL', $received, $shipment->destination_school_id, $shipment->id);
+        }
+
+        if ($partial) {
+            $shipment->forceFill([
+                'received_books' => $cumulative, 'status' => 'PARTIALLY_RECEIVED',
+                'received_signature' => $data['received_signature'] ?? (auth()->user()->name ?? null),
+            ])->save();
+            CustodyEvent::create([
+                'shipment_id' => $shipment->id, 'event_type' => 'RECEIVED_PARTIAL',
+                'actor' => auth()->user()->name ?? 'System',
+                'notes' => "Counted {$received} now; {$cumulative} of {$shipment->books} so far", 'occurred_at' => now(),
+            ]);
+
+            return back()->with('flash', "Partial receipt recorded \u{2014} {$cumulative} of {$shipment->books}; the balance stays in transit.");
+        }
+
+        $variance = $cumulative - $shipment->books;
         $shipment->forceFill([
-            'received_books' => $received,
+            'received_books' => $cumulative,
             'status' => $variance === 0 ? 'RECEIVED_FULL' : 'RECEIVED_WITH_DISCREPANCY',
             'received_signature' => $data['received_signature'] ?? (auth()->user()->name ?? null),
             'discrepancy_category' => $variance === 0 ? null : ($data['discrepancy_category'] ?? 'SHORTAGE'),
             'discrepancy_evidence_path' => $evidencePath,
         ])->save();
-        // Trip closes on receipt (LOG)
+
+        // Trip closes on final receipt (LOG)
         $trip = \App\Modules\Logistics\Models\Trip::where('shipment_id', $shipment->id)->latest('id')->first();
         if ($trip && $trip->status !== 'ARRIVED') {
             $trip->update(['status' => 'ARRIVED', 'arrived_at' => now()]);
@@ -188,38 +225,23 @@ class ShipmentController extends Controller
         CustodyEvent::create([
             'shipment_id' => $shipment->id, 'event_type' => 'RECEIVED',
             'actor' => auth()->user()->name ?? 'System',
-            'notes' => "Counted {$received} of {$shipment->books}", 'occurred_at' => now(),
+            'notes' => "Counted {$cumulative} of {$shipment->books}", 'occurred_at' => now(),
         ]);
 
-        if ($shipment->destination_warehouse_id) {
-            StockRecord::post($shipment->destination_warehouse_id, $shipment->textbook_title_id, 'AVAILABLE', $received);
-            \App\Modules\Catalogue\Models\Copy::whereIn('id',
-                \App\Modules\Catalogue\Models\Copy::where('shipment_id', $shipment->id)
-                    ->where('lifecycle_state', 'IN_TRANSIT')->limit($received)->pluck('id')
-            )->update(['lifecycle_state' => 'IN_WAREHOUSE', 'shipment_id' => null]);
-        }
-
-        if ($shipment->destination_school_id) {
-            \App\Modules\SchoolOps\Models\SchoolStock::create([
-                'school_id' => $shipment->destination_school_id,
-                'textbook_title_id' => $shipment->textbook_title_id,
-                'quantity' => $received, 'condition' => 'GOOD',
-            ]);
-            \App\Modules\Catalogue\Models\Copy::advance($shipment->textbook_title_id, 'IN_TRANSIT', 'AT_SCHOOL', $received, $shipment->destination_school_id, $shipment->id);
-        }
-
         if ($variance !== 0) {
+            $missing = $shipment->books - $cumulative;
             CustodyEvent::create([
                 'shipment_id' => $shipment->id, 'event_type' => 'DISCREPANCY_OPENED',
                 'actor' => 'System', 'notes' => "Variance {$variance}; frozen in QUARANTINE", 'occurred_at' => now(),
             ]);
-            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'QUARANTINE', abs($variance));
+            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'IN_TRANSIT_OUT', -$missing);
+            StockRecord::post($shipment->origin_warehouse_id, $shipment->textbook_title_id, 'QUARANTINE', $missing);
             \App\Modules\Platform\Models\ExceptionCase::open('DISCREPANCY', 'HIGH',
-                "Variance {$variance} on {$shipment->shipment_no} → {$shipment->destination_name}", $shipment->id);
+                "Variance {$variance} on {$shipment->shipment_no} \u{2192} {$shipment->destination_name}", $shipment->id);
             Alert::create([
                 'severity' => 'CRITICAL',
                 'title' => "Discrepancy on {$shipment->shipment_no}",
-                'message' => "Received {$received} of {$shipment->books} at {$shipment->destination_name}. Variance frozen in QUARANTINE pending reconciliation (FR-NWD-SM-02).",
+                'message' => "Received {$cumulative} of {$shipment->books} at {$shipment->destination_name}. Variance frozen in QUARANTINE pending reconciliation (FR-NWD-SM-02).",
                 'link' => "/shipments/{$shipment->id}",
             ]);
 

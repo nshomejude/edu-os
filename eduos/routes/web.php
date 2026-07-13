@@ -128,7 +128,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/procurement/suppliers/{supplier}', [\App\Http\Controllers\ProcurementController::class, 'showSupplier'])->name('procurement.supplier')->middleware('can:procurement');
     // Depth pass: requirements, adjustments, trip detail, verification queue, exception cases
     Route::post('/schools/{school}/requirements', [\App\Http\Controllers\SchoolOpsController::class, 'submitRequirement'])->name('schoolops.requirement')->middleware('can:school-ops');
-    Route::post('/warehouses/{warehouse}/adjust', [WarehouseController::class, 'adjust'])->name('warehouses.adjust')->middleware('can:warehouse-approve');
+    Route::post('/warehouses/{warehouse}/adjust', [WarehouseController::class, 'adjust'])->name('warehouses.adjust')->middleware('can:warehouse-ops');
+    Route::post('/adjustments/{adjustment}/approve', [WarehouseController::class, 'approveAdjustment'])->name('adjustments.approve')->middleware('can:warehouse-approve');
+    Route::post('/adjustments/{adjustment}/reject', [WarehouseController::class, 'rejectAdjustment'])->name('adjustments.reject')->middleware('can:warehouse-approve');
     Route::get('/trips/{trip}', [\App\Http\Controllers\LogisticsController::class, 'showTrip'])->name('trips.show');
     Route::get('/shipments/{shipment}/waybill', [ShipmentController::class, 'waybill'])->name('shipments.waybill');
     Route::get('/inspections/{inspection}/report', [\App\Http\Controllers\InspectionController::class, 'report'])->name('inspections.report')->middleware('can:inspect');

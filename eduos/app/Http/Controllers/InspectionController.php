@@ -32,6 +32,15 @@ class InspectionController extends Controller
             'findings' => 'nullable|string|max:500',
             'evidence' => 'nullable|image|max:4096',
         ]);
+        // VER SOD (spec L12861): the inspector must be independent of dispatch and receipt at this school
+        $recent = \App\Modules\Custody\Models\Shipment::where('destination_school_id', $data['school_id'])
+            ->where('updated_at', '>=', now()->subDays(90))->pluck('id');
+        $conflicted = \App\Modules\Custody\Models\CustodyEvent::whereIn('shipment_id', $recent)
+            ->whereIn('event_type', ['DISPATCHED', 'RECEIVED', 'RECEIVED_PARTIAL'])
+            ->where('actor', auth()->user()->name)->exists();
+        if ($conflicted) {
+            return back()->with('flash_error', 'Separation of duties: you dispatched or received deliveries for this school in the last 90 days — an independent inspector must verify it (VER rule).');
+        }
         if ($request->hasFile('evidence')) {
             $data['evidence_path'] = $request->file('evidence')->store('evidence', 'public');
         }
@@ -47,6 +56,8 @@ class InspectionController extends Controller
             'recorded_qty' => $recorded,
             'outcome' => $outcome,
         ]);
+
+        $inspection->forceFill(['ver_no' => sprintf('VER-%s-%04d', now()->format('Y'), $inspection->id)])->save();
 
         // VER-01: recording a check completes any open assignment for this school
         \App\Modules\SchoolOps\Models\InspectionAssignment::where('school_id', $data['school_id'])

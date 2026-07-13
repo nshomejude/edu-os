@@ -111,10 +111,27 @@ class WarehouseController extends Controller
             'warehouse_id' => $warehouse->id, 'ledger_qty' => $ledger, 'actor' => auth()->user()->name,
         ]);
         $variance = $data['counted_qty'] - $ledger;
+        if ($variance !== 0 && abs($variance) > max(50, $ledger * 0.005)) {
+            // FR-NWD-04: large count variances need explicit approval before touching the ledger
+            \App\Modules\Custody\Models\StockAdjustment::create([
+                'warehouse_id' => $warehouse->id, 'textbook_title_id' => $data['textbook_title_id'],
+                'delta' => $variance, 'reason' => 'CORRECTION',
+                'note' => "Cycle count: {$data['counted_qty']} counted vs {$ledger} on ledger",
+                'requested_by' => auth()->user()->name,
+            ]);
+            \App\Modules\Platform\Models\Alert::create([
+                'severity' => 'CRITICAL',
+                'title' => "Cycle count variance at {$warehouse->name} needs approval",
+                'message' => "Counted {$data['counted_qty']} vs {$ledger} on ledger — variance {$variance} exceeds the 0.5%/50-unit threshold and awaits manager approval before posting.",
+                'link' => "/warehouses/{$warehouse->id}",
+            ]);
+
+            return back()->with('flash_error', "Variance {$variance} exceeds the approval threshold — an adjustment request is pending manager approval.");
+        }
         if ($variance !== 0) {
             StockRecord::post($warehouse->id, $data['textbook_title_id'], 'AVAILABLE', $variance);
             \App\Modules\Platform\Models\Alert::create([
-                'severity' => abs($variance) > max(50, $ledger * 0.005) ? 'CRITICAL' : 'WARNING',
+                'severity' => 'WARNING',
                 'title' => "Cycle count variance at {$warehouse->name}",
                 'message' => "Counted {$data['counted_qty']} vs {$ledger} on ledger (adjustment {$variance} posted by ".auth()->user()->name.').',
                 'link' => "/warehouses/{$warehouse->id}",
@@ -160,7 +177,7 @@ class WarehouseController extends Controller
 
         return redirect()->route('shipments.show', $shipment)->with('flash', "Transfer {$shipment->shipment_no} confirmed to {$dest->name}.");
     }
-    /** INV-08: manual stock adjustment with a reason code; journalled, approval-tier gated. */
+    /** INV-08 / FR-NWD-04: adjustments are REQUESTED and post only on approval (self-approving for approve-tier). */
     public function adjust(Request $request, Warehouse $warehouse)
     {
         $data = $request->validate([
@@ -169,12 +186,45 @@ class WarehouseController extends Controller
             'reason' => 'required|in:DAMAGE,LOSS,THEFT,CORRECTION,FOUND',
             'note' => 'nullable|string|max:200',
         ]);
-        $rec = StockRecord::post($warehouse->id, $data['textbook_title_id'], 'AVAILABLE', (int) $data['delta']);
-        \App\Modules\Custody\Models\StockTransaction::latest('id')->first()?->update([
-            'context' => "ADJUSTMENT {$data['reason']}".(! empty($data['note']) ? " — {$data['note']}" : ''),
+        $adj = \App\Modules\Custody\Models\StockAdjustment::create($data + [
+            'warehouse_id' => $warehouse->id, 'requested_by' => auth()->user()->name,
         ]);
+        if (auth()->user()->can('warehouse-approve')) {
+            $this->postAdjustment($adj);
 
-        return back()->with('flash', sprintf('Adjustment posted: %+d (%s). AVAILABLE balance now %d.', $data['delta'], $data['reason'], $rec->quantity));
+            return back()->with('flash', sprintf('Adjustment approved and posted: %+d (%s).', $adj->delta, $adj->reason));
+        }
+
+        return back()->with('flash', sprintf('Adjustment requested: %+d (%s) — awaiting manager approval before posting.', $adj->delta, $adj->reason));
+    }
+
+    private function postAdjustment(\App\Modules\Custody\Models\StockAdjustment $adj): void
+    {
+        StockRecord::post($adj->warehouse_id, $adj->textbook_title_id, 'AVAILABLE', (int) $adj->delta);
+        \App\Modules\Custody\Models\StockTransaction::latest('id')->first()?->update([
+            'context' => "ADJUSTMENT {$adj->reason}".($adj->note ? " — {$adj->note}" : '')." (req {$adj->requested_by})",
+        ]);
+        $adj->update(['status' => 'APPROVED', 'decided_by' => auth()->user()->name, 'decided_at' => now()]);
+    }
+
+    public function approveAdjustment(\App\Modules\Custody\Models\StockAdjustment $adjustment)
+    {
+        if ($adjustment->status !== 'REQUESTED') {
+            return back()->with('flash_error', 'Already decided.');
+        }
+        $this->postAdjustment($adjustment);
+
+        return back()->with('flash', "Adjustment #{$adjustment->id} approved and posted to the ledger.");
+    }
+
+    public function rejectAdjustment(\App\Modules\Custody\Models\StockAdjustment $adjustment)
+    {
+        if ($adjustment->status !== 'REQUESTED') {
+            return back()->with('flash_error', 'Already decided.');
+        }
+        $adjustment->update(['status' => 'REJECTED', 'decided_by' => auth()->user()->name, 'decided_at' => now()]);
+
+        return back()->with('flash', "Adjustment #{$adjustment->id} rejected — nothing was posted.");
     }
 
 }

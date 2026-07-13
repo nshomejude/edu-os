@@ -51,6 +51,7 @@ class Shipment extends Model
         return match ($this->status) {
             'RECEIVED_FULL', 'CLOSED' => 'Delivered',
             'IN_TRANSIT', 'DISPATCHED', 'LOADED', 'ARRIVED' => 'In Transit',
+            'PARTIALLY_RECEIVED' => 'Partially Received',
             'RECEIVED_WITH_DISCREPANCY' => 'Discrepancy',
             'LOST_IN_TRANSIT' => 'Lost',
             default => 'Pending',
@@ -62,6 +63,7 @@ class Shipment extends Model
         return match ($this->statusKey()) {
             'Delivered' => 'pill-success',
             'In Transit' => 'pill-transit',
+            'Partially Received' => 'pill-transit',
             'Discrepancy', 'Lost' => 'pill-error',
             default => 'pill-pending',
         };
