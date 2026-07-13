@@ -142,7 +142,34 @@ class CollectionController extends Controller
         }
         $charge->update(['status' => 'SETTLED', 'settled_by' => auth()->user()->name, 'settled_at' => now()]);
 
-        return back()->with('flash', 'Settlement recorded: '.number_format($charge->amount_fcfa).' FCFA.');
+        // Close the loop: issue replacements from free school stock, else queue a requirement (PLAN-03)
+        $onHand = SchoolStock::where('school_id', $charge->school_id)
+            ->where('textbook_title_id', $charge->textbook_title_id)->sum('quantity');
+        $assigned = Assignment::where('school_id', $charge->school_id)
+            ->where('textbook_title_id', $charge->textbook_title_id)->where('status', 'ASSIGNED')->sum('quantity');
+        if ($onHand - $assigned >= $charge->quantity) {
+            Assignment::create([
+                'school_id' => $charge->school_id, 'textbook_title_id' => $charge->textbook_title_id,
+                'class_level' => 'REPL', 'quantity' => $charge->quantity,
+                'academic_year' => Setting::get('academic_year', '2025/2026'),
+                'actor' => auth()->user()->name,
+            ]);
+            Copy::advance($charge->textbook_title_id, 'AT_SCHOOL', 'ASSIGNED', $charge->quantity, $charge->school_id);
+            $followUp = "replacement of {$charge->quantity} book(s) issued from school stock";
+        } else {
+            $req = \App\Modules\Planning\Models\SchoolRequirement::firstOrNew([
+                'school_id' => $charge->school_id, 'textbook_title_id' => $charge->textbook_title_id,
+                'academic_year' => Setting::get('academic_year', '2025/2026'),
+            ]);
+            $req->quantity = ($req->exists ? $req->quantity : 0) + $charge->quantity;
+            $req->note = 'Replacement need from settled loss charges';
+            $req->submitted_by = auth()->user()->name;
+            $req->status = 'SUBMITTED';
+            $req->save();
+            $followUp = "no free school stock — {$charge->quantity} book(s) queued as a requirement for the next campaign";
+        }
+
+        return back()->with('flash', 'Settlement recorded: '.number_format($charge->amount_fcfa).' FCFA; '.$followUp.'.');
     }
 
 }

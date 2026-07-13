@@ -19,9 +19,9 @@
                 @foreach ($suppliers as $s)<option value="{{ $s->id }}">{{ $s->name }} ({{ $s->type }})</option>@endforeach
             </select>
             <select class="input" name="textbook_title_id" required style="min-width:230px">
-                @foreach ($titles as $t)<option value="{{ $t->id }}">{{ $t->ntid }}</option>@endforeach
+                @foreach ($titles as $t)<option value="{{ $t->id }}" @selected((int) request('title') === $t->id)>{{ $t->ntid }}</option>@endforeach
             </select>
-            <input class="input" type="number" name="quantity" min="1" placeholder="Qty" required style="min-width:110px">
+            <input class="input" type="number" name="quantity" min="1" placeholder="Qty" value="{{ request('qty') }}" required style="min-width:110px">
             <input class="input" type="number" name="unit_price_fcfa" min="1" placeholder="Unit FCFA" required style="min-width:120px">
             <input class="input" name="contract_ref" placeholder="Contract ref" required style="min-width:140px">
             <button class="btn btn-primary">{{ __('Order') }}</button>

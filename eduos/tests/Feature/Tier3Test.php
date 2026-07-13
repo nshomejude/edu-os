@@ -136,4 +136,31 @@ class Tier3Test extends TestCase
         $this->actingAs($this->admin)->post(route('textbooks.counterpart', $this->title), ['counterpart_id' => $en2->id]);
         $this->assertSame($fr->id, (int) $this->title->fresh()->counterpart_id);   // unchanged
     }
+
+    public function test_settling_a_charge_issues_replacement_or_queues_requirement(): void
+    {
+        // charge 1: free school stock exists → replacement assignment issued immediately
+        SchoolStock::create(['school_id' => $this->school->id, 'textbook_title_id' => $this->title->id, 'quantity' => 10, 'condition' => 'GOOD']);
+        $c1 = ReplacementCharge::create(['school_id' => $this->school->id, 'textbook_title_id' => $this->title->id,
+            'quantity' => 5, 'amount_fcfa' => 7500, 'academic_year' => '2025/2026']);
+        $this->actingAs($this->admin)->post(route('charges.settle', $c1));
+        $repl = \App\Modules\SchoolOps\Models\Assignment::where('class_level', 'REPL')->first();
+        $this->assertNotNull($repl);
+        $this->assertSame(5, (int) $repl->quantity);
+
+        // charge 2: not enough free stock → queued as a requirement for the next campaign
+        $c2 = ReplacementCharge::create(['school_id' => $this->school->id, 'textbook_title_id' => $this->title->id,
+            'quantity' => 50, 'amount_fcfa' => 75000, 'academic_year' => '2025/2026']);
+        $this->actingAs($this->admin)->post(route('charges.settle', $c2));
+        $req = \App\Modules\Planning\Models\SchoolRequirement::first();
+        $this->assertNotNull($req);
+        $this->assertSame(50, (int) $req->quantity);
+        $this->assertSame('SUBMITTED', $req->status);
+    }
+
+    public function test_forecast_prefills_a_procurement_order(): void
+    {
+        $this->actingAs($this->admin)->get('/procurement?title='.$this->title->id.'&qty=777')
+            ->assertOk()->assertSee('value="777"', false)->assertSee('selected', false);
+    }
 }

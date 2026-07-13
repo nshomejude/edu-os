@@ -26,7 +26,13 @@
                     </td>
                     <td><b style="color:{{ $r['gap'] > 0 ? 'var(--error)' : 'var(--success)' }}">{{ number_format($r['gap']) }}</b></td>
                     <td>{{ number_format($r['warehouse']) }}</td>
-                    <td><b>{{ number_format($r['procure']) }}</b></td>
+                    <td><b>{{ number_format($r['procure']) }}</b>
+                        @if ($r['procure'] > 0)
+                            @can('procurement')
+                                <a class="rowlink" style="font-size:12px;margin-left:6px" href="{{ route('procurement.index', ['title' => $r['title']->id, 'qty' => $r['procure']]) }}">Raise order →</a>
+                            @endcan
+                        @endif
+                    </td>
                     <td>{{ $r['short_schools'] }}</td>
                 </tr>
             @empty
