@@ -234,7 +234,9 @@ class ShipmentController extends Controller
         $copies = \App\Modules\Catalogue\Models\Copy::whereHas('batch', fn ($q) => $q->where('textbook_title_id', $shipment->textbook_title_id))
             ->where('lifecycle_state', 'IN_WAREHOUSE')->orderBy('id')->limit(min($shipment->books, 40))->get();
 
-        return view('shipments.picking', compact('shipment', 'copies'));
+        $perCarton = max(1, (int) \App\Modules\Platform\Models\Setting::get('carton_size', '40'));
+
+        return view('shipments.picking', compact('shipment', 'copies', 'perCarton'));
     }
 
     /** POD-05: printable digital proof of delivery. */

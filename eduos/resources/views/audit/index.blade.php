@@ -16,6 +16,7 @@
             <input class="input" type="date" name="from" value="{{ request('from') }}">
             <input class="input" type="date" name="to" value="{{ request('to') }}">
             <button class="btn btn-secondary btn-sm">Apply</button>
+            <a class="btn btn-sm btn-secondary" href="{{ route('reports.audit.csv', request()->query()) }}">Export CSV</a>
             @if ($q || request('from') || request('to'))
                 <a class="btn btn-sm btn-secondary" href="{{ route('audit.index') }}">Clear</a>
             @endif

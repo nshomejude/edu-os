@@ -133,6 +133,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/exports', fn () => view('reports.exports'))->name('exports.index');
     Route::get('/reports/shipments.csv', [\App\Http\Controllers\PublicApiController::class, 'shipmentsCsv'])->name('reports.shipments.csv');
     Route::get('/reports/stock.csv', [\App\Http\Controllers\PublicApiController::class, 'stockCsv'])->name('reports.stock.csv');
+    Route::get('/reports/audit.csv', [\App\Http\Controllers\AuditController::class, 'export'])->name('reports.audit.csv');
 
     // Profile & password management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');

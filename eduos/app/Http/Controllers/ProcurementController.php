@@ -78,17 +78,29 @@ class ProcurementController extends Controller
     }
 
     /** Delivery registers the print batch and links it to the order (traceable procurement). */
-    public function markDelivered(ProcurementOrder $order)
+    public function markDelivered(Request $request, ProcurementOrder $order)
     {
         if ($order->status === 'DELIVERED') {
             return back()->with('flash_error', 'Already delivered.');
         }
+        // PROC-06/07: delivery verification — damaged units are rejected at the gate
+        $damaged = (int) ($request->validate(['damaged_qty' => 'nullable|integer|min:0|max:'.$order->quantity])['damaged_qty'] ?? 0);
+        $good = $order->quantity - $damaged;
         $batch = PrintBatch::create([
             'batch_no' => sprintf('BAT-%s-%05d', now()->format('Y'), PrintBatch::count() + 1),
             'textbook_title_id' => $order->textbook_title_id,
             'printer' => $order->supplier->name,
-            'quantity' => $order->quantity,
+            'quantity' => $good,
         ]);
+        if ($damaged > 0) {
+            $order->forceFill(['damaged_qty' => $damaged])->save();
+            \App\Modules\Platform\Models\Alert::create([
+                'severity' => 'WARNING',
+                'title' => "Supplier delivery rejects — {$order->order_no}",
+                'message' => "{$damaged} of {$order->quantity} units rejected as damaged at delivery verification from {$order->supplier->name}; batch {$batch->batch_no} registered with {$good} good units.",
+                'link' => '/procurement',
+            ]);
+        }
         PassportEvent::create([
             'print_batch_id' => $batch->id, 'event_type' => 'PRINTED',
             'location' => $order->supplier->name, 'actor' => auth()->user()->name,

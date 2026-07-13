@@ -57,4 +57,21 @@ class AuditController extends Controller
 
         return view('audit.index', compact('events', 'q'));
     }
+    /** REP: CSV export of the merged trail (same filters as the screen). */
+    public function export(Request $request)
+    {
+        $events = $this->index($request)->getData()['events'];
+        $csv = "at,stream,event,actor,chained,intact\n";
+        foreach ($events as $e) {
+            $csv .= sprintf("%s,%s,\"%s\",\"%s\",%s,%s\n",
+                $e->at, $e->stream, str_replace('"', "'", $e->what), str_replace('"', "'", (string) $e->actor),
+                $e->chained ? 'yes' : 'no', $e->intact === null ? '' : ($e->intact ? 'intact' : 'broken'));
+        }
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="audit-trail.csv"',
+        ]);
+    }
+
 }

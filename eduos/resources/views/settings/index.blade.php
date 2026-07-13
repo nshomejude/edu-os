@@ -28,6 +28,8 @@
                     <input class="input" type="number" name="low_stock_threshold" value="{{ \App\Modules\Custody\Models\StockRecord::lowStockThreshold() }}" min="0" required></div>
                 <div class="field"><label>Exception SLA (hours)</label>
                     <input class="input" type="number" name="exception_sla_hours" value="{{ \App\Http\Controllers\ExceptionController::slaHours() }}" min="1" max="720" required></div>
+                <div class="field"><label>Carton size (books)</label>
+                    <input class="input" type="number" name="carton_size" value="{{ \App\Modules\Platform\Models\Setting::get('carton_size', '40') }}" min="10" max="200" required></div>
                 <button class="btn btn-primary" style="align-self:flex-end">Save</button>
             </form>
             @else

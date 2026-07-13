@@ -12,7 +12,7 @@
             <div><div class="dt">Quantity</div><div class="dd">{{ number_format($shipment->books) }} books</div></div>
             <div><div class="dt">Warehouse</div><div class="dd">{{ $shipment->origin_name }}</div></div>
         </div>
-        @php($perCarton = 40)
+        @php($perCarton = $perCarton ?? 40)
         @php($cartons = (int) ceil($shipment->books / $perCarton))
         <h2>Packing plan (SHIP-05) — {{ $cartons }} cartons @ {{ $perCarton }} books</h2>
         <div class="chips" style="margin-bottom:16px">
@@ -23,12 +23,12 @@
         </div>
         <h2>Copies to pick (first {{ $copies->count() }} NCIDs)</h2>
         <table class="table">
-            <thead><tr><th>#</th><th>NCID</th><th>Picked ☐</th></tr></thead>
+            <thead><tr><th>#</th><th>NCID</th><th>Carton</th><th>Picked ☐</th></tr></thead>
             <tbody>
             @forelse ($copies as $i => $c)
-                <tr><td>{{ $i + 1 }}</td><td style="font-family:monospace;font-size:12px">{{ $c->ncid }}</td><td style="font-size:18px">☐</td></tr>
+                <tr><td>{{ $i + 1 }}</td><td style="font-family:monospace;font-size:12px">{{ $c->ncid }}</td><td><b>CTN-{{ str_pad(intdiv($i, $perCarton) + 1, 3, '0', STR_PAD_LEFT) }}</b></td><td style="font-size:18px">☐</td></tr>
             @empty
-                <tr><td colspan="3">Batch-tracked title — pick {{ number_format($shipment->books) }} books by count.</td></tr>
+                <tr><td colspan="4">Batch-tracked title — pick {{ number_format($shipment->books) }} books by count.</td></tr>
             @endforelse
             </tbody>
         </table>

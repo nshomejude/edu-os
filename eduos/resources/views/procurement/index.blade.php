@@ -75,7 +75,7 @@
                     <td><span class="pill {{ $o->status === 'DELIVERED' ? 'pill-success' : 'pill-transit' }}">{{ $o->status }}</span></td>
                     <td>
                         @if ($o->status !== 'DELIVERED')
-                            <form method="post" action="{{ route('procurement.delivered', $o) }}">@csrf<button class="btn btn-sm btn-secondary">Register delivery</button></form>
+                            <form class="toolbar" method="post" action="{{ route('procurement.delivered', $o) }}" style="margin:0;gap:6px">@csrf<input class="input" type="number" name="damaged_qty" min="0" max="{{ $o->quantity }}" placeholder="Damaged" style="min-width:95px;height:34px"><button class="btn btn-sm btn-secondary" style="height:34px">Verify delivery</button></form>
                         @elseif ($o->batch)
                             <span style="font-size:12.5px;color:var(--text-2)">{{ $o->batch->batch_no }}</span>
                         @endif

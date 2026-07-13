@@ -143,4 +143,21 @@ class DepthTest extends TestCase
         $this->actingAs($this->admin)->get('/exceptions/discrepancy/'.$shipment->id)->assertOk()->assertSee('WITHIN SLA');
         $this->actingAs($this->admin)->get(route('shipments.pod', $shipment))->assertOk()->assertSee('Head Teacher A');
     }
+
+    public function test_supplier_delivery_verification_rejects_damaged_units(): void
+    {
+        $supplier = \App\Modules\Catalogue\Models\Supplier::create(['name' => 'Print Co', 'type' => 'PRINTER']);
+        $this->actingAs($this->admin)->post(route('procurement.store'), [
+            'supplier_id' => $supplier->id, 'textbook_title_id' => $this->title->id,
+            'quantity' => 100, 'unit_price_fcfa' => 1500, 'contract_ref' => 'CT-01',
+        ]);
+        $order = \App\Modules\Catalogue\Models\ProcurementOrder::first();
+
+        $this->actingAs($this->admin)->post(route('procurement.delivered', $order), ['damaged_qty' => 10]);
+        $order->refresh();
+        $this->assertSame('DELIVERED', $order->status);
+        $this->assertSame(10, (int) $order->damaged_qty);
+        $this->assertSame(90, (int) \App\Modules\Catalogue\Models\PrintBatch::first()->quantity);   // only good units enter custody
+        $this->assertTrue(\App\Modules\Platform\Models\Alert::where('title', 'like', 'Supplier delivery rejects%')->exists());
+    }
 }

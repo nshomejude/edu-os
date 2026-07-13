@@ -31,6 +31,13 @@
         @endforeach
     </div>
 
+    @if (! empty($chart))
+        <div class="card mb">
+            <h2>{{ $chart['heading'] }}</h2>
+            @include('partials.barchart', ['data' => $chart['data']])
+        </div>
+    @endif
+
     @foreach ($panels as $panel)
         <div class="card mb">
             <h2>{{ $panel['heading'] }}</h2>
