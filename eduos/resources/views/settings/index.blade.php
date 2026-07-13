@@ -26,6 +26,8 @@
                     <input class="input" name="academic_year" value="{{ \App\Modules\Platform\Models\Setting::get('academic_year', '2025/2026') }}" required></div>
                 <div class="field"><label>Low-stock threshold</label>
                     <input class="input" type="number" name="low_stock_threshold" value="{{ \App\Modules\Custody\Models\StockRecord::lowStockThreshold() }}" min="0" required></div>
+                <div class="field"><label>Exception SLA (hours)</label>
+                    <input class="input" type="number" name="exception_sla_hours" value="{{ \App\Http\Controllers\ExceptionController::slaHours() }}" min="1" max="720" required></div>
                 <button class="btn btn-primary" style="align-self:flex-end">Save</button>
             </form>
             @else
