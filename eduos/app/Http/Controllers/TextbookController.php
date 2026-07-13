@@ -154,9 +154,32 @@ class TextbookController extends Controller
     /** Field actions on a single copy: repair-complete, lost, found, retire, dispose. */
     public function copyTransition(Request $request, \App\Modules\Catalogue\Models\Copy $copy)
     {
-        $to = $request->validate(['to' => 'required|in:AT_SCHOOL,LOST,RETIRED,DISPOSED,UNDER_REPAIR'])['to'];
+        $data = $request->validate([
+            'to' => 'required|in:AT_SCHOOL,LOST,RETIRED,DISPOSED,UNDER_REPAIR,IN_WAREHOUSE',
+            'reason' => 'required_if:to,DISPOSED|nullable|string|max:200',
+        ]);
+        $to = $data['to'];
         if (! $copy->canTransition($to)) {
             return back()->with('flash_error', "ILLEGAL_TRANSITION: {$copy->lifecycle_state} → {$to} (FRS §5.2).");
+        }
+        // Disposal is governed: ministry tier only, and it always issues a certificate
+        if ($to === 'DISPOSED') {
+            if (! auth()->user()->can('ministry')) {
+                return back()->with('flash_error', 'Disposal requires the ministry approval tier.');
+            }
+            $copy->update(['lifecycle_state' => 'DISPOSED']);
+            $disposal = \App\Modules\Catalogue\Models\Disposal::create([
+                'ncid' => $copy->ncid,
+                'textbook_title_id' => $copy->batch->textbook_title_id,
+                'reason' => $data['reason'],
+                'location' => $copy->current_school_id
+                    ? \App\Modules\Registry\Models\School::find($copy->current_school_id)?->name_official
+                    : 'National warehouse network',
+                'actor' => auth()->user()->name,
+            ]);
+
+            return redirect()->route('disposals.cert', $disposal)
+                ->with('flash', "Copy {$copy->ncid} disposed — certificate DSP-".str_pad($disposal->id, 5, '0', STR_PAD_LEFT).' issued.');
         }
         $update = ['lifecycle_state' => $to];
         if ($to === 'AT_SCHOOL' && $copy->lifecycle_state === 'UNDER_REPAIR') {
@@ -256,6 +279,101 @@ class TextbookController extends Controller
         }
 
         return (10 - $sum % 10) % 10 === (int) $d[12];
+    }
+
+    /** BOOK: batch recall — pull every traceable copy of a defective batch from circulation. */
+    public function recallBatch(Request $request, PrintBatch $batch)
+    {
+        if ($batch->recalled_at) {
+            return back()->with('flash_error', 'Batch already recalled.');
+        }
+        $reason = $request->validate(['reason' => 'required|string|max:200'])['reason'];
+        $batch->forceFill(['recalled_at' => now(), 'recall_reason' => $reason])->save();
+
+        // write recalled copies out of the schools that hold them
+        $atSchools = \App\Modules\Catalogue\Models\Copy::where('print_batch_id', $batch->id)
+            ->whereIn('lifecycle_state', ['AT_SCHOOL', 'ASSIGNED'])->whereNotNull('current_school_id')
+            ->selectRaw('current_school_id sid, count(*) n')->groupBy('current_school_id')->get();
+        foreach ($atSchools as $row) {
+            $stock = \App\Modules\SchoolOps\Models\SchoolStock::where('school_id', $row->sid)
+                ->where('textbook_title_id', $batch->textbook_title_id)->first();
+            $stock?->update(['quantity' => max(0, $stock->quantity - $row->n)]);
+        }
+        $pulled = \App\Modules\Catalogue\Models\Copy::where('print_batch_id', $batch->id)
+            ->whereIn('lifecycle_state', ['IN_WAREHOUSE', 'IN_TRANSIT', 'AT_SCHOOL', 'ASSIGNED'])
+            ->update(['lifecycle_state' => 'RECALLED']);
+
+        PassportEvent::create([
+            'print_batch_id' => $batch->id, 'event_type' => 'RECALL_ISSUED',
+            'location' => 'National', 'actor' => auth()->user()->name, 'occurred_at' => now(),
+        ]);
+        \App\Modules\Platform\Models\Alert::create([
+            'severity' => 'CRITICAL',
+            'title' => "Batch recall — {$batch->batch_no}",
+            'message' => "{$pulled} copies pulled from circulation: {$reason}. Affected school stock written down; recalled copies await disposition.",
+            'link' => "/batches/{$batch->id}/recall",
+        ]);
+
+        return back()->with('flash_error', "Recall issued — {$pulled} copies pulled from circulation.");
+    }
+
+    /** Recall trace: where every copy of the batch is right now. */
+    public function recallTrace(PrintBatch $batch)
+    {
+        $byState = \App\Modules\Catalogue\Models\Copy::where('print_batch_id', $batch->id)
+            ->selectRaw('lifecycle_state, count(*) n')->groupBy('lifecycle_state')->pluck('n', 'lifecycle_state');
+        $schools = \App\Modules\Catalogue\Models\Copy::where('print_batch_id', $batch->id)
+            ->whereIn('lifecycle_state', ['AT_SCHOOL', 'ASSIGNED'])->whereNotNull('current_school_id')
+            ->selectRaw('current_school_id school_id, count(*) n')->groupBy('current_school_id')->get()
+            ->each(fn ($r) => $r->name = \App\Modules\Registry\Models\School::find($r->school_id)?->name_official ?? '—');
+
+        return view('batches.recall', compact('batch', 'byState', 'schools'));
+    }
+
+    /** Disposals register. */
+    public function disposals()
+    {
+        return view('disposals.index', [
+            'disposals' => \App\Modules\Catalogue\Models\Disposal::with('title')->orderByDesc('id')->limit(50)->get(),
+        ]);
+    }
+
+    public function disposalCertificate(\App\Modules\Catalogue\Models\Disposal $disposal)
+    {
+        $disposal->load('title');
+
+        return view('disposals.certificate', compact('disposal'));
+    }
+
+    /** BOOK-04: retiring a curriculum flags every approved title mapped to it. */
+    public function retireCurriculum(\App\Modules\Catalogue\Models\CurriculumVersion $curriculum)
+    {
+        if ($curriculum->status === 'RETIRED') {
+            return back()->with('flash_error', 'Curriculum already retired.');
+        }
+        $curriculum->update(['status' => 'RETIRED']);
+        $affected = TextbookTitle::where('curriculum_version_id', $curriculum->id)->where('status', 'APPROVED')->count();
+        \App\Modules\Platform\Models\Alert::create([
+            'severity' => 'WARNING',
+            'title' => "Curriculum retired — {$curriculum->name}",
+            'message' => "{$affected} approved title(s) map to the retired curriculum and need review for supersession or retirement (BOOK-04).",
+            'link' => '/textbooks',
+        ]);
+
+        return back()->with('flash', "Curriculum retired; {$affected} approved title(s) flagged for review.");
+    }
+
+    /** BOOK: link EN/FR language counterparts (both directions). */
+    public function linkCounterpart(Request $request, TextbookTitle $textbook)
+    {
+        $other = TextbookTitle::find((int) $request->validate(['counterpart_id' => 'required|exists:textbook_titles,id'])['counterpart_id']);
+        if ($other->id === $textbook->id || $other->language === $textbook->language) {
+            return back()->with('flash_error', 'Counterpart must be a different title in the other language.');
+        }
+        $textbook->forceFill(['counterpart_id' => $other->id])->save();
+        $other->forceFill(['counterpart_id' => $textbook->id])->save();
+
+        return back()->with('flash', "Linked {$textbook->ntid} ↔ {$other->ntid} as language counterparts.");
     }
 
 }

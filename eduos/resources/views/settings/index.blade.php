@@ -30,6 +30,8 @@
                     <input class="input" type="number" name="exception_sla_hours" value="{{ \App\Http\Controllers\ExceptionController::slaHours() }}" min="1" max="720" required></div>
                 <div class="field"><label>Carton size (books)</label>
                     <input class="input" type="number" name="carton_size" value="{{ \App\Modules\Platform\Models\Setting::get('carton_size', '40') }}" min="10" max="200" required></div>
+                <div class="field"><label>Replacement fee (FCFA/book)</label>
+                    <input class="input" type="number" name="replacement_fee_fcfa" value="{{ \App\Modules\Platform\Models\Setting::get('replacement_fee_fcfa', '1500') }}" min="0" max="100000" required></div>
                 <button class="btn btn-primary" style="align-self:flex-end">{{ __('Save') }}</button>
             </form>
             @else

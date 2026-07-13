@@ -102,6 +102,11 @@ class CollectionController extends Controller
             $stock = SchoolStock::where('school_id', $a->school_id)
                 ->where('textbook_title_id', $a->textbook_title_id)->first();
             $stock?->update(['quantity' => max(0, $stock->quantity - $a->quantity)]);
+            \App\Modules\SchoolOps\Models\ReplacementCharge::create([
+                'school_id' => $a->school_id, 'textbook_title_id' => $a->textbook_title_id,
+                'quantity' => $a->quantity, 'academic_year' => $round->academic_year,
+                'amount_fcfa' => $a->quantity * (int) Setting::get('replacement_fee_fcfa', '1500'),
+            ]);
             $lostBooks += $a->quantity;
         }
         $round->update(['status' => 'CLOSED', 'closed_at' => now(), 'lost_count' => $outstanding->count()]);
@@ -117,4 +122,27 @@ class CollectionController extends Controller
 
         return back()->with('flash', "Round closed — {$round->returned_count} assignments returned, {$outstanding->count()} declared lost ({$lostBooks} books).");
     }
+    /** Replacement-charge ledger for books lost at collection close. */
+    public function charges()
+    {
+        $charges = \App\Modules\SchoolOps\Models\ReplacementCharge::with(['school', 'title'])->orderByDesc('id')->get();
+
+        return view('charges.index', [
+            'charges' => $charges,
+            'outstanding' => (int) $charges->where('status', 'OUTSTANDING')->sum('amount_fcfa'),
+            'settled' => (int) $charges->where('status', 'SETTLED')->sum('amount_fcfa'),
+            'fee' => (int) Setting::get('replacement_fee_fcfa', '1500'),
+        ]);
+    }
+
+    public function settle(\App\Modules\SchoolOps\Models\ReplacementCharge $charge)
+    {
+        if ($charge->status === 'SETTLED') {
+            return back()->with('flash_error', 'Already settled.');
+        }
+        $charge->update(['status' => 'SETTLED', 'settled_by' => auth()->user()->name, 'settled_at' => now()]);
+
+        return back()->with('flash', 'Settlement recorded: '.number_format($charge->amount_fcfa).' FCFA.');
+    }
+
 }

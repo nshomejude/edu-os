@@ -87,4 +87,21 @@
         </table>
         {{ $titles->links('partials.pagination') }}
     </div>
+    @can('curriculum')
+    <div class="card" style="margin-top:18px">
+        <h2>Curriculum versions (BOOK-04) · <a class="rowlink" href="{{ route('disposals.index') }}">Disposals register →</a></h2>
+        <div class="chips">
+            @foreach (\App\Modules\Catalogue\Models\CurriculumVersion::all() as $cv)
+                <span class="chip">{{ $cv->name }} ({{ $cv->year }}) <b style="color:{{ $cv->status === 'RETIRED' ? 'var(--error)' : 'var(--success)' }}">{{ $cv->status }}</b>
+                    @if ($cv->status === 'ACTIVE')
+                        <form method="post" action="{{ route('curricula.retire', $cv) }}" style="display:inline"
+                              onsubmit="return confirm('Retire this curriculum? Every mapped approved title will be flagged for review.')">@csrf
+                            <button class="btn btn-sm btn-danger" style="margin-left:6px;height:26px;padding:0 10px">Retire</button>
+                        </form>
+                    @endif
+                </span>
+            @endforeach
+        </div>
+    </div>
+    @endcan
 @endsection

@@ -11,12 +11,13 @@ class Copy extends Model
     /** Legal transitions per FRS §5.2 */
     public const TRANSITIONS = [
         'PRINTED' => ['IN_WAREHOUSE'],
-        'IN_WAREHOUSE' => ['IN_TRANSIT', 'RETIRED'],
-        'IN_TRANSIT' => ['AT_SCHOOL', 'LOST'],
-        'AT_SCHOOL' => ['ASSIGNED', 'UNDER_REPAIR', 'LOST', 'RETIRED'],
-        'ASSIGNED' => ['AT_SCHOOL', 'UNDER_REPAIR', 'LOST'],
+        'IN_WAREHOUSE' => ['IN_TRANSIT', 'RETIRED', 'RECALLED'],
+        'IN_TRANSIT' => ['AT_SCHOOL', 'LOST', 'RECALLED'],
+        'AT_SCHOOL' => ['ASSIGNED', 'UNDER_REPAIR', 'LOST', 'RETIRED', 'RECALLED'],
+        'ASSIGNED' => ['AT_SCHOOL', 'UNDER_REPAIR', 'LOST', 'RECALLED'],
         'UNDER_REPAIR' => ['AT_SCHOOL'],
         'LOST' => ['AT_SCHOOL'],
+        'RECALLED' => ['IN_WAREHOUSE', 'DISPOSED'],
         'RETIRED' => ['DISPOSED'],
         'DISPOSED' => [],
     ];

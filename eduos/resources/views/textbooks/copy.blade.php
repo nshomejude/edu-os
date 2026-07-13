@@ -35,7 +35,15 @@
                 <div><div class="dt">Minted</div><div class="dd">{{ $copy->created_at->format('d M Y') }}</div></div>
             </div>
             <div class="toolbar" style="margin-top:16px">
-                @foreach (['AT_SCHOOL' => 'Repair complete', 'LOST' => 'Report lost', 'RETIRED' => 'Retire', 'DISPOSED' => 'Dispose'] as $to => $label)
+                @if ($copy->canTransition('DISPOSED'))
+                    <form class="toolbar" method="post" action="{{ route('copies.transition', $copy) }}" style="margin:0;gap:6px">
+                        @csrf
+                        <input type="hidden" name="to" value="DISPOSED">
+                        <input class="input" name="reason" placeholder="Disposal reason (certificate)" required style="min-width:210px;height:34px">
+                        <button class="btn btn-sm btn-danger" style="height:34px">Dispose + certificate</button>
+                    </form>
+                @endif
+                @foreach (['AT_SCHOOL' => 'Repair complete', 'LOST' => 'Report lost', 'RETIRED' => 'Retire'] as $to => $label)
                     @if ($copy->canTransition($to))
                         <form method="post" action="{{ route('copies.transition', $copy) }}">
                             @csrf

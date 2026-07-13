@@ -69,7 +69,7 @@
     @endif
 
     <div class="card">
-        <h2>Past rounds</h2>
+        <h2>Past rounds · <a class="rowlink" href="{{ route('charges.index') }}">Replacement charges →</a></h2>
         <table class="table">
             <thead><tr><th>{{ __('Year') }}</th><th>{{ __('Status') }}</th><th>Opened</th><th>Closed</th><th>Returned</th><th>Declared lost</th></tr></thead>
             <tbody>

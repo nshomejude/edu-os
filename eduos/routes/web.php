@@ -144,6 +144,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/collections', [\App\Http\Controllers\CollectionController::class, 'open'])->name('collections.open')->middleware('can:ministry');
     Route::post('/collections/bulk-return', [\App\Http\Controllers\CollectionController::class, 'bulkReturn'])->name('collections.bulk')->middleware('can:school-ops');
     Route::post('/collections/{round}/close', [\App\Http\Controllers\CollectionController::class, 'close'])->name('collections.close')->middleware('can:ministry');
+    Route::get('/batches/{batch}/recall', [TextbookController::class, 'recallTrace'])->name('batches.recall');
+    Route::post('/batches/{batch}/recall', [TextbookController::class, 'recallBatch'])->name('batches.recall.post')->middleware('can:procurement');
+    Route::get('/disposals', [TextbookController::class, 'disposals'])->name('disposals.index');
+    Route::get('/disposals/{disposal}', [TextbookController::class, 'disposalCertificate'])->name('disposals.cert');
+    Route::get('/charges', [\App\Http\Controllers\CollectionController::class, 'charges'])->name('charges.index');
+    Route::post('/charges/{charge}/settle', [\App\Http\Controllers\CollectionController::class, 'settle'])->name('charges.settle')->middleware('can:ministry');
+    Route::post('/curricula/{curriculum}/retire', [TextbookController::class, 'retireCurriculum'])->name('curricula.retire')->middleware('can:curriculum');
+    Route::post('/textbooks/{textbook}/counterpart', [TextbookController::class, 'linkCounterpart'])->name('textbooks.counterpart')->middleware('can:curriculum');
 
     // Profile & password management
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');

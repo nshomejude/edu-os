@@ -88,11 +88,13 @@ class PlatformController extends Controller
             'low_stock_threshold' => 'required|integer|min:0',
             'exception_sla_hours' => 'required|integer|min:1|max:720',
             'carton_size' => 'required|integer|min:10|max:200',
+            'replacement_fee_fcfa' => 'required|integer|min:0|max:100000',
         ]);
         \App\Modules\Platform\Models\Setting::put('academic_year', $data['academic_year']);
         \App\Modules\Platform\Models\Setting::put('low_stock_threshold', (string) $data['low_stock_threshold']);
         \App\Modules\Platform\Models\Setting::put('exception_sla_hours', (string) $data['exception_sla_hours']);
         \App\Modules\Platform\Models\Setting::put('carton_size', (string) $data['carton_size']);
+        \App\Modules\Platform\Models\Setting::put('replacement_fee_fcfa', (string) $data['replacement_fee_fcfa']);
 
         return back()->with('flash', 'System configuration saved.');
     }

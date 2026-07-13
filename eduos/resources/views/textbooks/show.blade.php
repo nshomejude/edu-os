@@ -12,6 +12,11 @@
 
     @include('partials.flash')
 
+    @php($cvr = $textbook->curriculum_version_id ? \App\Modules\Catalogue\Models\CurriculumVersion::find($textbook->curriculum_version_id) : null)
+    @if ($cvr && $cvr->status === 'RETIRED')
+        <div class="flash error">Curriculum “{{ $cvr->name }}” has been retired — review this title for supersession or retirement (BOOK-04).</div>
+    @endif
+
     <div class="card mb">
         <h2>Lifecycle actions (FR-NTR-SM-01)</h2>
         <div class="toolbar">
@@ -86,6 +91,7 @@
                         <b>{{ $batch->batch_no }}</b>
                         <span style="color:var(--text-2);font-size:13.5px">{{ $batch->printer }} · {{ number_format($batch->quantity) }} copies</span>
                         <span class="pill {{ $batch->qa_status === 'PASSED' ? 'pill-success' : ($batch->qa_status === 'FAILED' ? 'pill-error' : 'pill-transit') }}">QA {{ $batch->qa_status }}</span>
+                        <a class="rowlink" href="{{ route('batches.recall', $batch) }}" style="font-size:12.5px;{{ $batch->recalled_at ? 'color:var(--error);font-weight:700' : '' }}">{{ $batch->recalled_at ? 'RECALLED' : 'Recall / trace' }}</a>
                         @can('procurement')
                             @foreach (['PASSED' => 'Pass QA', 'FAILED' => 'Fail QA'] as $q => $ql)
                                 @if ($batch->qa_status !== $q)
@@ -128,4 +134,22 @@
             </table>
         </div>
     </div>
+    @can('curriculum')
+    <div class="card" style="margin-top:18px">
+        <h2>Language counterpart (EN ↔ FR)</h2>
+        @if ($textbook->counterpart_id)
+            @php($cp = \App\Modules\Catalogue\Models\TextbookTitle::find($textbook->counterpart_id))
+            <p style="margin-bottom:10px">Paired with <a class="rowlink" href="{{ route('textbooks.show', $cp) }}">{{ $cp->ntid }}</a> — {{ $cp->title_en ?? $cp->title_fr }} ({{ $cp->language }})</p>
+        @endif
+        <form class="toolbar" method="post" action="{{ route('textbooks.counterpart', $textbook) }}" style="margin:0">@csrf
+            <select class="input" name="counterpart_id" required style="min-width:290px">
+                @foreach (\App\Modules\Catalogue\Models\TextbookTitle::where('language', '!=', $textbook->language)->where('id', '!=', $textbook->id)->orderBy('ntid')->get() as $t)
+                    <option value="{{ $t->id }}">{{ $t->ntid }} — {{ \Illuminate\Support\Str::limit($t->title_en ?? $t->title_fr, 40) }}</option>
+                @endforeach
+            </select>
+            <button class="btn btn-secondary btn-sm">{{ $textbook->counterpart_id ? 'Re-link counterpart' : 'Link counterpart' }}</button>
+        </form>
+        <p style="color:var(--text-2);font-size:13px;margin-top:8px">Pairing the EN and FR editions lets bilingual coverage be assessed as one need.</p>
+    </div>
+    @endcan
 @endsection
