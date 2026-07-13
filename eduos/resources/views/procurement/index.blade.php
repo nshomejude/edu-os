@@ -74,8 +74,18 @@
                     <td>{{ $o->contract_ref }}</td>
                     <td><span class="pill {{ $o->status === 'DELIVERED' ? 'pill-success' : 'pill-transit' }}">{{ $o->status }}</span></td>
                     <td>
-                        @if ($o->status !== 'DELIVERED')
-                            <form class="toolbar" method="post" action="{{ route('procurement.delivered', $o) }}" style="margin:0;gap:6px">@csrf<input class="input" type="number" name="damaged_qty" min="0" max="{{ $o->quantity }}" placeholder="Damaged" style="min-width:95px;height:34px"><button class="btn btn-sm btn-secondary" style="height:34px">{{ __('Verify delivery') }}</button></form>
+                        @if ($o->status === 'SUBMITTED')
+                            @can('ministry')
+                                <form method="post" action="{{ route('procurement.approve', $o) }}">@csrf<button class="btn btn-sm btn-primary">Approve order</button></form>
+                            @else
+                                <span style="font-size:12px;color:var(--text-2)">Awaiting ministry approval</span>
+                            @endcan
+                        @elseif (in_array($o->status, ['APPROVED', 'PARTIALLY_DELIVERED']))
+                            <form class="toolbar" method="post" action="{{ route('procurement.delivered', $o) }}" style="margin:0;gap:6px">@csrf
+                                <input class="input" type="number" name="delivered_qty" min="1" max="{{ $o->quantity - $o->delivered_total }}" placeholder="Qty ({{ $o->quantity - $o->delivered_total }} left)" style="min-width:125px;height:34px">
+                                <input class="input" type="number" name="damaged_qty" min="0" placeholder="Damaged" style="min-width:90px;height:34px">
+                                <button class="btn btn-sm btn-secondary" style="height:34px">{{ __('Verify delivery') }}</button>
+                            </form>
                         @elseif ($o->batch)
                             <span style="font-size:12.5px;color:var(--text-2)">{{ $o->batch->batch_no }}</span>
                         @endif

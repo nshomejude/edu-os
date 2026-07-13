@@ -153,6 +153,7 @@ class DepthTest extends TestCase
         ]);
         $order = \App\Modules\Catalogue\Models\ProcurementOrder::first();
 
+        $this->actingAs($this->admin)->post(route('procurement.approve', \App\Modules\Catalogue\Models\ProcurementOrder::first()));
         $this->actingAs($this->admin)->post(route('procurement.delivered', $order), ['damaged_qty' => 10]);
         $order->refresh();
         $this->assertSame('DELIVERED', $order->status);

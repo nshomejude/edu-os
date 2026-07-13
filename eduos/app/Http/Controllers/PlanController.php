@@ -63,6 +63,9 @@ class PlanController extends Controller
         \App\Modules\Planning\Models\SchoolRequirement::where('academic_year', $campaign->academic_year)
             ->where('status', 'SUBMITTED')->update(['status' => 'CONSIDERED']);
 
+        // PLAN-04: the demand snapshot is frozen with its formula version at generation time
+        $campaign->forceFill(['demand_frozen_at' => now(), 'formula_version' => 'enrolment-v1'])->save();
+
         return redirect()->route('plan.show', $campaign)
             ->with('flash', "Campaign drafted with {$generated} allocation lines from enrolment-based demand.");
     }
@@ -169,6 +172,35 @@ class PlanController extends Controller
         $allocations = $campaign->allocations()->with(['school.region', 'title', 'shipment'])->get();
 
         return view('plan.order', compact('campaign', 'allocations'));
+    }
+
+    /** Approved versions are immutable — amendments create a new campaign version (PLAN rule). */
+    public function amend(DistributionCampaign $campaign)
+    {
+        if (! in_array($campaign->status, ['APPROVED', 'EXECUTING', 'CLOSED'])) {
+            return back()->with('flash_error', 'Only approved or later campaigns are amended by new version — drafts are edited directly.');
+        }
+        $next = DistributionCampaign::create([
+            'name' => $campaign->name,
+            'academic_year' => $campaign->academic_year,
+            'created_by' => auth()->user()->name,
+        ]);
+        $next->forceFill([
+            'version' => ((int) $campaign->version) + 1,
+            'parent_id' => $campaign->id,
+            'demand_frozen_at' => now(),
+            'formula_version' => 'enrolment-v1',
+        ])->save();
+        foreach ($campaign->allocations()->whereNull('shipment_id')->get() as $a) {
+            Allocation::create([
+                'distribution_campaign_id' => $next->id,
+                'school_id' => $a->school_id, 'textbook_title_id' => $a->textbook_title_id,
+                'quantity' => $a->quantity,
+            ]);
+        }
+
+        return redirect()->route('plan.show', $next)
+            ->with('flash', "Amendment drafted as version {$next->version} — the approved version stays immutable; unexecuted lines were carried over.");
     }
 
 }

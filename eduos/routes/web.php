@@ -96,6 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/plan/{campaign}', [\App\Http\Controllers\PlanController::class, 'show'])->name('plan.show');
     Route::post('/plan/{campaign}/transition', [\App\Http\Controllers\PlanController::class, 'transition'])->name('plan.transition')->middleware('can:programme');
     Route::post('/plan/{campaign}/execute', [\App\Http\Controllers\PlanController::class, 'execute'])->name('plan.execute')->middleware('can:programme');
+    Route::post('/plan/{campaign}/amend', [\App\Http\Controllers\PlanController::class, 'amend'])->name('plan.amend')->middleware('can:programme');
     Route::post('/allocations/{allocation}', [\App\Http\Controllers\PlanController::class, 'updateLine'])->name('plan.line')->middleware('can:programme');
 
     // LOG module (screens 58–64)
@@ -193,6 +194,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/procurement', [\App\Http\Controllers\ProcurementController::class, 'index'])->name('procurement.index');
         Route::post('/procurement', [\App\Http\Controllers\ProcurementController::class, 'store'])->name('procurement.store');
         Route::post('/procurement/{order}/delivered', [\App\Http\Controllers\ProcurementController::class, 'markDelivered'])->name('procurement.delivered');
+        Route::post('/procurement/{order}/approve', [\App\Http\Controllers\ProcurementController::class, 'approveOrder'])->name('procurement.approve');
     });
     Route::middleware('can:inspect')->group(function () {
         Route::get('/inspections', [\App\Http\Controllers\InspectionController::class, 'index'])->name('inspections.index');

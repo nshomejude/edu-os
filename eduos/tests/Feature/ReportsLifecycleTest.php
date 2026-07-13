@@ -125,6 +125,7 @@ class ReportsLifecycleTest extends TestCase
             'supplier_id' => $supplier->id, 'textbook_title_id' => $this->title->id,
             'quantity' => 100, 'unit_price_fcfa' => 1500, 'contract_ref' => 'CT-01',
         ]);
+        $this->actingAs($this->admin)->post(route('procurement.approve', \App\Modules\Catalogue\Models\ProcurementOrder::first()));
         $this->actingAs($this->admin)->post(route('procurement.delivered', \App\Modules\Catalogue\Models\ProcurementOrder::first()), ['damaged_qty' => 10]);
 
         $page = $this->actingAs($this->admin)->get('/reports/performance');

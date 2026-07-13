@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PrintBatch extends Model
 {
-    protected $fillable = ['batch_no', 'textbook_title_id', 'printer', 'quantity', 'qa_status', 'received_qty'];
+    protected $fillable = ['batch_no', 'textbook_title_id', 'printer', 'quantity', 'procurement_order_id', 'qa_status', 'received_qty'];
 
     public function title()
     {

@@ -32,6 +32,7 @@ class ProcurementController extends Controller
         ]);
         $order = ProcurementOrder::create($data + [
             'order_no' => sprintf('PO-%s-%04d', now()->format('Y'), ProcurementOrder::count() + 1),
+            'status' => 'SUBMITTED',   // PROC lifecycle: ministry approval precedes any delivery
         ]);
 
         return back()->with('flash', "Order {$order->order_no} placed ({$order->quantity} copies @ {$order->unit_price_fcfa} FCFA).");
@@ -80,18 +81,29 @@ class ProcurementController extends Controller
     /** Delivery registers the print batch and links it to the order (traceable procurement). */
     public function markDelivered(Request $request, ProcurementOrder $order)
     {
-        if ($order->status === 'DELIVERED') {
-            return back()->with('flash_error', 'Already delivered.');
+        if (! in_array($order->status, ['APPROVED', 'PARTIALLY_DELIVERED'])) {
+            return back()->with('flash_error', "Order is {$order->status} — deliveries post only against APPROVED orders (PROC lifecycle).");
         }
-        // PROC-06/07: delivery verification — damaged units are rejected at the gate
-        $damaged = (int) ($request->validate(['damaged_qty' => 'nullable|integer|min:0|max:'.$order->quantity])['damaged_qty'] ?? 0);
-        $good = $order->quantity - $damaged;
+        $remaining = $order->quantity - (int) $order->delivered_total;
+        $data = $request->validate([
+            'delivered_qty' => 'nullable|integer|min:1|max:'.$remaining,
+            'damaged_qty' => 'nullable|integer|min:0|max:'.$remaining,
+        ]);
+        // PROC-06/07: partial deliveries accumulate; damaged units are rejected at the gate
+        $delivered = (int) ($data['delivered_qty'] ?? $remaining);
+        $damaged = min((int) ($data['damaged_qty'] ?? 0), $delivered);
+        $good = $delivered - $damaged;
         $batch = PrintBatch::create([
             'batch_no' => sprintf('BAT-%s-%05d', now()->format('Y'), PrintBatch::count() + 1),
             'textbook_title_id' => $order->textbook_title_id,
             'printer' => $order->supplier->name,
             'quantity' => $good,
+            'procurement_order_id' => $order->id,
         ]);
+        $order->forceFill([
+            'delivered_total' => (int) $order->delivered_total + $delivered,
+            'status' => ((int) $order->delivered_total + $delivered) >= $order->quantity ? 'DELIVERED' : 'PARTIALLY_DELIVERED',
+        ])->save();
         if ($damaged > 0) {
             $order->forceFill(['damaged_qty' => $damaged])->save();
             \App\Modules\Platform\Models\Alert::create([
@@ -120,8 +132,19 @@ class ProcurementController extends Controller
             }
             \App\Modules\Catalogue\Models\Copy::insert($rows);
         }
-        $order->update(['status' => 'DELIVERED', 'print_batch_id' => $batch->id]);
+        $order->update(['print_batch_id' => $batch->id]);   // status governed by delivered_total above
 
         return back()->with('flash', "Delivery registered as batch {$batch->batch_no}; ready for warehouse receipt.");
     }
+    /** PROC lifecycle: ministry approves a submitted order before any delivery can post. */
+    public function approveOrder(ProcurementOrder $order)
+    {
+        if ($order->status !== 'SUBMITTED') {
+            return back()->with('flash_error', 'Only SUBMITTED orders can be approved.');
+        }
+        $order->update(['status' => 'APPROVED']);
+
+        return back()->with('flash', "Order {$order->order_no} approved by ".auth()->user()->name.' — deliveries can now be verified.');
+    }
+
 }

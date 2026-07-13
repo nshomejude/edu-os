@@ -9,6 +9,12 @@
         </div>
         <div class="toolbar" style="margin:0">
             <a class="btn btn-sm btn-secondary" href="{{ route('plan.order', $campaign) }}">{{ __('Distribution order') }}</a>
+            @if ($campaign->version > 1)<span class="chip">v{{ $campaign->version }}</span>@endif
+            @can('programme')
+                @if (in_array($campaign->status, ['APPROVED', 'EXECUTING', 'CLOSED']))
+                    <form method="post" action="{{ route('plan.amend', $campaign) }}">@csrf<button class="btn btn-sm btn-secondary">Amend as new version</button></form>
+                @endif
+            @endcan
             <span class="pill {{ $campaign->status === 'APPROVED' ? 'pill-success' : 'pill-transit' }}">{{ $campaign->status }}</span>
             @can('programme')
                 @if ($campaign->status === 'DRAFT')
