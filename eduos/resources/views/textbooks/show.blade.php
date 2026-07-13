@@ -5,7 +5,7 @@
     <div class="pagehead">
         <div>
             <h1>{{ $textbook->title_en ?? $textbook->title_fr }}</h1>
-            <div class="sub">{{ $textbook->ntid }} · {{ $textbook->ministry }} · {{ $textbook->subject_code }} {{ $textbook->grade_code }} ({{ $textbook->language }})@if($textbook->isbn) · ISBN {{ $textbook->isbn }}@endif@if($textbook->publisher) · {{ $textbook->publisher }}@endif@if($textbook->pages) · {{ $textbook->pages }} pp@endif@if($textbook->weight_grams) · {{ $textbook->weight_grams }} g@endif@if($textbook->curriculum_version_id) · {{ \App\Modules\Catalogue\Models\CurriculumVersion::find($textbook->curriculum_version_id)?->name }}@endif</div>
+            <div class="sub">{{ $textbook->ntid }} · {{ $textbook->ministry }} · {{ $textbook->subject_code }} {{ $textbook->grade_code }} ({{ $textbook->language }})@if($textbook->isbn) · ISBN {{ $textbook->isbn }}@endif @if($textbook->publisher) · {{ $textbook->publisher }}@endif @if($textbook->pages) · {{ $textbook->pages.' pp' }}@endif @if($textbook->weight_grams) · {{ $textbook->weight_grams.' g' }}@endif @if($textbook->curriculum_version_id) · {{ \App\Modules\Catalogue\Models\CurriculumVersion::find($textbook->curriculum_version_id)?->name }}@endif</div>
         </div>
         <span class="pill {{ $textbook->status === 'APPROVED' ? 'pill-success' : ($textbook->status === 'RETIRED' ? 'pill-pending' : 'pill-transit') }}">{{ $textbook->status }}</span>
     </div>

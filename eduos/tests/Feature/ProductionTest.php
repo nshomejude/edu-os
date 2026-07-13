@@ -82,4 +82,27 @@ class ProductionTest extends TestCase
         $this->assertSame(1, \Illuminate\Support\Facades\DB::transactionLevel());
         $this->assertTrue(\App\Modules\Platform\Models\Alert::where('title', 'ESCALATION: probe')->exists());
     }
+
+    /** Route sweep: every admin-facing screen must render — catches template regressions in CI. */
+    public function test_every_screen_renders_for_admin(): void
+    {
+        $region = \App\Modules\Registry\Models\Region::create(['code' => 'CE', 'name_en' => 'C', 'name_fr' => 'C', 'books_distributed' => 0]);
+        $school = \App\Modules\Registry\Models\School::create(['nsid' => 'CM-SCH-CE-0101-BP-00001', 'name_official' => 'S', 'ministry' => 'MINEDUB', 'school_type' => 'PRIMARY', 'region_id' => $region->id]);
+        $warehouse = \App\Modules\Custody\Models\Warehouse::create(['wh_id' => 'CM-WH-CE-001', 'name' => 'W1', 'tier' => 'NATIONAL', 'region_id' => $region->id]);
+        $title = \App\Modules\Catalogue\Models\TextbookTitle::create(['ntid' => 'CM-TB-B-MAT-P1-EN-0001-01', 'title_en' => 'T', 'ministry' => 'MINEDUB', 'subject_code' => 'MAT', 'grade_code' => 'P1', 'language' => 'EN', 'status' => 'APPROVED', 'isbn' => '978-0-306-40615-7', 'publisher' => 'P', 'pages' => 120, 'weight_grams' => 300]);
+
+        $screens = [
+            '/', '/about', '/alerts', '/audit-trail', '/campaigns', '/exceptions', '/exports',
+            '/forecast', '/inspections', '/inventory/low-stock', '/logistics', '/network', '/plan',
+            '/procurement', '/profile', '/profile/mfa', '/profile/sessions', '/redistribution',
+            '/reports', '/schedule', '/schools', '/schools/create', '/settings', '/shipments',
+            '/shipments/create', '/textbooks', '/users', '/warehouses', '/up',
+            '/api/catalogue', '/api/schools', '/api/stats', '/api/openapi.json',
+            '/schools/'.$school->id, '/schools/'.$school->id.'/students',
+            '/warehouses/'.$warehouse->id, '/textbooks/'.$title->id,
+        ];
+        foreach ($screens as $uri) {
+            $this->actingAs($this->admin)->get($uri)->assertOk();
+        }
+    }
 }

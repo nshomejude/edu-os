@@ -1,6 +1,22 @@
 # EduOS Cameroon
 
-Documentation repository for **EduOS Cameroon** — a proposed National Education Digital Operating System for the Government of Cameroon (MINESEC / MINEDUB), covering the full national textbook and learning-resource lifecycle: forecasting, procurement, warehousing, distribution, school-level management, inspection, analytics, and governance.
+[![tests](https://github.com/nshomejude/edu-os/actions/workflows/tests.yml/badge.svg)](https://github.com/nshomejude/edu-os/actions/workflows/tests.yml)
+
+**EduOS Cameroon** — a National Education Digital Operating System for the Government of Cameroon (MINESEC / MINEDUB), covering the full national textbook and learning-resource lifecycle: forecasting, procurement, warehousing, distribution, school-level management, inspection, analytics, and governance.
+
+## The application (`eduos/`)
+
+A production-candidate Laravel 12 implementation of the full 86-screen specification:
+
+- **13 modules** — planning, procurement, catalogue/passports, warehousing, shipments, logistics, school operations, verification, exceptions, reporting, administration, auth, dashboards
+- **15-role RBAC** with enforced separation of duties; TOTP MFA with recovery codes; login lockout and a complete authentication audit stream
+- **Tamper-evident custody**: SHA-256 hash-chained custody & passport events, a reconstructible stock journal, and nightly chain verification
+- **Printable official documents** (waybill, proof of delivery, picking list, distribution order, inspection report) with QR verification codes and Code 39 barcodes
+- **Bilingual UI** (English / Français) with a one-click switcher
+- **Production hardening**: atomic mutations, security headers + CSP, forced temp-password rotation, mail-aware resets — see [`eduos/PRODUCTION.md`](eduos/PRODUCTION.md)
+- **43-test suite** running in CI on every push
+
+Demo: `cd eduos && php artisan serve` — sign in as `admin@minedub.cm` / `password`.
 
 ## Contents
 
